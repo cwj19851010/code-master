@@ -5,6 +5,8 @@
     var clientDownloadUrl = ViewData["ClientDownloadUrl"] as string ?? "/download/client/windows/latest";
     var clientDownloadVersion = ViewData["ClientDownloadVersion"] as string;
     var clientDownloadSize = ViewData["ClientDownloadSize"] as string;
+    var githubRepositoryUrl = "https://github.com/cwj19851010/code-master";
+    var giteeRepositoryUrl = "https://gitee.com/cwj19851010/code-master";
     var clientVersionLabel = string.IsNullOrWhiteSpace(clientDownloadVersion) ? "等待上传最新版" : $"最新版 v{clientDownloadVersion}";
     var clientVersionMeta = string.IsNullOrWhiteSpace(clientDownloadSize) ? clientVersionLabel : $"{clientVersionLabel} · {clientDownloadSize}";
     ViewData["Title"] = "CodeMaster - 约定驱动的 .NET + Vue 企业级开发平台";
@@ -23,6 +25,10 @@
       "softwareVersion": "@(clientDownloadVersion ?? "preview")",
       "description": "Convention-driven .NET and Vue enterprise development platform with dynamic APIs, permission generation, database migrations, code generation, MCP workflows and a Tauri LocalAgent client.",
       "programmingLanguage": ["C#", ".NET", "Vue", "JavaScript"],
+      "sameAs": [
+        "@githubRepositoryUrl",
+        "@giteeRepositoryUrl"
+      ],
       "featureList": [
         "Convention-based dynamic API generation",
         "Automatic menu and permission generation",
@@ -51,6 +57,8 @@
             <a class="button primary" href="/register">开始使用</a>
             <a class="button secondary" href="@clientDownloadUrl">下载客户端</a>
             <span class="client-version-pill">@clientVersionMeta</span>
+            <a class="button repo github-repo" href="@githubRepositoryUrl" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a class="button repo gitee-repo" href="@giteeRepositoryUrl" target="_blank" rel="noopener noreferrer">Gitee</a>
             <a class="button ghost" href="#workflow">了解工作流</a>
             @if (swaggerEnabled)
             {
@@ -273,5 +281,7 @@
     <div class="hero-actions">
         <a class="button primary" href="/register">创建账号</a>
         <a class="button secondary" href="/download">下载 CodeMaster</a>
+        <a class="button repo github-repo" href="@githubRepositoryUrl" target="_blank" rel="noopener noreferrer">GitHub 仓库</a>
+        <a class="button repo gitee-repo" href="@giteeRepositoryUrl" target="_blank" rel="noopener noreferrer">Gitee 仓库</a>
     </div>
 </section>

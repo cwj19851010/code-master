@@ -75,6 +75,9 @@ p { color: var(--muted); line-height: 1.8; }
 .button.secondary { background: white; color: var(--blue); }
 .button.ghost { background: transparent; }
 .button.github { background: #24292f; color: white; border-color: #24292f; width: 100%; }
+.button.repo { gap: 8px; }
+.button.github-repo { background: #24292f; color: white; border-color: #24292f; }
+.button.gitee-repo { background: #c71d23; color: white; border-color: #c71d23; }
 .client-version-pill {
   display: inline-flex;
   align-items: center;
