@@ -35,7 +35,7 @@ admin / admin123
 ## Code Generation Rules
 
 - Do not hand-edit generated `.vue` or `.auto.js` files when the fix belongs in templates.
-- Template behavior changes should update seed data and the matching update script under `scripts/`.
+- Template behavior changes should update seed data. One-off local database or template repair scripts should not be committed.
 - Keep Web and Tauri client behavior shared where possible.
 - MCP metadata operations should go through MCP tools instead of direct metadata file edits.
 
@@ -44,7 +44,7 @@ admin / admin123
 - The change has a clear reason and limited scope.
 - Backend builds with `dotnet build CodeMaster.WebApi/CodeMaster.WebApi.csproj`.
 - Frontend changes build with `npm run build` under `CodeMaster.Vue` when relevant.
-- Template changes include seed/update-script alignment when relevant.
+- Template changes include seed data alignment when relevant.
 - Public files contain no private credentials, tokens, IP-only production URLs or local machine paths.
 
 ## Commit Style

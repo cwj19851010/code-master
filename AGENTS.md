@@ -134,9 +134,7 @@ Located in [CodeMaster.Vue/src/views/codegen/entityDesigner/](CodeMaster.Vue/src
 
 Templates live in the database (`sys_page_templates`, `sys_field_control_templates`, `sys_child_templates`). Seed data is in `CodeMaster.Migrator/SeedData/System/TemplateModule.cs`. **Template edits only take effect after regenerating code.**
 
-When any template content or template marker contract changes, update both:
-- `CodeMaster.Migrator/SeedData/System/TemplateModule.cs` so fresh databases get the new templates.
-- A runnable update script under `scripts/` and run it against the current configured database so the local `CodeMaster_Test.db` is updated immediately.
+When any template content or template marker contract changes, update `CodeMaster.Migrator/SeedData/System/TemplateModule.cs` so fresh databases get the new templates. One-off local database/template repair scripts may live under the ignored root `scripts/` directory, but they should not be committed.
 
 ### Critical Rules
 
@@ -144,7 +142,7 @@ When any template content or template marker contract changes, update both:
 - **`tree.json` is the designer's source of truth**, not the `.vue` file. If they disagree, trust `tree.json`
 - **`fields.json` preserves user ScriptSection edits** across regeneration
 - **Template changes require re-running code generation** to take effect
-- **Every template update must be applied in two places**: migration seed data and the current database update script/run.
+- **Every template update must update seed data**: keep one-off local database repair scripts out of version control.
 
 ## Frontend (CodeMaster.Vue)
 

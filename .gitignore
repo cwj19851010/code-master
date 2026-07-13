@@ -106,6 +106,9 @@ Templates/CodeMaster_Template_*.tar.gz
 CodeMaster.WebApi/Templates/CodeMaster_Template_*.zip
 CodeMaster.WebApi/Templates/CodeMaster_Template_*.tar.gz
 
+# Local maintenance/update scripts
+/scripts/
+
 # Accidental dependency/output folders
 **/node_modules1/
 

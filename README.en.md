@@ -108,7 +108,7 @@ For the Vue/Tauri client, copy `CodeMaster.Vue/.env.example` to a local `.env` f
 ## Code Generation Notes
 
 - Generated `.vue` and `.auto.js` files should not be hand-edited.
-- Template changes should be made in database seed data and mirrored by update scripts under `scripts/`.
+- Template changes should be made in database seed data; one-off local repair or update scripts should not be committed.
 - `tree.json` is the entity designer source of truth.
 - `fields.json` preserves per-field script sections across regeneration.
 
