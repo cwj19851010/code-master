@@ -88,6 +88,7 @@ Thumbs.db
 .claude/
 .cursor/
 .reasonix/
+openspec/
 
 # Local publish and generated smoke-test output
 artifacts/
