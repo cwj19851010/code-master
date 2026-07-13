@@ -55,12 +55,14 @@ _ReSharper*/
 *.db.backup_*
 *.backup
 *.backup_*
+*.bak
 *.old
 **/backup/*.db
 **/backup/*.db.backup_*
 
 # Logs
 *.log
+*.pid
 
 # Local environment and production secrets
 .env
