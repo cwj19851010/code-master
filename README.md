@@ -21,6 +21,20 @@ CodeMaster 是一个面向 **.NET 10 + Vue 3** 的企业级快速开发平台。
 - **多租户基础能力**：内置租户上下文、菜单范围、JWT 租户声明和数据权限扩展点。
 - **企业开发栈**：ASP.NET Core、SqlSugar、EF Core Migrator、Vue 3、Element Plus、Vite、SignalR、Quartz、Redis 可选缓存。
 
+## 产品截图
+
+### 项目实体管理
+
+![项目实体管理](CodeMaster.WebApi/wwwroot/site/images/product-project-list.png)
+
+### 模板配置
+
+![模板配置](CodeMaster.WebApi/wwwroot/site/images/product-template-config.png)
+
+### 实体设计器
+
+![实体设计器](CodeMaster.WebApi/wwwroot/site/images/product-entity-designer.png)
+
 ## 项目结构
 
 ```text

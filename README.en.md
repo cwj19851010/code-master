@@ -20,6 +20,20 @@ CodeMaster is a convention-driven rapid development platform for enterprise appl
 - **Multi-tenant foundation**: tenant-aware entities, menu scopes, JWT tenant claims and data-permission hooks are built in.
 - **Production-oriented stack**: .NET 10, SqlSugar runtime ORM, EF Core Migrator, Vue 3, Element Plus, Vite, SignalR, Quartz and optional Redis cache.
 
+## Screenshots
+
+### Project Entity Management
+
+![Project entity management](CodeMaster.WebApi/wwwroot/site/images/product-project-list.png)
+
+### Template Configuration
+
+![Template configuration](CodeMaster.WebApi/wwwroot/site/images/product-template-config.png)
+
+### Entity Designer
+
+![Entity designer](CodeMaster.WebApi/wwwroot/site/images/product-entity-designer.png)
+
 ## Architecture
 
 ```text
