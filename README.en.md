@@ -2,6 +2,9 @@
 
 [简体中文](README.md) | English
 
+- Official website: [http://124.221.136.83:8000](http://124.221.136.83:8000)
+- Open source repository: [https://gitee.com/cwj19851010/code-master](https://gitee.com/cwj19851010/code-master)
+
 CodeMaster is a convention-driven rapid development platform for enterprise applications. It helps teams define projects, modules, entities and fields, then generate maintainable .NET + Vue applications with dynamic APIs, permissions, menus, migrations, i18n data and client-side startup support.
 
 > Current status: early preview. The core framework, code generation, template designer, MCP integration and Tauri client workflow are usable, but APIs and templates may still change before v1.0.
