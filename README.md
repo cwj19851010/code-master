@@ -1,55 +1,65 @@
 # CodeMaster
 
-CodeMaster is a convention-driven rapid development platform for enterprise applications. It helps teams define projects, modules, entities and fields, then generate maintainable .NET + Vue applications with dynamic APIs, permissions, menus, migrations, i18n data and client-side startup support.
+[English](README.en.md) | 简体中文
 
-> Current status: early preview. The core framework, code generation, template designer, MCP integration and Tauri client workflow are usable, but APIs and templates may still change before v1.0.
+CodeMaster 是一个面向 **.NET 10 + Vue 3** 的企业级快速开发平台。它以“约定大于配置”为核心思想，让团队先定义项目、模块、实体和字段，再自动生成可运行、可维护、可持续演进的前后端工程。
 
-## Highlights
+> 当前状态：早期预览版。核心框架、代码生成、模板设计器、MCP 集成和 Tauri 客户端流程已经可用，但 v1.0 前 API、模板和部分交互仍可能调整。
 
-- **Convention over configuration**: define entities and fields once, then generate backend services, DTOs, frontend pages, menus, permissions, language resources and migration data.
-- **Dynamic API and permissions**: application services can be exposed as REST endpoints and protected by generated permission codes.
-- **Template-driven code generation**: page templates, field controls and child-table templates are stored in the database and can be edited from the UI.
-- **Full and incremental generation**: regenerate clean projects or update existing generated code while preserving user-edited script sections.
-- **MCP integration**: AI agents can create or edit CodeMaster projects, modules, entities and fields through MCP instead of writing metadata files directly.
-- **Tauri + LocalAgent client**: the desktop client can call local capabilities such as project initialization, local code generation and starting generated services.
-- **Multi-tenant foundation**: tenant-aware entities, menu scopes, JWT tenant claims and data-permission hooks are built in.
-- **Production-oriented stack**: .NET 10, SqlSugar runtime ORM, EF Core Migrator, Vue 3, Element Plus, Vite, SignalR, Quartz and optional Redis cache.
+## 核心能力
 
-## Architecture
+- **约定式建模**：定义项目、模块、实体和字段后，自动生成后端服务、DTO、前端页面、菜单、权限、语言资源和迁移数据。
+- **动态 API**：应用服务可通过约定自动暴露为 REST API，减少重复 Controller 编写。
+- **自动权限**：根据服务、菜单、按钮和生成规则自动维护权限编码，降低权限遗漏风险。
+- **模板化代码生成**：页面模板、字段控件模板、子表模板存储在数据库中，可在系统界面维护。
+- **全量与增量生成**：支持从零生成项目，也支持对既有生成项目做增量更新，尽量保留用户自定义脚本区。
+- **MCP 智能体集成**：AI 可以通过 MCP 工具新增/编辑项目、模块、实体、字段，执行初始化、生成代码和启动服务。
+- **Tauri + LocalAgent 客户端**：桌面客户端可调用本地能力，例如本地初始化、生成代码、启动生成项目的前后端。
+- **多租户基础能力**：内置租户上下文、菜单范围、JWT 租户声明和数据权限扩展点。
+- **企业开发栈**：ASP.NET Core、SqlSugar、EF Core Migrator、Vue 3、Element Plus、Vite、SignalR、Quartz、Redis 可选缓存。
+
+## 项目结构
 
 ```text
-CodeMaster.WebApi          ASP.NET Core API, dynamic API, controllers, middleware
-CodeMaster.Application     Services, DTOs, code generation, templates, MCP-facing logic
-CodeMaster.Domain          Entity models
-CodeMaster.Infrastructure  SqlSugar, repositories, auth, SignalR, Quartz, middleware
-CodeMaster.Core            Base entities, interfaces, shared abstractions
-CodeMaster.Migrator        EF Core migrations and seed data
-CodeMaster.Vue             Vue 3 admin UI and Tauri client source
-CodeMaster.LocalAgent      Local sidecar service used by the desktop client
-CodeMaster.McpServer       MCP server for AI-assisted code generation workflows
-Templates                  Source template package used for generated projects
+CodeMaster.WebApi          ASP.NET Core API、动态 API、Controller、中间件
+CodeMaster.Application     应用服务、DTO、代码生成、模板和 MCP 相关业务
+CodeMaster.Domain          领域实体
+CodeMaster.Infrastructure  SqlSugar、仓储、认证授权、SignalR、Quartz、中间件
+CodeMaster.Core            基础实体、接口、公共抽象
+CodeMaster.Migrator        EF Core 迁移和种子数据
+CodeMaster.Vue             Vue 3 管理端和 Tauri 客户端源码
+CodeMaster.LocalAgent      桌面客户端使用的本地 sidecar 服务
+CodeMaster.McpServer       面向 AI 代码生成流程的 MCP 服务
+Templates                  生成项目使用的源码模板包
 ```
 
-## Requirements
+## 技术栈
 
 - .NET SDK 10
-- Node.js 20+
-- PostgreSQL for the current committed EF migration set
-- Runtime code supports SQLite, PostgreSQL, MySQL, SQL Server and Oracle, but non-PostgreSQL EF migrations should be regenerated for the selected provider before publishing or deploying.
-- Optional: Redis, Tauri prerequisites for desktop client builds
+- ASP.NET Core Web API
+- SqlSugar 运行时 ORM
+- EF Core Migrator
+- Vue 3 + Element Plus + Vite
+- Pinia + vue-i18n
+- SignalR
+- Quartz
+- Tauri + LocalAgent
+- PostgreSQL 当前默认迁移集
 
-## Quick Start
+运行时代码支持 SQLite、PostgreSQL、MySQL、SQL Server、Oracle，但当前提交的 EF 迁移集以 PostgreSQL 为主。如果你要把其他数据库作为生产首选，建议重新生成并验证对应 provider 的迁移集。
 
-The committed configuration uses local PostgreSQL example values and placeholder secrets. Update the connection string before running in your own environment.
+## 快速开始
 
-1. Restore and build:
+当前仓库使用本地 PostgreSQL 示例配置和占位密钥。正式部署前请改成自己的连接串和密钥。
+
+1. 还原并构建：
 
 ```bash
 dotnet restore CodeMaster.sln
 dotnet build CodeMaster.sln
 ```
 
-2. Create an empty PostgreSQL database named `CodeMasterDB`, then create the tables and seed data:
+2. 创建数据库并初始化种子数据：
 
 ```bash
 createdb -h localhost -U postgres CodeMasterDB
@@ -57,14 +67,14 @@ cd CodeMaster.Migrator
 dotnet run
 ```
 
-3. Start the API:
+3. 启动后端：
 
 ```bash
 cd CodeMaster.WebApi
 dotnet run
 ```
 
-4. Start the frontend:
+4. 启动前端：
 
 ```bash
 cd CodeMaster.Vue
@@ -72,22 +82,22 @@ npm install
 npm run dev
 ```
 
-Default development account:
+默认开发账号：
 
 ```text
 admin / admin123
 ```
 
-## Configuration
+## 配置说明
 
-Do not commit real production secrets. Use one of these approaches:
+请不要提交真实生产密钥。推荐使用：
 
-- environment variables
-- user secrets for local development
-- an ignored `appsettings.Production.json`
-- server-side secret managers
+- 环境变量
+- 本地 user secrets
+- 被 `.gitignore` 忽略的 `appsettings.Production.json`
+- 服务器密钥管理服务
 
-Important keys:
+常用配置键：
 
 ```text
 ConnectionStrings__DefaultConnection
@@ -101,44 +111,66 @@ Email__Smtp__Password
 Email__CodeSecret
 ```
 
-For the Vue/Tauri client, copy `CodeMaster.Vue/.env.example` to a local `.env` file when a custom server address is needed.
+Vue/Tauri 客户端需要自定义服务地址时，可复制 `CodeMaster.Vue/.env.example` 为本地 `.env`。
 
-## Code Generation Notes
+## 代码生成约定
 
-- Generated `.vue` and `.auto.js` files should not be hand-edited.
-- Template changes should be made in database seed data and mirrored by update scripts under `scripts/`.
-- `tree.json` is the entity designer source of truth.
-- `fields.json` preserves per-field script sections across regeneration.
+- 不建议手工修改生成的 `.vue` 和 `.auto.js` 文件，重新生成时可能被覆盖。
+- 模板变更应同步维护数据库种子数据和 `scripts/` 下的更新脚本。
+- 实体设计器以 `.tree.json` 作为页面结构来源。
+- `.fields.json` 用于保留字段级脚本配置，支持增量生成。
 
-## MCP Usage
+## MCP 场景
 
-The MCP server is intended for natural-language workflows such as:
+CodeMaster MCP Server 面向自然语言代码生成工作流，例如：
 
-- create or edit projects, modules and entities
-- define entity fields and control attributes
-- initialize generated projects
-- run full or incremental code generation
-- start generated frontend/backend services
-- inspect generated project entity structure
+- 新增或编辑项目
+- 新增或编辑模块
+- 新增或编辑实体
+- 维护实体字段和控件属性
+- 初始化生成项目
+- 执行全量或增量代码生成
+- 启动生成项目的前后端服务
+- 查看生成项目的整体实体结构
 
-Agents should use MCP tools for metadata operations instead of directly editing generated project metadata.
+涉及项目元数据的操作，推荐通过 MCP 工具完成，而不是让智能体直接编辑生成项目的元数据文件。
 
-## Security
+## 桌面客户端
 
-Before publishing a fork or deployment:
+CodeMaster 的 Tauri 客户端用于连接服务端前端，同时通过 LocalAgent 调用本地能力。典型场景：
 
-- rotate any secrets that may have been committed or shared
-- keep production appsettings out of git
-- disable Swagger in public production deployments unless explicitly protected
-- use HTTPS and a strong JWT secret
-- review generated templates before exposing them to untrusted users
+- 在客户端中打开部署在服务器上的 CodeMaster 前端
+- 调用本地 sidecar 执行项目初始化和代码生成
+- 启动本地生成项目的前端和后端
+- 下载和管理生成模板
 
-See [SECURITY.md](SECURITY.md) for vulnerability reporting.
+## 安全提醒
 
-## Contributing
+公开仓库或生产部署前请务必：
 
-Issues and pull requests are welcome while the project is stabilizing. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening larger changes.
+- 轮换所有曾经出现在源码、日志、截图或聊天记录里的密钥
+- 不要提交生产 `appsettings`、`.env`、证书和数据库备份
+- 生产环境默认关闭或保护 Swagger
+- 使用 HTTPS 和足够强的 JWT 密钥
+- 对可编辑模板、上传文件和生成代码流程做权限控制
 
-## License
+漏洞报告请查看 [SECURITY.md](SECURITY.md)。
 
-CodeMaster is released under the [Apache License 2.0](LICENSE).
+## 路线图
+
+- 完善代码生成模板稳定性
+- 完善 MCP 工具能力和文档
+- 改进 Tauri 客户端安装、升级和模板下载流程
+- 完善论坛、账号注册、GitHub 登录和租户初始化体验
+- 补充更多测试和示例项目
+- 移动端/小程序生成能力，敬请期待后续版本
+
+## 参与贡献
+
+欢迎提交 Issue 和 Pull Request。较大的功能变更建议先开 Issue 讨论设计方向。
+
+贡献前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。
+
+## 开源协议
+
+CodeMaster 基于 [Apache License 2.0](LICENSE) 开源。
