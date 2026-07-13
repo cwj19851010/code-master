@@ -1,0 +1,120 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "title",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "Alert 标题。"
+    },
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": "'primary' (2.9.11) | 'success' | 'warning' | 'info' | 'error'",
+      "DefaultValue": "info",
+      "Description": "Alert 类型。"
+    },
+    {
+      "Name": "description",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "描述性文本"
+    },
+    {
+      "Name": "closable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否可以关闭"
+    },
+    {
+      "Name": "center",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "文字是否居中"
+    },
+    {
+      "Name": "close-text",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "自定义关闭按钮文本"
+    },
+    {
+      "Name": "show-icon",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示类型图标"
+    },
+    {
+      "Name": "effect",
+      "Type": "enum",
+      "TypeDescription": "'light' | 'dark'",
+      "DefaultValue": "light",
+      "Description": "主题样式"
+    },
+    {
+      "Name": "show-after",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "在触发后多久显示内容，单位毫秒"
+    },
+    {
+      "Name": "hide-after",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "200",
+      "Description": "延迟关闭，单位毫秒"
+    },
+    {
+      "Name": "auto-close",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "alert 出现后自动隐藏延时，单位毫秒"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "Alert 内容描述",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "title",
+      "Description": "标题的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "icon",
+      "Description": "icon 的内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "open",
+      "Description": "开启 Alert 时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "close",
+      "Description": "关闭 Alert 时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "(event?: Event) => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "alert",
+  "Link": "https://element-plus.org/zh-CN/component/alert",
+  "Tag": "alert",
+  "GroupName": "Feedback 反馈组件"
+}

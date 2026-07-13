@@ -1,0 +1,94 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "value",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "显示值"
+    },
+    {
+      "Name": "max",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "99",
+      "Description": "最大值，超过最大值会显示 {max}+。 只有当 value 是数字类型时起作用。"
+    },
+    {
+      "Name": "is-dot",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示小圆点。"
+    },
+    {
+      "Name": "hidden",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否隐藏 Badge。"
+    },
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": "'primary' | 'success' | 'warning' | 'danger' | 'info'",
+      "DefaultValue": "danger",
+      "Description": "badge type."
+    },
+    {
+      "Name": "show-zero",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "值为零时是否显示 Badge"
+    },
+    {
+      "Name": "color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "",
+      "Description": "背景色"
+    },
+    {
+      "Name": "offset",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "badge 的偏移量"
+    },
+    {
+      "Name": "badge-style",
+      "Type": "object",
+      "TypeDescription": "CSSProperties",
+      "DefaultValue": "—",
+      "Description": "自定义 badge 样式"
+    },
+    {
+      "Name": "badge-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "自定义 badge 类名"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "content",
+      "Description": "自定义显示内容",
+      "Type": "object",
+      "TypeDescription": "{ value: string }"
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "badge",
+  "Link": "https://element-plus.org/zh-CN/component/badge",
+  "Tag": "badge",
+  "GroupName": "Data 数据展示"
+}

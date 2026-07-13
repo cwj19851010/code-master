@@ -1,0 +1,60 @@
+import request from '@/utils/request'
+
+{{~ for related in entity.related_imports ~}}
+// 引入{{ related.entity_name }}的不分页列表 API
+import { getList as get{{ related.entity_name }}List } from '@/api/{{ related.module_name_lower }}/{{ related.entity_name_lower }}'
+{{~ end ~}}
+
+// 获取分页列表
+export function getPagedList(params) {
+  return request({
+    url: '/{{ entity.module_name_lower }}/{{ entity.name_lower }}/getpagedlist',
+    method: 'get',
+    params
+  })
+}
+
+// 获取不分页列表（关联表引用）
+export function getList(params) {
+  return request({
+    url: '/{{ entity.module_name_lower }}/{{ entity.name_lower }}/getlist',
+    method: 'get',
+    params
+  })
+}
+
+// 获取详情
+export function getById(id) {
+  return request({
+    url: `/{{ entity.module_name_lower }}/{{ entity.name_lower }}/getbyid/${id}`,
+    method: 'get'
+  })
+}
+
+{{~ if !entity.is_read_only ~}}
+// 创建
+export function create(data) {
+  return request({
+    url: '/{{ entity.module_name_lower }}/{{ entity.name_lower }}/create',
+    method: 'post',
+    data
+  })
+}
+
+// 更新
+export function update(id, data) {
+  return request({
+    url: `/{{ entity.module_name_lower }}/{{ entity.name_lower }}/update/${id}`,
+    method: 'put',
+    data
+  })
+}
+
+// 删除
+export function deleteById(id) {
+  return request({
+    url: `/{{ entity.module_name_lower }}/{{ entity.name_lower }}/delete/${id}`,
+    method: 'delete'
+  })
+}
+{{~ end ~}}

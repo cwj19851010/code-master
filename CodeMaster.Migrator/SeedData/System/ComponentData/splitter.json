@@ -1,0 +1,43 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "layout",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "horizontal",
+      "Description": "分隔面板的布局方向"
+    }
+  ],
+  "ComponentSlots": [],
+  "ComponentEvents": [
+    {
+      "Name": "resize-start",
+      "Description": "开始调整面板大小时触发，index 是拖拽条的索引。",
+      "Type": "Function",
+      "TypeDescription": null
+    },
+    {
+      "Name": "resize",
+      "Description": "调整面板大小时触发，index 是拖拽条的索引。",
+      "Type": "Function",
+      "TypeDescription": null
+    },
+    {
+      "Name": "resize-end",
+      "Description": "面板调整大小结束时触发，index 是拖拽条的索引。",
+      "Type": "Function",
+      "TypeDescription": null
+    },
+    {
+      "Name": "collapse",
+      "Description": "当面板折叠时触发，index 是拖拽条的索引。",
+      "Type": "Function",
+      "TypeDescription": null
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "splitter",
+  "Link": "https://element-plus.org/zh-CN/component/splitter",
+  "Tag": "splitter",
+  "GroupName": "Basic 基础组件"
+}

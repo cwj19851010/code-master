@@ -1,0 +1,18 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "variant",
+      "Type": "enum",
+      "TypeDescription": "'p' | 'text' | 'h1' | 'h3' | 'caption' | 'button' | 'image' | 'circle' | 'rect'",
+      "DefaultValue": "text",
+      "Description": "当前渲染 skeleton 类型"
+    }
+  ],
+  "ComponentSlots": [],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "skeleton-item",
+  "Link": "https://element-plus.org/zh-CN/component/skeleton",
+  "Tag": "skeleton-item",
+  "GroupName": "Data 数据展示"
+}

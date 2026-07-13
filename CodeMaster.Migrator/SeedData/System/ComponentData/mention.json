@@ -1,0 +1,184 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "options",
+      "Type": "array",
+      "TypeDescription": "MentionOption[]",
+      "DefaultValue": "[]",
+      "Description": "提及选项列表"
+    },
+    {
+      "Name": "prefix",
+      "Type": "string, array",
+      "TypeDescription": "string[]",
+      "DefaultValue": "'@'",
+      "Description": "触发字段的前缀。 字符串长度必须且只能为 1"
+    },
+    {
+      "Name": "split",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "' '",
+      "Description": "用于拆分提及的字符。 字符串长度必须且只能为 1"
+    },
+    {
+      "Name": "filter-option",
+      "Type": "false, Function",
+      "TypeDescription": "(pattern: string, option: MentionOption) => boolean",
+      "DefaultValue": "—",
+      "Description": "定制筛选器选项逻辑"
+    },
+    {
+      "Name": "placement",
+      "Type": "string",
+      "TypeDescription": "'bottom' \\| 'top'",
+      "DefaultValue": "'bottom'",
+      "Description": "设置弹出位置"
+    },
+    {
+      "Name": "show-arrow",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "下拉菜单的内容是否有箭头"
+    },
+    {
+      "Name": "offset",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "下拉面板偏移量"
+    },
+    {
+      "Name": "whole",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "当退格键被按下做删除操作时，是否将提及部分作为整体删除"
+    },
+    {
+      "Name": "check-is-whole",
+      "Type": "Function",
+      "TypeDescription": "(pattern: string, prefix: string) => boolean",
+      "DefaultValue": "—",
+      "Description": "当退格键被按下做删除操作时，检查是否将提及部分作为整体删除"
+    },
+    {
+      "Name": "loading",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "提及的下拉面板是否处于加载状态"
+    },
+    {
+      "Name": "model-value",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "输入值"
+    },
+    {
+      "Name": "popper-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "自定义浮层类名"
+    },
+    {
+      "Name": "popper-options",
+      "Type": "object",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "popper.js\n 参数"
+    },
+    {
+      "Name": "input",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "—"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "label",
+      "Description": "自定义标签内容",
+      "Type": "object",
+      "TypeDescription": "{ item: MentionOption, index: number }"
+    },
+    {
+      "Name": "loading",
+      "Description": "自定义 loading内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "header",
+      "Description": "下拉列表顶部的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "footer",
+      "Description": "下拉列表底部的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "input",
+      "Description": "—",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "search",
+      "Description": "按下触发字段时触发",
+      "Type": "Function",
+      "TypeDescription": "(pattern: string, prefix: string) => void"
+    },
+    {
+      "Name": "select",
+      "Description": "当用户选择选项时触发",
+      "Type": "Function",
+      "TypeDescription": "(option: MentionOption, prefix: string) => void"
+    },
+    {
+      "Name": "whole-remove",
+      "Description": "当整个 mention 被移除，且 whole 为 true 或 check-is-whole 为 true 时触发。",
+      "Type": "Function",
+      "TypeDescription": "(pattern: string, prefix: string) => void"
+    },
+    {
+      "Name": "input",
+      "Description": "—",
+      "Type": "",
+      "TypeDescription": null
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "input",
+      "Description": "el-input 组件实例",
+      "Type": "object",
+      "TypeDescription": "Ref<InputInstance \\| null>"
+    },
+    {
+      "Name": "tooltip",
+      "Description": "el-tooltip 组件实例",
+      "Type": "object",
+      "TypeDescription": "Ref<TooltipInstance \\| null>"
+    },
+    {
+      "Name": "dropdownVisible",
+      "Description": "tooltip 显示状态",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<boolean>"
+    }
+  ],
+  "Name": "mention",
+  "Link": "https://element-plus.org/zh-CN/component/mention",
+  "Tag": "mention",
+  "GroupName": "Form 表单组件"
+}

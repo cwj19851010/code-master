@@ -1,0 +1,59 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment HostEnvironment
+@{
+    var swaggerEnabled = HostEnvironment.IsDevelopment() || Configuration.GetValue("Swagger:Enabled", false);
+}
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@(ViewData["Title"] ?? "CodeMaster - AI native rapid development platform")</title>
+    <meta name="description" content="@(ViewData["Description"] ?? "CodeMaster is a .NET + Vue rapid development platform with code generation, visual entity design, MCP AI workflows, and Tauri LocalAgent desktop capability.")" />
+    <meta name="keywords" content="CodeMaster,.NET,Vue,code generator,low code,MCP,Tauri,LocalAgent,enterprise development" />
+    <link rel="canonical" href="@(ViewData["Canonical"] ?? $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}")" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="@(ViewData["Title"] ?? "CodeMaster")" />
+    <meta property="og:description" content="@(ViewData["Description"] ?? "AI native rapid development platform for .NET and Vue teams.")" />
+    <meta property="og:url" content="@(ViewData["Canonical"] ?? $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}")" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="stylesheet" href="/site/marketing.css" />
+    @RenderSection("Head", required: false)
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="/">
+            <span class="brand-mark">CM</span>
+            <span>CodeMaster</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary navigation">
+            <a href="/#workflow">工作流</a>
+            <a href="/#features">能力</a>
+            <a href="/#architecture">架构</a>
+            <a href="/download">下载</a>
+            <a href="/community">社区</a>
+            @if (swaggerEnabled)
+            {
+                <a href="/swagger">API</a>
+            }
+            <a href="/app">前端入口</a>
+            <a class="nav-cta" href="/register">注册</a>
+        </nav>
+    </header>
+    <main>
+        @RenderBody()
+    </main>
+    <footer class="site-footer">
+        <div>
+            <strong>CodeMaster</strong>
+            <p>AI native rapid development platform for .NET and Vue teams.</p>
+        </div>
+        <div class="footer-links">
+            <a href="/llms.txt">llms.txt</a>
+            <a href="/sitemap.xml">Sitemap</a>
+            <a href="/download">Download</a>
+        </div>
+    </footer>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

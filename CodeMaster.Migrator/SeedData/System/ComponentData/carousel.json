@@ -1,0 +1,141 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "height",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "carousel 的高度"
+    },
+    {
+      "Name": "initial-index",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "初始状态激活的幻灯片的索引，从 0 开始"
+    },
+    {
+      "Name": "trigger",
+      "Type": "enum",
+      "TypeDescription": "'hover' | 'click'",
+      "DefaultValue": "hover",
+      "Description": "指示器的触发方式"
+    },
+    {
+      "Name": "autoplay",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否自动切换"
+    },
+    {
+      "Name": "interval",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "3000",
+      "Description": "自动切换的时间间隔，单位为毫秒"
+    },
+    {
+      "Name": "indicator-position",
+      "Type": "enum",
+      "TypeDescription": "'' | 'none' | 'outside'",
+      "DefaultValue": "''",
+      "Description": "指示器的位置"
+    },
+    {
+      "Name": "arrow",
+      "Type": "enum",
+      "TypeDescription": "'always' | 'hover' | 'never'",
+      "DefaultValue": "hover",
+      "Description": "切换箭头的显示时机"
+    },
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": "'' | 'card'",
+      "DefaultValue": "''",
+      "Description": "carousel 的类型"
+    },
+    {
+      "Name": "cardScale",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0.83",
+      "Description": "当 type 为 card时，二级卡的缩放大小"
+    },
+    {
+      "Name": "loop",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否循环显示"
+    },
+    {
+      "Name": "direction",
+      "Type": "enum",
+      "TypeDescription": "'horizontal' | 'vertical'",
+      "DefaultValue": "horizontal",
+      "Description": "展示的方向"
+    },
+    {
+      "Name": "pause-on-hover",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "鼠标悬浮时暂停自动切换"
+    },
+    {
+      "Name": "motion-blur",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "添加动态模糊以给走马灯注入活力和流畅性。"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "当前展示的幻灯片切换时触发，它有两个参数， 一个是新幻灯片的索引，另一个是旧幻灯片的索引",
+      "Type": "Function",
+      "TypeDescription": "(current: number, prev: number) => boolean"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "activeIndex",
+      "Description": "当前幻灯片的索引",
+      "Type": "number",
+      "TypeDescription": null
+    },
+    {
+      "Name": "setActiveItem",
+      "Description": "手动切换幻灯片，传入需要切换的幻灯片的索引，从 0 开始；或相应 el-carousel-item 的 name 属性值",
+      "Type": "Function",
+      "TypeDescription": "(index: string | number) => void"
+    },
+    {
+      "Name": "prev",
+      "Description": "切换至上一张幻灯片",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "next",
+      "Description": "切换至下一张幻灯片",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "Name": "carousel",
+  "Link": "https://element-plus.org/zh-CN/component/carousel",
+  "Tag": "carousel",
+  "GroupName": "Data 数据展示"
+}

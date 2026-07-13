@@ -1,0 +1,113 @@
+using CodeMaster.Core.Repositories;
+using CodeMaster.Domain.Entities.{{ module_name }};
+using CodeMaster.Application.Dtos.{{ module_name }};
+using SqlSugar;
+
+namespace CodeMaster.Application.Services.{{ module_name }};
+
+/// <summary>
+/// {{ description }}服务实现
+/// </summary>
+public class {{ entity_name }}Service : I{{ entity_name }}Service
+{
+    private readonly ISqlSugarClient _db;
+
+    public {{ entity_name }}Service(ISqlSugarClient db)
+    {
+        _db = db;
+    }
+
+    public async Task<{{ entity_name }}Dto> GetByIdAsync(long id)
+    {
+        var entity = await _db.Queryable<{{ entity_name }}>()
+            .Where(x => x.Id == id)
+            .FirstAsync();
+
+        if (entity == null)
+            throw new Exception("数据不存在");
+
+        return MapToDto(entity);
+    }
+
+    public async Task<PagedResultDto<{{ entity_name }}Dto>> GetPagedListAsync({{ entity_name }}QueryDto query)
+    {
+        RefAsync<int> total = 0;
+        var entities = await _db.Queryable<{{ entity_name }}>()
+{{~ for prop in properties ~}}
+{{~ if prop.name != "Id" && prop.name != "CreateTime" && prop.name != "UpdateTime" && prop.name != "CreateBy" && prop.name != "UpdateBy" && prop.name != "DelFlag" ~}}
+{{~ if prop.type == "string" ~}}
+            .WhereIF(!string.IsNullOrEmpty(query.{{ prop.name }}), x => x.{{ prop.name }}!.Contains(query.{{ prop.name }}!))
+{{~ else ~}}
+            .WhereIF(query.{{ prop.name }}.HasValue, x => x.{{ prop.name }} == query.{{ prop.name }})
+{{~ end ~}}
+{{~ end ~}}
+{{~ end ~}}
+            .OrderBy(x => x.Id, OrderByType.Desc)
+            .ToPageListAsync(query.PageIndex, query.PageSize, total);
+
+        return new PagedResultDto<{{ entity_name }}Dto>
+        {
+            Items = entities.Select(MapToDto).ToList(),
+            Total = total
+        };
+    }
+
+    public async Task<long> CreateAsync(Create{{ entity_name }}Dto dto)
+    {
+        var entity = new {{ entity_name }}
+        {
+{{~ for prop in properties ~}}
+{{~ if prop.name != "Id" && prop.name != "CreateTime" && prop.name != "UpdateTime" && prop.name != "CreateBy" && prop.name != "UpdateBy" && prop.name != "DelFlag" ~}}
+            {{ prop.name }} = dto.{{ prop.name }},
+{{~ end ~}}
+{{~ end ~}}
+            CreateTime = DateTime.Now
+        };
+
+        await _db.Insertable(entity).ExecuteCommandAsync();
+        return entity.Id;
+    }
+
+    public async Task UpdateAsync(long id, Update{{ entity_name }}Dto dto)
+    {
+        var entity = await _db.Queryable<{{ entity_name }}>()
+            .Where(x => x.Id == id)
+            .FirstAsync();
+
+        if (entity == null)
+            throw new Exception("数据不存在");
+
+{{~ for prop in properties ~}}
+{{~ if prop.name != "Id" && prop.name != "CreateTime" && prop.name != "UpdateTime" && prop.name != "CreateBy" && prop.name != "UpdateBy" && prop.name != "DelFlag" ~}}
+        entity.{{ prop.name }} = dto.{{ prop.name }};
+{{~ end ~}}
+{{~ end ~}}
+        entity.UpdateTime = DateTime.Now;
+
+        await _db.Updateable(entity).ExecuteCommandAsync();
+    }
+
+    public async Task DeleteAsync(long id)
+    {
+        await _db.Deleteable<{{ entity_name }}>()
+            .Where(x => x.Id == id)
+            .ExecuteCommandAsync();
+    }
+
+    public async Task BatchDeleteAsync(long[] ids)
+    {
+        await _db.Deleteable<{{ entity_name }}>()
+            .Where(x => ids.Contains(x.Id))
+            .ExecuteCommandAsync();
+    }
+
+    private {{ entity_name }}Dto MapToDto({{ entity_name }} entity)
+    {
+        return new {{ entity_name }}Dto
+        {
+{{~ for prop in properties ~}}
+            {{ prop.name }} = entity.{{ prop.name }},
+{{~ end ~}}
+        };
+    }
+}

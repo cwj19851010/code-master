@@ -1,0 +1,74 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "设置 Avatar 的图标类型，具体参考 Icon 组件"
+    },
+    {
+      "Name": "size",
+      "Type": "number, enum",
+      "TypeDescription": "'large' | 'default' | 'small'",
+      "DefaultValue": "default",
+      "Description": "Avatar 大小"
+    },
+    {
+      "Name": "shape",
+      "Type": "enum",
+      "TypeDescription": "'circle' | 'square'",
+      "DefaultValue": "circle",
+      "Description": "Avatar 形状"
+    },
+    {
+      "Name": "src",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "Avatar 图片的源地址"
+    },
+    {
+      "Name": "src-set",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "图片 Avatar 的原生 srcset 属性"
+    },
+    {
+      "Name": "alt",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "图片 Avatar 的原生 alt 属性"
+    },
+    {
+      "Name": "fit",
+      "Type": "enum",
+      "TypeDescription": "'fill' | 'contain' | 'cover' | 'none' | 'scale-down'",
+      "DefaultValue": "cover",
+      "Description": "当展示类型为图片的时候，设置图片如何适应容器"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义头像展示内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "error",
+      "Description": "图片加载失败时触发",
+      "Type": "Function",
+      "TypeDescription": "(e: Event) => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "avatar",
+  "Link": "https://element-plus.org/zh-CN/component/avatar",
+  "Tag": "avatar",
+  "GroupName": "Data 数据展示"
+}

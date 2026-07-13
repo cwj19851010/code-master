@@ -1,0 +1,53 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "类型"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "default",
+      "Description": "大小"
+    },
+    {
+      "Name": "truncated",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "显示省略号"
+    },
+    {
+      "Name": "line-clamp",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "最大行数"
+    },
+    {
+      "Name": "tag",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "span",
+      "Description": "自定义元素标签"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "text",
+  "Link": "https://element-plus.org/zh-CN/component/text",
+  "Tag": "text",
+  "GroupName": "Basic 基础组件"
+}

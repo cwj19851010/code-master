@@ -1,0 +1,39 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "value",
+      "Type": "string, number, boolean, object",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选项的值"
+    },
+    {
+      "Name": "label",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选项的标签，若不设置则默认与value相同"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用该选项"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "默认插槽内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "option",
+  "Link": "https://element-plus.org/zh-CN/component/select",
+  "Tag": "option",
+  "GroupName": "Form 表单组件"
+}

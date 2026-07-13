@@ -1,0 +1,25 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "width",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "300px",
+      "Description": "侧边栏宽度"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "aside",
+  "Link": "https://element-plus.org/zh-CN/component/container",
+  "Tag": "aside",
+  "GroupName": "Basic 基础组件"
+}

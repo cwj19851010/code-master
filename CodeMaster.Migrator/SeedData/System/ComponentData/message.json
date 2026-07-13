@@ -1,0 +1,95 @@
+{
+  "ComponentsProperties": [],
+  "ComponentSlots": [],
+  "ComponentEvents": [],
+  "ComponentExposes": [
+    {
+      "Name": "message",
+      "Description": "消息文字",
+      "Type": "string, VNode, Function",
+      "TypeDescription": "() => VNode"
+    },
+    {
+      "Name": "type",
+      "Description": "消息类型",
+      "Type": "enum",
+      "TypeDescription": "'primary' (2.9.11) | 'success' | 'warning' | 'info' | 'error'"
+    },
+    {
+      "Name": "plain",
+      "Description": "是否纯色",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "icon",
+      "Description": "自定义图标，该属性会覆盖 type 的图标。",
+      "Type": "string, Component",
+      "TypeDescription": null
+    },
+    {
+      "Name": "dangerouslyUseHTMLString",
+      "Description": "是否将 message 属性作为 HTML 片段处理",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "customClass",
+      "Description": "自定义类名",
+      "Type": "string",
+      "TypeDescription": null
+    },
+    {
+      "Name": "duration",
+      "Description": "显示时间，单位为毫秒。 设为 0 则不会自动关闭",
+      "Type": "number",
+      "TypeDescription": null
+    },
+    {
+      "Name": "showClose",
+      "Description": "是否显示关闭按钮",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "onClose",
+      "Description": "关闭时的回调函数, 参数为被关闭的 message 实例",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "offset",
+      "Description": "Message 距离窗口顶部的偏移量",
+      "Type": "number",
+      "TypeDescription": null
+    },
+    {
+      "Name": "appendTo",
+      "Description": "设置 message 的根元素，默认为 document.body",
+      "Type": "CSSSelector, HTMLElement",
+      "TypeDescription": null
+    },
+    {
+      "Name": "grouping",
+      "Description": "合并内容相同的消息，不支持 VNode 类型的消息",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "repeatNum",
+      "Description": "重复次数，类似于 Badge 。当和 grouping 属性一起使用时作为初始数量使用",
+      "Type": "number",
+      "TypeDescription": null
+    },
+    {
+      "Name": "close",
+      "Description": "关闭当前的 Message",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "Name": "message",
+  "Link": "https://element-plus.org/zh-CN/component/message",
+  "Tag": "message",
+  "GroupName": "Feedback 反馈组件"
+}

@@ -1,0 +1,63 @@
+using {{ entity.project_name }}.Core.Entities;
+{{~ if entity.has_tenant ~}}
+using {{ entity.project_name }}.Core.MultiTenancy;
+{{~ end ~}}
+using SqlSugar;
+// 消除 SqlSugar.ITenant 歧义
+{{~ if entity.has_tenant ~}}using ITenant = {{ entity.project_name }}.Core.Entities.ITenant;{{~ end ~}}
+
+namespace {{ entity.project_name }}.Domain.Entities.{{ entity.module_name }};
+
+/// <summary>
+/// {{ entity.description }}（自动生成部分，请勿手动修改）
+/// </summary>
+public partial class {{ entity.name }} : {{ entity.base_class_name }}, IBaseEntity{{ entity.interface_list }}
+{
+{{~ if entity.has_tenant ~}}
+    [SugarColumn(ColumnName = "tenant_id")]
+    public long TenantId { get; set; }
+{{~ end ~}}
+{{~ if entity.is_tree ~}}
+    [SugarColumn(ColumnName = "parent_id")]
+    public long ParentId { get; set; }
+
+    [SugarColumn(ColumnName = "ancestors")]
+    public string? Ancestors { get; set; }
+{{~ end ~}}
+{{~ if entity.has_data_permission ~}}
+    [SugarColumn(ColumnName = "dept_id")]
+    public long DeptId { get; set; }
+
+    [SugarColumn(ColumnName = "dept_ancestors")]
+    public string? DeptAncestors { get; set; }
+{{~ end ~}}
+{{~ for field in entity.fields ~}}
+{{~ if !field.is_interface_field ~}}
+    /// <summary>
+    /// {{ field.description }}
+    /// </summary>
+{{~ if field.is_primary_key ~}}
+    [SugarColumn(IsPrimaryKey = true)]
+{{~ end ~}}
+{{~ if field.column_name ~}}
+    [SugarColumn(ColumnName = "{{ field.column_name }}")]
+{{~ end ~}}
+{{~ if field.is_required && !field.is_nullable ~}}
+    public {{ field.data_type }} {{ field.name }} { get; set; } = default!;
+{{~ else if field.is_nullable ~}}
+    public {{ field.data_type }}? {{ field.name }} { get; set; }
+{{~ else ~}}
+    public {{ field.data_type }} {{ field.name }} { get; set; }
+{{~ end ~}}
+
+{{~ end ~}}
+{{~ end ~}}
+{{~ for relation in entity.one_to_many_relations ~}}
+    /// <summary>
+    /// {{ relation.child_entity_name }}列表（导航属性）
+    /// </summary>
+    [Navigate(NavigateType.OneToMany, nameof({{ relation.child_entity_name }}.{{ relation.child_foreign_key }}), nameof({{ relation.master_field }}))]
+    public List<{{ relation.child_entity_name }}>? {{ relation.child_entity_name }}s { get; set; }
+
+{{~ end ~}}
+}

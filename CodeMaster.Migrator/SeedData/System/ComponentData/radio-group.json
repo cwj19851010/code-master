@@ -1,0 +1,95 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "string, number, boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "绑定值"
+    },
+    {
+      "Name": "size",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "default",
+      "Description": "单选框按钮或边框按钮的大小"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用"
+    },
+    {
+      "Name": "validate-event",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "输入时是否触发表单的校验"
+    },
+    {
+      "Name": "text-color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "#ffffff",
+      "Description": "按钮形式的 Radio 激活时的文本颜色"
+    },
+    {
+      "Name": "fill",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "#409eff",
+      "Description": "按钮形式的 Radio 激活时的填充色和边框色"
+    },
+    {
+      "Name": "aria-labela11y",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "与 RadioGroup 中的 aria-label 属性相同"
+    },
+    {
+      "Name": "name",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生 name 属性"
+    },
+    {
+      "Name": "id",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生 id 属性"
+    },
+    {
+      "Name": "labela11y",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "与 RadioGroup 中的 aria-label 属性相同"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "绑定值变化时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "(value: string | number | boolean) => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "radio-group",
+  "Link": "https://element-plus.org/zh-CN/component/radio",
+  "Tag": "radio-group",
+  "GroupName": "Form 表单组件"
+}

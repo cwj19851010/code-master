@@ -1,0 +1,119 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "container",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "滚动的容器"
+    },
+    {
+      "Name": "offset",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "设置锚点滚动的偏移量"
+    },
+    {
+      "Name": "bound",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "15",
+      "Description": "触发锚点的元素的位置偏移量"
+    },
+    {
+      "Name": "duration",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "300",
+      "Description": "设置容器滚动持续时间，单位为毫秒。"
+    },
+    {
+      "Name": "marker",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示标记"
+    },
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": "'default' \\| 'underline'",
+      "DefaultValue": "default",
+      "Description": "设置锚点类型"
+    },
+    {
+      "Name": "direction",
+      "Type": "enum",
+      "TypeDescription": "'vertical' \\| 'horizontal'",
+      "DefaultValue": "vertical",
+      "Description": "设置锚点方向"
+    },
+    {
+      "Name": "select-scroll-top",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "滚动时，链接是否选中位于顶部"
+    },
+    {
+      "Name": "title",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "链接的文本内容。"
+    },
+    {
+      "Name": "href",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "链接的地址。"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "AnchorLink 组件列表",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "default",
+      "Description": "链接的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "sub-link",
+      "Description": "子链接的槽位。",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "step 改变时的回调",
+      "Type": "Function",
+      "TypeDescription": "(href: string) => void"
+    },
+    {
+      "Name": "click",
+      "Description": "当用户点击链接时触发",
+      "Type": "Function",
+      "TypeDescription": "(e: MouseEvent, href?: string) => void"
+    },
+    {
+      "Name": "scrollTo",
+      "Description": "手动滚动到特定位置。",
+      "Type": "Function",
+      "TypeDescription": "(href: string) => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "anchor",
+  "Link": "https://element-plus.org/zh-CN/component/anchor",
+  "Tag": "anchor",
+  "GroupName": "Navigation 导航"
+}

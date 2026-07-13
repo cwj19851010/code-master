@@ -1,0 +1,130 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "绑定值，选中选项卡的 name，默认值是第一个 tab 的 name"
+    },
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": "'' | 'card' | 'border-card'",
+      "DefaultValue": "''",
+      "Description": "风格类型"
+    },
+    {
+      "Name": "closable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "标签是否可关闭"
+    },
+    {
+      "Name": "addable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "标签是否可增加"
+    },
+    {
+      "Name": "editable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "标签是否同时可增加和关闭"
+    },
+    {
+      "Name": "tab-position",
+      "Type": "enum",
+      "TypeDescription": "'top' | 'right' | 'bottom' | 'left'",
+      "DefaultValue": "top",
+      "Description": "选项卡所在位置"
+    },
+    {
+      "Name": "stretch",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "标签的宽度是否自撑开"
+    },
+    {
+      "Name": "before-leave",
+      "Type": "Function",
+      "TypeDescription": "(activeName: TabPaneName, oldActiveName: TabPaneName) => Awaitable<void | boolean>",
+      "DefaultValue": "() => true",
+      "Description": "切换标签之前的钩子函数， 若返回 false  或者返回被 reject 的 Promise，则阻止切换。"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "默认插槽",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "add-icon",
+      "Description": "自定义添加按钮图标",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "addIcon2.4.0",
+      "Description": "自定义添加按钮图标",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "tab-click",
+      "Description": "tab 被选中时触发",
+      "Type": "Function",
+      "TypeDescription": "(pane: TabsPaneContext, ev: Event) => void"
+    },
+    {
+      "Name": "tab-change",
+      "Description": "activeName 改变时触发",
+      "Type": "Function",
+      "TypeDescription": "(name: TabPaneName) => void"
+    },
+    {
+      "Name": "tab-remove",
+      "Description": "点击 tab 移除按钮时触发",
+      "Type": "Function",
+      "TypeDescription": "(name: TabPaneName) => void"
+    },
+    {
+      "Name": "tab-add",
+      "Description": "点击 tab 新增按钮时触发",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "edit",
+      "Description": "点击 tab 的新增或移除按钮后触发",
+      "Type": "Function",
+      "TypeDescription": "(paneName: TabPaneName | undefined, action: 'remove' | 'add') => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "currentName",
+      "Description": "当前活动的面板名称",
+      "Type": "object",
+      "TypeDescription": "Ref<TabPaneName>"
+    },
+    {
+      "Name": "tabNavRef",
+      "Description": "tab-nav 组件实例",
+      "Type": "object",
+      "TypeDescription": "Ref<TabNavInstance | undefined>"
+    }
+  ],
+  "Name": "tabs",
+  "Link": "https://element-plus.org/zh-CN/component/tabs",
+  "Tag": "tabs",
+  "GroupName": "Navigation 导航"
+}

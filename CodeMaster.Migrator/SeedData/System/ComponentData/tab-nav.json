@@ -1,0 +1,35 @@
+{
+  "ComponentsProperties": [],
+  "ComponentSlots": [],
+  "ComponentEvents": [],
+  "ComponentExposes": [
+    {
+      "Name": "scrollToActiveTab",
+      "Description": "滚动到活动标签",
+      "Type": "Function",
+      "TypeDescription": "() => Promise<void>"
+    },
+    {
+      "Name": "removeFocus",
+      "Description": "移除聚焦状态",
+      "Type": "Function",
+      "TypeDescription": "() => boolean"
+    },
+    {
+      "Name": "tabListRef",
+      "Description": "el_tabs__nav html 元素",
+      "Type": "object",
+      "TypeDescription": "Ref<HTMLDivElement | undefined>"
+    },
+    {
+      "Name": "tabBarRef",
+      "Description": "el_tabs__nav bar 实例",
+      "Type": "object",
+      "TypeDescription": "Ref<TabBarInstance | undefined>"
+    }
+  ],
+  "Name": "tab-nav",
+  "Link": "https://element-plus.org/zh-CN/component/tabs",
+  "Tag": "tab-nav",
+  "GroupName": "Navigation 导航"
+}

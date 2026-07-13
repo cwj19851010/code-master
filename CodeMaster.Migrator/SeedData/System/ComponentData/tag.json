@@ -1,0 +1,87 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": "'primary' | 'success' | 'info' | 'warning' | 'danger'",
+      "DefaultValue": "primary",
+      "Description": "Tag 的类型"
+    },
+    {
+      "Name": "closable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否可关闭"
+    },
+    {
+      "Name": "disable-transitions",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用渐变动画"
+    },
+    {
+      "Name": "hit",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否有边框描边"
+    },
+    {
+      "Name": "color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "背景色"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'large' | 'default' | 'small'",
+      "DefaultValue": "—",
+      "Description": "Tag 的尺寸"
+    },
+    {
+      "Name": "effect",
+      "Type": "enum",
+      "TypeDescription": "'dark' | 'light' | 'plain'",
+      "DefaultValue": "light",
+      "Description": "Tag 的主题"
+    },
+    {
+      "Name": "round",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "Tag 是否为圆形"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "click",
+      "Description": "点击 Tag 时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "(evt: MouseEvent) => void"
+    },
+    {
+      "Name": "close",
+      "Description": "关闭 Tag 时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "(evt: MouseEvent) => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "tag",
+  "Link": "https://element-plus.org/zh-CN/component/tag",
+  "Tag": "tag",
+  "GroupName": "Data 数据展示"
+}

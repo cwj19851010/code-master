@@ -1,0 +1,81 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "value",
+      "Type": "string, number, boolean, object",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中状态的值，只有在绑定对象类型为 array 时有效。"
+    },
+    {
+      "Name": "label",
+      "Type": "string, number, boolean, object",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中状态的值，只有在绑定对象类型为 array 时有效。 如果没有 value， label则作为value使用"
+    },
+    {
+      "Name": "true-value",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中时的值"
+    },
+    {
+      "Name": "false-value",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "没有选中时的值"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用"
+    },
+    {
+      "Name": "name",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生 name 属性"
+    },
+    {
+      "Name": "checked",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "当前是否勾选"
+    },
+    {
+      "Name": "true-label",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中时的值"
+    },
+    {
+      "Name": "false-label",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "没有选中时的值"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "checkbox-button",
+  "Link": "https://element-plus.org/zh-CN/component/checkbox",
+  "Tag": "checkbox-button",
+  "GroupName": "Form 表单组件"
+}

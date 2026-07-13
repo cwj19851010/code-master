@@ -1,0 +1,101 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "index",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "唯一标志"
+    },
+    {
+      "Name": "popper-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "为 popper 添加类名"
+    },
+    {
+      "Name": "show-timeout",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "子菜单出现之前的延迟，(继承 menu 的 show-timeout 配置)"
+    },
+    {
+      "Name": "hide-timeout",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "子菜单消失之前的延迟，(继承 menu 的 hide-timeout 配置)"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用"
+    },
+    {
+      "Name": "teleported",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "undefined",
+      "Description": "是否将弹出菜单挂载到 body 上，第一级SubMenu默认值为 true，其他SubMenus 的值为 false"
+    },
+    {
+      "Name": "popper-offset",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "弹出窗口的偏移量 (覆盖 popper的菜单)"
+    },
+    {
+      "Name": "expand-close-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "父菜单展开且子菜单关闭时的图标， expand-close-icon 和 expand-open-icon 需要一起配置才能生效"
+    },
+    {
+      "Name": "expand-open-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "父菜单展开且子菜单打开时的图标， expand-open-icon 和 expand-close-icon 需要一起配置才能生效"
+    },
+    {
+      "Name": "collapse-close-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "父菜单收起且子菜单关闭时的图标， collapse-close-icon 和 collapse-open-icon 需要一起配置才能生效"
+    },
+    {
+      "Name": "collapse-open-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "父菜单收起且子菜单打开时的图标， collapse-open-icon 和 collapse-close-icon 需要一起配置才能生效"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "title",
+      "Description": "自定义标题内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "sub-menu",
+  "Link": "https://element-plus.org/zh-CN/component/menu",
+  "Tag": "sub-menu",
+  "GroupName": "Navigation 导航"
+}

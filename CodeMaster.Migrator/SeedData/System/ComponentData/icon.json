@@ -1,0 +1,32 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "继承颜色",
+      "Description": "svg 的 fill 颜色"
+    },
+    {
+      "Name": "size",
+      "Type": "number, string",
+      "TypeDescription": null,
+      "DefaultValue": "继承字体大小",
+      "Description": "SVG 图标的大小，size x size"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "icon",
+  "Link": "https://element-plus.org/zh-CN/component/icon",
+  "Tag": "icon",
+  "GroupName": "Basic 基础组件"
+}

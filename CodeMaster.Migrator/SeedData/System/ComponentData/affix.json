@@ -1,0 +1,72 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "offset",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "偏移距离"
+    },
+    {
+      "Name": "position",
+      "Type": "enum",
+      "TypeDescription": "'top' | 'bottom'",
+      "DefaultValue": "top",
+      "Description": "固钉位置"
+    },
+    {
+      "Name": "target",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "指定容器（CSS 选择器）"
+    },
+    {
+      "Name": "z-index",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "100",
+      "Description": "z-index"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "固钉状态改变时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "(fixed: boolean) => void"
+    },
+    {
+      "Name": "scroll",
+      "Description": "滚动时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "(value: { scrollTop: number, fixed: boolean }) => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "update",
+      "Description": "手动更新固钉状态",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "updateRoot",
+      "Description": "手动更新根元素的盒模型信息",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "Name": "affix",
+  "Link": "https://element-plus.org/zh-CN/component/affix",
+  "Tag": "affix",
+  "GroupName": "Navigation 导航"
+}

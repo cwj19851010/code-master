@@ -1,0 +1,67 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "name",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "唯一标志符"
+    },
+    {
+      "Name": "title",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "面板标题"
+    },
+    {
+      "Name": "icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "ArrowRight",
+      "Description": "折叠项目的图标"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用"
+    },
+    {
+      "Name": "default",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "Collapse Item 的内容"
+    },
+    {
+      "Name": "title",
+      "Type": "object",
+      "TypeDescription": "{ isActive: boolean }",
+      "DefaultValue": null,
+      "Description": "Collapse Item 的标题"
+    },
+    {
+      "Name": "icon",
+      "Type": "object",
+      "TypeDescription": "{ isActive: boolean }",
+      "DefaultValue": null,
+      "Description": "折叠项目图标的内容"
+    }
+  ],
+  "ComponentSlots": [],
+  "ComponentEvents": [],
+  "ComponentExposes": [
+    {
+      "Name": "isActive",
+      "Description": "当前折叠项是否激活",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<boolean | undefined>"
+    }
+  ],
+  "Name": "collapse-item",
+  "Link": "https://element-plus.org/zh-CN/component/collapse",
+  "Tag": "collapse-item",
+  "GroupName": "Data 数据展示"
+}

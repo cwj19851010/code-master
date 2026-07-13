@@ -1,0 +1,118 @@
+<template>
+  <div class="app-container">
+    <el-card shadow="never">
+      <template #header>
+        <div class="card-header">
+          <span>{{ t($route.meta.title) }}</span>
+        </div>
+      </template>
+
+      <el-descriptions :column="2" border v-loading="loading">
+        <el-descriptions-item :label="t('title')">{{ detailData.title }}</el-descriptions-item>
+        <el-descriptions-item :label="t('business_type')">{{ getBusinessTypeLabel(detailData.businessType) }}</el-descriptions-item>
+        <el-descriptions-item :label="t('request_method')">{{ detailData.requestMethod }}</el-descriptions-item>
+        <el-descriptions-item :label="t('oper_name')">{{ detailData.operName }}</el-descriptions-item>
+        <el-descriptions-item :label="t('oper_ip')">{{ detailData.operIp }}</el-descriptions-item>
+        <el-descriptions-item :label="t('oper_location')">{{ detailData.operLocation }}</el-descriptions-item>
+        <el-descriptions-item :label="t('status')">
+          <el-tag :type="detailData.status === 0 ? 'success' : 'danger'">
+            {{ detailData.status === 0 ? t('normal') : t('disabled') }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item :label="t('elapsed')">{{ detailData.elapsed }} ms</el-descriptions-item>
+        <el-descriptions-item :label="t('oper_time')">{{ formatDateTime(detailData.operTime) }}</el-descriptions-item>
+        <el-descriptions-item :label="t('method')" :span="2">{{ detailData.method }}</el-descriptions-item>
+        <el-descriptions-item :label="t('oper_url')" :span="2">{{ detailData.operUrl }}</el-descriptions-item>
+        <el-descriptions-item :label="t('oper_param')" :span="2">
+          <pre style="max-height: 200px; overflow-y: auto;">{{ detailData.operParam }}</pre>
+        </el-descriptions-item>
+        <el-descriptions-item :label="t('json_result')" :span="2">
+          <pre style="max-height: 200px; overflow-y: auto;">{{ detailData.jsonResult }}</pre>
+        </el-descriptions-item>
+        <el-descriptions-item :label="t('error_msg')" :span="2" v-if="detailData.errorMsg">
+          <pre style="max-height: 200px; overflow-y: auto; color: red;">{{ detailData.errorMsg }}</pre>
+        </el-descriptions-item>
+      </el-descriptions>
+
+      <div class="mt-20" style="text-align: center;">
+        <el-button @click="handleBack">{{ t('back') }}</el-button>
+      </div>
+    </el-card>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+import { getById } from '@/api/monitor/operlog'
+import { formatDateTime } from '@/utils/dateFormat'
+
+const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
+
+const loading = ref(false)
+const detailData = ref({})
+
+const businessTypeMap = {
+  0: t('business_type_other'),
+  1: t('business_type_insert'),
+  2: t('business_type_update'),
+  3: t('business_type_delete'),
+  4: t('business_type_grant'),
+  5: t('business_type_export'),
+  6: t('business_type_import'),
+  7: t('business_type_force'),
+  8: t('business_type_clean')
+}
+
+const getBusinessTypeLabel = (type) => {
+  return businessTypeMap[type] || t('business_type_other')
+}
+
+const fetchDetail = async () => {
+  const id = route.query.id
+  if (!id) {
+    ElMessage.error(t('invalid_id'))
+    handleBack()
+    return
+  }
+
+  loading.value = true
+  try {
+    detailData.value = await getById(id)
+  } catch (error) {
+    console.error('Failed to fetch operation log detail:', error)
+    ElMessage.error(t('fetch_failed'))
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleBack = () => {
+  router.back()
+}
+
+onMounted(() => {
+  fetchDetail()
+})
+</script>
+
+<style scoped>
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  margin: 0;
+  padding: 10px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+}
+</style>

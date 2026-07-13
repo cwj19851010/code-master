@@ -1,0 +1,249 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "action",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "#",
+      "Description": "请求 URL"
+    },
+    {
+      "Name": "headers",
+      "Type": "object",
+      "TypeDescription": "Headers | Record<string, any>",
+      "DefaultValue": "—",
+      "Description": "设置上传的请求头部"
+    },
+    {
+      "Name": "method",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "post",
+      "Description": "设置上传请求方法"
+    },
+    {
+      "Name": "multiple",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否支持多选文件"
+    },
+    {
+      "Name": "data",
+      "Type": "object, Function",
+      "TypeDescription": "(rawFile: UploadRawFile) => Awaitable<Record<string, any>>",
+      "DefaultValue": "{}",
+      "Description": "上传时附带的额外参数 从 v2.3.13 支持 Awaitable 数据，和 Function"
+    },
+    {
+      "Name": "name",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "file",
+      "Description": "上传的文件字段名"
+    },
+    {
+      "Name": "with-credentials",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "支持发送 cookie 凭证信息"
+    },
+    {
+      "Name": "show-file-list",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示已上传文件列表"
+    },
+    {
+      "Name": "drag",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否启用拖拽上传"
+    },
+    {
+      "Name": "accept",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "接受上传的文件类型\n（thumbnail-mode 模式下此参数无效）"
+    },
+    {
+      "Name": "crossorigin",
+      "Type": "enum",
+      "TypeDescription": "'' | 'anonymous' | 'use-credentials'",
+      "DefaultValue": "—",
+      "Description": "原生属性 crossorigin"
+    },
+    {
+      "Name": "on-preview",
+      "Type": "Function",
+      "TypeDescription": "(uploadFile: UploadFile) => void",
+      "DefaultValue": "—",
+      "Description": "点击文件列表中已上传的文件时的钩子"
+    },
+    {
+      "Name": "on-remove",
+      "Type": "Function",
+      "TypeDescription": "(uploadFile: UploadFile, uploadFiles: UploadFiles) => void",
+      "DefaultValue": "—",
+      "Description": "文件列表移除文件时的钩子"
+    },
+    {
+      "Name": "on-success",
+      "Type": "Function",
+      "TypeDescription": "(response: any, uploadFile: UploadFile, uploadFiles: UploadFiles) => void",
+      "DefaultValue": "—",
+      "Description": "文件上传成功时的钩子"
+    },
+    {
+      "Name": "on-error",
+      "Type": "Function",
+      "TypeDescription": "(error: Error, uploadFile: UploadFile, uploadFiles: UploadFiles) => void",
+      "DefaultValue": "—",
+      "Description": "文件上传失败时的钩子"
+    },
+    {
+      "Name": "on-progress",
+      "Type": "Function",
+      "TypeDescription": "(evt: UploadProgressEvent, uploadFile: UploadFile, uploadFiles: UploadFiles) => void",
+      "DefaultValue": "—",
+      "Description": "文件上传时的钩子"
+    },
+    {
+      "Name": "on-change",
+      "Type": "Function",
+      "TypeDescription": "(uploadFile: UploadFile, uploadFiles: UploadFiles) => void",
+      "DefaultValue": "—",
+      "Description": "文件状态改变时的钩子，添加文件、上传成功和上传失败时都会被调用"
+    },
+    {
+      "Name": "on-exceed",
+      "Type": "Function",
+      "TypeDescription": "(files: File[], uploadFiles: UploadUserFile[]) => void",
+      "DefaultValue": "—",
+      "Description": "当超出限制时，执行的钩子函数"
+    },
+    {
+      "Name": "before-upload",
+      "Type": "Function",
+      "TypeDescription": "(rawFile: UploadRawFile) => Awaitable<void | undefined | null | boolean | File | Blob>",
+      "DefaultValue": "—",
+      "Description": "上传文件之前的钩子，参数为上传的文件， 若返回false或者返回 Promise 且被 reject，则停止上传。"
+    },
+    {
+      "Name": "before-remove",
+      "Type": "Function",
+      "TypeDescription": "(uploadFile: UploadFile, uploadFiles: UploadFiles) => Awaitable<boolean>",
+      "DefaultValue": "—",
+      "Description": "删除文件之前的钩子，参数为上传的文件和文件列表， 若返回 false 或者返回 Promise 且被 reject，则停止删除。"
+    },
+    {
+      "Name": "file-list",
+      "Type": "object",
+      "TypeDescription": "UploadUserFile[]",
+      "DefaultValue": "[]",
+      "Description": "默认上传文件"
+    },
+    {
+      "Name": "list-type",
+      "Type": "enum",
+      "TypeDescription": "'text' | 'picture' | 'picture-card'",
+      "DefaultValue": "text",
+      "Description": "文件列表的类型"
+    },
+    {
+      "Name": "auto-upload",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否自动上传文件"
+    },
+    {
+      "Name": "http-request",
+      "Type": "Function",
+      "TypeDescription": "(options: UploadRequestOptions) => XMLHttpRequest | Promise<unknown>",
+      "DefaultValue": "请参考ajaxUpload",
+      "Description": "覆盖默认的 Xhr 行为，允许自行实现上传文件的请求"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用上传"
+    },
+    {
+      "Name": "limit",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "允许上传文件的最大数量"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "trigger",
+      "Description": "触发文件选择框的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "tip",
+      "Description": "提示说明文字",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "file",
+      "Description": "缩略图模板的内容",
+      "Type": "object",
+      "TypeDescription": "{ file: UploadFile, index: number }"
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [
+    {
+      "Name": "abort",
+      "Description": "取消上传请求",
+      "Type": "Function",
+      "TypeDescription": "(file: UploadFile) => void"
+    },
+    {
+      "Name": "submit",
+      "Description": "手动上传文件列表",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "clearFiles",
+      "Description": "清空已上传的文件列表（该方法不支持在 before-upload 中调用）",
+      "Type": "Function",
+      "TypeDescription": "(status?: UploadStatus[]) => void"
+    },
+    {
+      "Name": "handleStart",
+      "Description": "手动选择文件",
+      "Type": "Function",
+      "TypeDescription": "(rawFile: UploadRawFile) => void"
+    },
+    {
+      "Name": "handleRemove",
+      "Description": "手动移除文件。 file 和rawFile 已被合并。 rawFile 将在 v2.2.0 中移除",
+      "Type": "Function",
+      "TypeDescription": "(file: UploadFile | UploadRawFile, rawFile?: UploadRawFile) => void"
+    }
+  ],
+  "Name": "upload",
+  "Link": "https://element-plus.org/zh-CN/component/upload",
+  "Tag": "upload",
+  "GroupName": "Form 表单组件"
+}

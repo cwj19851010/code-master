@@ -1,0 +1,123 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "string, number, boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "绑定值"
+    },
+    {
+      "Name": "options",
+      "Type": "array",
+      "TypeDescription": "Option[]",
+      "DefaultValue": "[]",
+      "Description": "选项的数据"
+    },
+    {
+      "Name": "props",
+      "Type": "object",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "配置选项，详见下表"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'' \\| 'large' \\| 'default' \\| 'small'",
+      "DefaultValue": "''",
+      "Description": "组件大小"
+    },
+    {
+      "Name": "block",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "撑满父元素宽度"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用"
+    },
+    {
+      "Name": "validate-event",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否触发表单验证"
+    },
+    {
+      "Name": "name",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生 name 属性"
+    },
+    {
+      "Name": "id",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生 id 属性"
+    },
+    {
+      "Name": "aria-label",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生 aria-label 属性"
+    },
+    {
+      "Name": "direction",
+      "Type": "enum",
+      "TypeDescription": "'horizontal' \\| 'vertical'",
+      "DefaultValue": "horizontal",
+      "Description": "展示的方向"
+    },
+    {
+      "Name": "value",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "value",
+      "Description": "指定键为节点对象的某个属性值"
+    },
+    {
+      "Name": "label",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "label",
+      "Description": "指定标签为节点对象的某个属性值"
+    },
+    {
+      "Name": "disabled",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "disabled",
+      "Description": "指定禁用状态为节点对象的某个属性值"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义 Option 模板",
+      "Type": "object",
+      "TypeDescription": "{ item: Option }"
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "当所选值更改时触发，参数是当前选中的值",
+      "Type": "Function",
+      "TypeDescription": "(val: any) => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "segmented",
+  "Link": "https://element-plus.org/zh-CN/component/segmented",
+  "Tag": "segmented",
+  "GroupName": "Data 数据展示"
+}

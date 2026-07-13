@@ -1,0 +1,81 @@
+using Microsoft.AspNetCore.Mvc;
+using CodeMaster.Core.Common;
+using CodeMaster.Application.Dtos.{{ module_name }};
+using CodeMaster.Application.Services.{{ module_name }};
+
+namespace CodeMaster.WebApi.Controllers.{{ module_name }};
+
+/// <summary>
+/// {{ description }}
+/// </summary>
+[ApiController]
+[Route("api/[controller]")]
+public class {{ entity_name }}Controller : ControllerBase
+{
+    private readonly I{{ entity_name }}Service _{{ business_name_lower }}Service;
+
+    public {{ entity_name }}Controller(I{{ entity_name }}Service {{ business_name_lower }}Service)
+    {
+        _{{ business_name_lower }}Service = {{ business_name_lower }}Service;
+    }
+
+    /// <summary>
+    /// 分页查询{{ description }}
+    /// </summary>
+    [HttpGet("page")]
+    public async Task<ApiResponse<PagedResultDto<{{ entity_name }}Dto>>> GetPagedListAsync([FromQuery] {{ entity_name }}QueryDto query)
+    {
+        var result = await _{{ business_name_lower }}Service.GetPagedListAsync(query);
+        return ApiResponse<PagedResultDto<{{ entity_name }}Dto>>.Success(result);
+    }
+
+    /// <summary>
+    /// 获取{{ description }}详情
+    /// </summary>
+    [HttpGet("{id}")]
+    public async Task<ApiResponse<{{ entity_name }}Dto>> GetByIdAsync(long id)
+    {
+        var result = await _{{ business_name_lower }}Service.GetByIdAsync(id);
+        return ApiResponse<{{ entity_name }}Dto>.Success(result);
+    }
+
+    /// <summary>
+    /// 创建{{ description }}
+    /// </summary>
+    [HttpPost]
+    public async Task<ApiResponse<long>> CreateAsync([FromBody] Create{{ entity_name }}Dto dto)
+    {
+        var id = await _{{ business_name_lower }}Service.CreateAsync(dto);
+        return ApiResponse<long>.Success(id);
+    }
+
+    /// <summary>
+    /// 更新{{ description }}
+    /// </summary>
+    [HttpPut("{id}")]
+    public async Task<ApiResponse<bool>> UpdateAsync(long id, [FromBody] Update{{ entity_name }}Dto dto)
+    {
+        await _{{ business_name_lower }}Service.UpdateAsync(id, dto);
+        return ApiResponse<bool>.Success(true);
+    }
+
+    /// <summary>
+    /// 删除{{ description }}
+    /// </summary>
+    [HttpDelete("{id}")]
+    public async Task<ApiResponse<bool>> DeleteAsync(long id)
+    {
+        await _{{ business_name_lower }}Service.DeleteAsync(id);
+        return ApiResponse<bool>.Success(true);
+    }
+
+    /// <summary>
+    /// 批量删除{{ description }}
+    /// </summary>
+    [HttpDelete("batch")]
+    public async Task<ApiResponse<bool>> BatchDeleteAsync([FromBody] long[] ids)
+    {
+        await _{{ business_name_lower }}Service.BatchDeleteAsync(ids);
+        return ApiResponse<bool>.Success(true);
+    }
+}

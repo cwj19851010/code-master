@@ -1,0 +1,88 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "alignment",
+      "Type": "enum",
+      "TypeDescription": "'center' | 'normal' | 'stretch' | ...",
+      "DefaultValue": "center",
+      "Description": "对齐的方式"
+    },
+    {
+      "Name": "class",
+      "Type": "string, object, array",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "className"
+    },
+    {
+      "Name": "direction",
+      "Type": "enum",
+      "TypeDescription": "'vertical' | 'horizontal'",
+      "DefaultValue": "horizontal",
+      "Description": "排列的方向"
+    },
+    {
+      "Name": "prefix-cls",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "给 space-items 的类名前缀"
+    },
+    {
+      "Name": "style",
+      "Type": "string, object",
+      "TypeDescription": "CSSProperties | CSSProperties[] | string[]",
+      "DefaultValue": "—",
+      "Description": "额外样式"
+    },
+    {
+      "Name": "spacer",
+      "Type": "string, number, VNode",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "间隔符"
+    },
+    {
+      "Name": "size",
+      "Type": "enum, number, array",
+      "TypeDescription": "[number, number]",
+      "DefaultValue": "small",
+      "Description": "间隔大小"
+    },
+    {
+      "Name": "wrap",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "设置是否自动折行"
+    },
+    {
+      "Name": "fill",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "子元素是否填充父容器"
+    },
+    {
+      "Name": "fill-ratio",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "100",
+      "Description": "填充父容器的比例"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "需要添加间隔的元素",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "space",
+  "Link": "https://element-plus.org/zh-CN/component/space",
+  "Tag": "space",
+  "GroupName": "Basic 基础组件"
+}

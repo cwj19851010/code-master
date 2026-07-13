@@ -1,0 +1,63 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "Date",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中项绑定值"
+    },
+    {
+      "Name": "range",
+      "Type": "array",
+      "TypeDescription": "[Date, Date]",
+      "DefaultValue": "—",
+      "Description": "时间范围，包括开始时间与结束时间。 开始时间必须是周起始日，结束时间必须是周结束日，且时间跨度不能超过两个月。"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "date-cell",
+      "Description": "type 表示该日期的所属月份，可选值有 prev-month、current-month 和 next-month；isSelected 标明该日期是否被选中；day 是格式化的日期，格式为 yyyy-MM-dd；date 是单元格的日期",
+      "Type": "object",
+      "TypeDescription": "{ data: { type: 'prev-month' | 'current-month' | 'next-month', isSelected: boolean, day: string, date: Date } }"
+    },
+    {
+      "Name": "header",
+      "Description": "卡片标题内容",
+      "Type": "object",
+      "TypeDescription": "{ date: string }"
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [
+    {
+      "Name": "selectedDay",
+      "Description": "当前已选日期",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<Dayjs | undefined>"
+    },
+    {
+      "Name": "pickDay",
+      "Description": "选择一个具体日期",
+      "Type": "Function",
+      "TypeDescription": "(day: dayjs.Dayjs) => void"
+    },
+    {
+      "Name": "selectDate",
+      "Description": "选择日期",
+      "Type": "Function",
+      "TypeDescription": "(type: CalendarDateType) => void"
+    },
+    {
+      "Name": "calculateValidatedDateRange",
+      "Description": "根据开始与结束日期计算验证日期范围",
+      "Type": "Function",
+      "TypeDescription": "(startDayjs: dayjs.Dayjs, endDayjs: dayjs.Dayjs) => [dayjs.Dayjs, dayjs.Dayjs][]"
+    }
+  ],
+  "Name": "calendar",
+  "Link": "https://element-plus.org/zh-CN/component/calendar",
+  "Tag": "calendar",
+  "GroupName": "Data 数据展示"
+}

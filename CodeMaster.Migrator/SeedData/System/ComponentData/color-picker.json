@@ -1,0 +1,186 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中项绑定值"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "尺寸"
+    },
+    {
+      "Name": "show-alpha",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否支持透明度选择"
+    },
+    {
+      "Name": "color-format",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "写入 v-model 的颜色的格式"
+    },
+    {
+      "Name": "popper-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "ColorPicker 下拉框的类名"
+    },
+    {
+      "Name": "predefine",
+      "Type": "object",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "预定义颜色"
+    },
+    {
+      "Name": "validate-event",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "输入时是否触发表单的校验"
+    },
+    {
+      "Name": "tabindex",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "ColorPicker 的 tabindex"
+    },
+    {
+      "Name": "aria-labela11y",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "ColorPicker 的 aria-label"
+    },
+    {
+      "Name": "empty-values",
+      "Type": "array",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "组件的空值配置 参考config-provider"
+    },
+    {
+      "Name": "value-on-clear",
+      "Type": "string, number, boolean, Function",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "清空选项的值 参考 config-provider"
+    },
+    {
+      "Name": "id",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "ColorPicker 的 id"
+    },
+    {
+      "Name": "teleported",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否将 popover 的下拉列表渲染至 body 下"
+    },
+    {
+      "Name": "labela11y",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "ColorPicker 的 aria-label"
+    },
+    {
+      "Name": "persistent",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "当颜色选择器未激活且 persistent 为 false 时，颜色面板将被销毁。"
+    },
+    {
+      "Name": "append-to",
+      "Type": "CSSSelector, HTMLElement",
+      "TypeDescription": null,
+      "DefaultValue": "-",
+      "Description": "挂载到哪个 DOM 元素"
+    }
+  ],
+  "ComponentSlots": [],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "当绑定值变化时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: string) => void"
+    },
+    {
+      "Name": "active-change",
+      "Description": "面板中当前显示的颜色发生改变时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: string) => void"
+    },
+    {
+      "Name": "focus",
+      "Description": "当获得焦点时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: FocusEvent) => void"
+    },
+    {
+      "Name": "blur",
+      "Description": "当失去焦点时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: FocusEvent) => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "color",
+      "Description": "当前色彩对象",
+      "Type": "object",
+      "TypeDescription": "Color"
+    },
+    {
+      "Name": "show",
+      "Description": "手动显示颜色选择器",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "hide",
+      "Description": "手动隐藏颜色选择器",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "focus",
+      "Description": "使 picker 获得焦点",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "blur",
+      "Description": "使 picker 失去焦点",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "Name": "color-picker",
+  "Link": "https://element-plus.org/zh-CN/component/color-picker",
+  "Tag": "color-picker",
+  "GroupName": "Form 表单组件"
+}

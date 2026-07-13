@@ -1,0 +1,176 @@
+@model CodeMaster.WebApi.Models.CommunityIndexViewModel
+@{
+    ViewData["Title"] = "CodeMaster 社区 - 反馈、讨论和产品建议";
+    ViewData["Description"] = "CodeMaster 用户社区，用于提出问题、反馈建议、讨论 MCP、代码生成、客户端和模板体系。";
+    var currentCategory = Model.Categories.FirstOrDefault(x => x.Id == Model.CategoryId);
+}
+
+<section class="page-hero community-hero">
+    <p class="eyebrow">Community</p>
+    <h1>CodeMaster 社区</h1>
+    <p>这里用来收集产品建议、问题反馈、模板与生成讨论，以及使用 CodeMaster 做出的项目展示。账号直接复用 CodeMaster 用户体系，邮箱注册和 GitHub 登录都可以发帖。</p>
+</section>
+
+<section class="section community-page">
+    <aside class="community-sidebar">
+        <div class="community-panel">
+            <h2>分类</h2>
+            <a class="category-link @(Model.CategoryId == null ? "active" : "")" href="/community">全部讨论</a>
+            @foreach (var category in Model.Categories)
+            {
+                <a class="category-link @(Model.CategoryId == category.Id ? "active" : "")" href="/community?categoryId=@category.Id">
+                    <strong>@category.Name</strong>
+                    <span>@category.Description</span>
+                </a>
+            }
+        </div>
+
+        <div class="community-panel compact">
+            <h2>发帖规则</h2>
+            <p>描述清楚问题、复现步骤、期望结果。如果是代码生成问题，尽量说明数据库类型、实体字段和操作入口。</p>
+        </div>
+    </aside>
+
+    <div class="community-main">
+        <form class="community-search" method="get" action="/community">
+            @if (Model.CategoryId.HasValue)
+            {
+                <input type="hidden" name="categoryId" value="@Model.CategoryId.Value" />
+            }
+            <input name="keyword" value="@Model.Keyword" placeholder="搜索主题、问题或建议" />
+            <button class="button secondary" type="submit">搜索</button>
+            <button class="button primary" type="button" id="openTopicForm">发新主题</button>
+        </form>
+
+        <section class="new-topic-panel" id="newTopicPanel" hidden>
+            <div class="panel-head">
+                <h2>发布新主题</h2>
+                <button type="button" class="icon-button" id="closeTopicForm" aria-label="关闭">×</button>
+            </div>
+            <form id="topicForm" class="topic-form">
+                <label>
+                    分类
+                    <select name="categoryId" required>
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.Id" selected="@(Model.CategoryId == category.Id)">@category.Name</option>
+                        }
+                    </select>
+                </label>
+                <label>
+                    标题
+                    <input name="title" required minlength="4" maxlength="120" placeholder="一句话说明你的问题或建议" />
+                </label>
+                <label>
+                    内容
+                    <textarea name="content" required minlength="10" rows="8" placeholder="写清楚背景、步骤、期望结果或你的想法"></textarea>
+                </label>
+                <div class="form-actions">
+                    <button class="button primary" type="submit">发布</button>
+                    <span id="topicMessage" class="form-message"></span>
+                </div>
+            </form>
+        </section>
+
+        <div class="topic-list">
+            <div class="topic-list-head">
+                <div>
+                    <h2>@(currentCategory?.Name ?? "全部讨论")</h2>
+                    <p>共 @Model.Topics.Total 条主题</p>
+                </div>
+            </div>
+
+            @if (!Model.Topics.Items.Any())
+            {
+                <div class="empty-state">
+                    <h3>还没有讨论</h3>
+                    <p>可以发布第一个问题、建议或展示你的生成项目。</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var topic in Model.Topics.Items)
+                {
+                    <article class="topic-row">
+                        <div class="topic-status">
+                            @if (topic.IsPinned)
+                            {
+                                <span>置顶</span>
+                            }
+                            else if (topic.IsFeatured)
+                            {
+                                <span>精华</span>
+                            }
+                            else
+                            {
+                                <span>讨论</span>
+                            }
+                        </div>
+                        <div class="topic-body">
+                            <a class="topic-title" href="/community/topic/@topic.Id">@topic.Title</a>
+                            <p>@topic.Content</p>
+                            <div class="topic-meta">
+                                <span>@topic.CategoryName</span>
+                                <span>@topic.AuthorName</span>
+                                <span>@topic.CreateTime.ToString("yyyy-MM-dd HH:mm")</span>
+                            </div>
+                        </div>
+                        <div class="topic-counts">
+                            <strong>@topic.ReplyCount</strong>
+                            <span>回复</span>
+                            <strong>@topic.ViewCount</strong>
+                            <span>浏览</span>
+                        </div>
+                    </article>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+<script>
+const tokenKeys = ['Admin-Token', 'access_token', 'token']
+const getToken = () => tokenKeys.map(key => localStorage.getItem(key)).find(Boolean)
+const panel = document.getElementById('newTopicPanel')
+const message = document.getElementById('topicMessage')
+document.getElementById('openTopicForm').addEventListener('click', () => {
+  if (!getToken()) {
+    window.location.href = '/register'
+    return
+  }
+  panel.hidden = false
+})
+document.getElementById('closeTopicForm').addEventListener('click', () => {
+  panel.hidden = true
+})
+document.getElementById('topicForm').addEventListener('submit', async (event) => {
+  event.preventDefault()
+  const token = getToken()
+  if (!token) {
+    window.location.href = '/register'
+    return
+  }
+  const form = event.currentTarget
+  message.textContent = '正在发布...'
+  const response = await fetch('/api/community/topics', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      categoryId: Number(form.categoryId.value),
+      title: form.title.value,
+      content: form.content.value
+    })
+  })
+  const result = await response.json().catch(() => ({}))
+  if (!response.ok || result.code !== 200) {
+    message.textContent = result.message || '发布失败，请稍后再试'
+    return
+  }
+  window.location.href = `/community/topic/${result.data.id}`
+})
+</script>
+}

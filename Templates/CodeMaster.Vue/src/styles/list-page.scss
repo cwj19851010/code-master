@@ -1,0 +1,41 @@
+// 列表页面全局样式
+.app-container {
+  padding: 20px;
+
+  .query-form {
+    margin-bottom: 0;
+  }
+
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .el-pagination {
+    margin-top: 16px;
+    justify-content: flex-end;
+  }
+
+  .mb-20 {
+    margin-bottom: 20px;
+  }
+}
+
+// 下拉框统一宽度
+.el-select {
+  width: 180px;
+}
+
+// 详情页表单控件宽度
+.detail-form {
+  .el-input,
+  .el-select,
+  .el-date-picker {
+    width: 300px;
+  }
+
+  .el-textarea {
+    width: 500px;
+  }
+}

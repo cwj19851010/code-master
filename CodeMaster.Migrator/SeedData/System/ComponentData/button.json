@@ -1,0 +1,187 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'large' | 'default' | 'small'",
+      "DefaultValue": "—",
+      "Description": "尺寸"
+    },
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": "'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | '' | 'text' (deprecated)",
+      "DefaultValue": "—",
+      "Description": "按钮类型，在设置color时，后者优先。"
+    },
+    {
+      "Name": "plain",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为朴素按钮"
+    },
+    {
+      "Name": "text",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为文字按钮"
+    },
+    {
+      "Name": "bg",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示文字按钮背景颜色"
+    },
+    {
+      "Name": "link",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为链接按钮"
+    },
+    {
+      "Name": "round",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为圆角按钮"
+    },
+    {
+      "Name": "circle",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为圆形按钮"
+    },
+    {
+      "Name": "loading",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为加载中状态"
+    },
+    {
+      "Name": "loading-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "Loading",
+      "Description": "自定义加载中状态图标组件"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "按钮是否为禁用状态"
+    },
+    {
+      "Name": "icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "图标组件"
+    },
+    {
+      "Name": "autofocus",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "原生 autofocus 属性"
+    },
+    {
+      "Name": "native-type",
+      "Type": "enum",
+      "TypeDescription": "'button' | 'submit' | 'reset'",
+      "DefaultValue": "button",
+      "Description": "原生 type 属性"
+    },
+    {
+      "Name": "auto-insert-space",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "两个中文字符之间自动插入空格(仅当文本长度为 2 且所有字符均为中文时才生效)"
+    },
+    {
+      "Name": "color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "自定义按钮颜色, 并自动计算 hover 和 active 触发后的颜色"
+    },
+    {
+      "Name": "dark",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "dark 模式, 意味着自动设置 color 为 dark 模式的颜色"
+    },
+    {
+      "Name": "tag",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "button",
+      "Description": "自定义元素标签"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "loading",
+      "Description": "自定义加载中组件",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "icon",
+      "Description": "自定义图标组件",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [
+    {
+      "Name": "ref",
+      "Description": "按钮 html 元素",
+      "Type": "object",
+      "TypeDescription": "Ref<HTMLButtonElement>"
+    },
+    {
+      "Name": "size",
+      "Description": "按钮尺寸",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<'' | 'small' | 'default' | 'large'>"
+    },
+    {
+      "Name": "type",
+      "Description": "按钮类型",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<'' | 'default' | 'primary' | 'success' | 'warning' | 'info' | 'danger' | 'text'>"
+    },
+    {
+      "Name": "disabled",
+      "Description": "按钮已禁用",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<boolean>"
+    },
+    {
+      "Name": "shouldAddSpace",
+      "Description": "是否在两个字符之间插入空格",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<boolean>"
+    }
+  ],
+  "Name": "button",
+  "Link": "https://element-plus.org/zh-CN/component/button",
+  "Tag": "button",
+  "GroupName": "Basic 基础组件"
+}

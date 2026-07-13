@@ -1,0 +1,114 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "url-list",
+      "Type": "object",
+      "TypeDescription": "string[]",
+      "DefaultValue": "[]",
+      "Description": "用于预览的图片链接列表"
+    },
+    {
+      "Name": "z-index",
+      "Type": "number, string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "预览时遮罩层的 z-index"
+    },
+    {
+      "Name": "initial-index",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "初始预览图像索引，小于 url-list 的长度"
+    },
+    {
+      "Name": "infinite",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否可以无限循环预览"
+    },
+    {
+      "Name": "hide-on-click-modal",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否可以通过点击遮罩层关闭预览"
+    },
+    {
+      "Name": "teleported",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "image 自身是否插入至 body 元素上。 嵌套的父元素属性会发生修改时应该将此属性设置为 true"
+    },
+    {
+      "Name": "zoom-rate",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "1.2",
+      "Description": "图像查看器缩放事件的缩放速率。"
+    },
+    {
+      "Name": "min-scale",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0.2",
+      "Description": "图像查看器缩放事件的最小缩放比例"
+    },
+    {
+      "Name": "max-scale",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "7",
+      "Description": "图像查看器缩放事件的最大缩放比例"
+    },
+    {
+      "Name": "close-on-press-escape",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否可以通过按下 ESC 关闭 Image Viewer"
+    },
+    {
+      "Name": "show-progress",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示预览图片的进度条内容"
+    }
+  ],
+  "ComponentSlots": [],
+  "ComponentEvents": [
+    {
+      "Name": "close",
+      "Description": "当点击 X 按钮或者在hide-on-click-modal为 true 时点击遮罩层时触发",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "switch",
+      "Description": "切换图像时触发。",
+      "Type": "Function",
+      "TypeDescription": "(index: number) => void"
+    },
+    {
+      "Name": "rotate",
+      "Description": "旋转图像时触发。",
+      "Type": "Function",
+      "TypeDescription": "(deg: number) => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "setActiveItem",
+      "Description": "手动切换图片",
+      "Type": "Function",
+      "TypeDescription": "(index: number) => void"
+    }
+  ],
+  "Name": "image -viewer",
+  "Link": "https://element-plus.org/zh-CN/component/image",
+  "Tag": "image",
+  "GroupName": "Data 数据展示"
+}

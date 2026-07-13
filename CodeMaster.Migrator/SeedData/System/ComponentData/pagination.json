@@ -1,0 +1,196 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "'default'",
+      "Description": "分页大小"
+    },
+    {
+      "Name": "background",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为分页按钮添加背景色"
+    },
+    {
+      "Name": "page-size",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "每页显示条目个数"
+    },
+    {
+      "Name": "default-page-size",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "每页默认的条目个数，不设置时默认为10"
+    },
+    {
+      "Name": "total",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "总条目数"
+    },
+    {
+      "Name": "page-count",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "总页数， total 和 page-count 设置任意一个就可以达到显示页码的功能；如果要支持 page-sizes 的更改，则需要使用 total 属性"
+    },
+    {
+      "Name": "pager-count",
+      "Type": "number",
+      "TypeDescription": "5 | 7 | 9 | 11 | 13 | 15 | 17 | 19 | 21",
+      "DefaultValue": "7",
+      "Description": "设置最大页码按钮数。 页码按钮的数量，当总页数超过该值时会折叠"
+    },
+    {
+      "Name": "current-page",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "当前页数"
+    },
+    {
+      "Name": "default-current-page",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "当前页数的默认初始值，不设置时默认为 1"
+    },
+    {
+      "Name": "layout",
+      "Type": "string",
+      "TypeDescription": "string (consists of sizes, prev, pager, next, jumper, ->, total, slot)",
+      "DefaultValue": "prev, pager, next, jumper, ->, total",
+      "Description": "组件布局，子组件名用逗号分隔"
+    },
+    {
+      "Name": "page-sizes",
+      "Type": "object",
+      "TypeDescription": "number[]",
+      "DefaultValue": "[10, 20, 30, 40, 50, 100]",
+      "Description": "每页显示个数选择器的选项设置"
+    },
+    {
+      "Name": "append-size-to",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "下拉框挂载到哪个 DOM 元素"
+    },
+    {
+      "Name": "popper-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "每页显示个数选择器的下拉框类名"
+    },
+    {
+      "Name": "prev-text",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "替代图标显示的上一页文字"
+    },
+    {
+      "Name": "prev-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "ArrowLeft",
+      "Description": "上一页的图标， 比 prev-text 优先级更高"
+    },
+    {
+      "Name": "next-text",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "替代图标显示的下一页文字"
+    },
+    {
+      "Name": "next-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "ArrowRight",
+      "Description": "下一页的图标， 比 next-text 优先级更低"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用分页"
+    },
+    {
+      "Name": "teleported",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否将下拉菜单teleport至 body"
+    },
+    {
+      "Name": "hide-on-single-page",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "只有一页时是否隐藏"
+    },
+    {
+      "Name": "small",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否使用小型分页样式"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义内容 设置文案，需要在 layout 中列出 slot",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "size-change",
+      "Description": "page-size 改变时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: number) => void"
+    },
+    {
+      "Name": "current-change",
+      "Description": "current-page 改变时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: number) => void"
+    },
+    {
+      "Name": "change",
+      "Description": "current-page 或 page-size 更改时触发",
+      "Type": "Function",
+      "TypeDescription": "(currentPage: number, pageSize: number) => void"
+    },
+    {
+      "Name": "prev-click",
+      "Description": "用户点击上一页按钮改变当前页时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: number) => void"
+    },
+    {
+      "Name": "next-click",
+      "Description": "用户点击下一页按钮改变当前页时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: number) => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "pagination",
+  "Link": "https://element-plus.org/zh-CN/component/pagination",
+  "Tag": "pagination",
+  "GroupName": "Data 数据展示"
+}

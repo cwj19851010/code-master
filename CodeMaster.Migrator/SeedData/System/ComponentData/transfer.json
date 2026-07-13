@@ -1,0 +1,17 @@
+{
+  "ComponentsProperties": [],
+  "ComponentSlots": [],
+  "ComponentEvents": [],
+  "ComponentExposes": [
+    {
+      "Name": "query",
+      "Description": "过滤关键词",
+      "Type": "string",
+      "TypeDescription": null
+    }
+  ],
+  "Name": "transfer -panel",
+  "Link": "https://element-plus.org/zh-CN/component/transfer",
+  "Tag": "transfer",
+  "GroupName": "Form 表单组件"
+}

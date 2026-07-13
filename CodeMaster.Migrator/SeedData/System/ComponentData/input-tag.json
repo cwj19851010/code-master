@@ -1,0 +1,233 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "array",
+      "TypeDescription": "string[]",
+      "DefaultValue": "—",
+      "Description": "绑定值"
+    },
+    {
+      "Name": "max",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "可添加标签的最大数量"
+    },
+    {
+      "Name": "tag-type",
+      "Type": "enum",
+      "TypeDescription": "'' \\| 'success' \\| 'info' \\| 'warning' \\| 'danger'",
+      "DefaultValue": "info",
+      "Description": "标签类型"
+    },
+    {
+      "Name": "tag-effect",
+      "Type": "enum",
+      "TypeDescription": "'' \\| 'light' \\| 'dark' \\| 'plain'",
+      "DefaultValue": "light",
+      "Description": "标签效果"
+    },
+    {
+      "Name": "trigger",
+      "Type": "enum",
+      "TypeDescription": "'Enter' \\| 'Space'",
+      "DefaultValue": "Enter",
+      "Description": "触发输入标签的按键"
+    },
+    {
+      "Name": "draggable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否可以拖动标签"
+    },
+    {
+      "Name": "delimiter",
+      "Type": "string, regex",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "在匹配分隔符时添加标签"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'large' \\| 'default' \\| 'small'",
+      "DefaultValue": "—",
+      "Description": "输入框尺寸"
+    },
+    {
+      "Name": "save-on-blur",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "当输入失去焦点时是否保存输入值"
+    },
+    {
+      "Name": "clearable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示清除按钮"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用"
+    },
+    {
+      "Name": "validate-event",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否触发表单验证"
+    },
+    {
+      "Name": "readonly",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "等价于原生 readonly 属性"
+    },
+    {
+      "Name": "autofocus",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "等价于原生  autofocus  属性"
+    },
+    {
+      "Name": "id",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "等价于原生 input id 属性"
+    },
+    {
+      "Name": "tabindex",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "等价于原生  tabindex  属性"
+    },
+    {
+      "Name": "maxlength",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "等价于原生  maxlength  属性"
+    },
+    {
+      "Name": "minlength",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "等价于原生  minlength  属性"
+    },
+    {
+      "Name": "placeholder",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "输入框占位文本"
+    },
+    {
+      "Name": "autocomplete",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "off",
+      "Description": "等价于原生  autocomplete  属性"
+    },
+    {
+      "Name": "aria-label",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "等价于原生  aria-label  属性"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "tag",
+      "Description": "作为tag的内容",
+      "Type": "object",
+      "TypeDescription": "{ value: string, index: number }"
+    },
+    {
+      "Name": "prefix",
+      "Description": "InputTag 头部内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "suffix",
+      "Description": "InputTag 尾部内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "绑定值变化时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "(value: string[]) => void"
+    },
+    {
+      "Name": "input",
+      "Description": "在 Input 值改变时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: string) => void"
+    },
+    {
+      "Name": "add-tag",
+      "Description": "tag 被添加时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: string \\| string []) => void"
+    },
+    {
+      "Name": "remove-tag",
+      "Description": "tag 被移除时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: string) => void"
+    },
+    {
+      "Name": "focus",
+      "Description": "在 Input 获得焦点时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: FocusEvent) => void"
+    },
+    {
+      "Name": "blur",
+      "Description": "在 Input 失去焦点时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: FocusEvent) => void"
+    },
+    {
+      "Name": "clear",
+      "Description": "点击清除图标时触发",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "focus",
+      "Description": "使 input 获取焦点",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "blur",
+      "Description": "使 input 失去焦点",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "Name": "input-tag",
+  "Link": "https://element-plus.org/zh-CN/component/input-tag",
+  "Tag": "input-tag",
+  "GroupName": "Form 表单组件"
+}

@@ -1,0 +1,185 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "选中项绑定值"
+    },
+    {
+      "Name": "max",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "5",
+      "Description": "最大分值"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'large' | 'default' | 'small'",
+      "DefaultValue": "—",
+      "Description": "尺寸"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为只读"
+    },
+    {
+      "Name": "allow-half",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否允许半选"
+    },
+    {
+      "Name": "low-threshold",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "2",
+      "Description": "低分和中等分数的界限值， 值本身被划分在低分中"
+    },
+    {
+      "Name": "high-threshold",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "4",
+      "Description": "高分和中等分数的界限值， 值本身被划分在高分中"
+    },
+    {
+      "Name": "colors",
+      "Type": "object",
+      "TypeDescription": "string[] | Record<number, string>",
+      "DefaultValue": "['#f7ba2a', '#f7ba2a', '#f7ba2a']",
+      "Description": "icon 的颜色。 若传入数组，共有 3 个元素，为 3 个分段所对应的颜色；若传入对象，可自定义分段，键名为分段的界限值，键值为对应的颜色"
+    },
+    {
+      "Name": "void-color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "#c6d1de",
+      "Description": "未选中 icon 的颜色"
+    },
+    {
+      "Name": "disabled-void-color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "#eff2f7",
+      "Description": "只读时未选中 icon 的颜色"
+    },
+    {
+      "Name": "icons",
+      "Type": "object",
+      "TypeDescription": "string[] | Component[] | Record<number, string | Component>",
+      "DefaultValue": "[StarFilled, StarFilled, StarFilled]",
+      "Description": "图标组件 若传入数组，则需要传入 3 个元素，分别为 3 个部分所对应的类名；若传入对象，则可自定义分段，键名为分段的界限值，键值为对应的类名"
+    },
+    {
+      "Name": "void-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "Star",
+      "Description": "未被选中的图标组件"
+    },
+    {
+      "Name": "disabled-void-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "StarFilled",
+      "Description": "禁用状态的未选择图标"
+    },
+    {
+      "Name": "show-text",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示辅助文字，若为真，则会从 texts 数组中选取当前分数对应的文字内容"
+    },
+    {
+      "Name": "show-score",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示当前分数， show-score 和 show-text 不能同时为真"
+    },
+    {
+      "Name": "text-color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "辅助文字的颜色"
+    },
+    {
+      "Name": "texts",
+      "Type": "array",
+      "TypeDescription": "string[]",
+      "DefaultValue": "['Extremely bad', 'Disappointed', 'Fair', 'Satisfied', 'Surprise']",
+      "Description": "辅助文字数组"
+    },
+    {
+      "Name": "score-template",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "",
+      "Description": "分数显示模板"
+    },
+    {
+      "Name": "clearable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否可以重置值为 0"
+    },
+    {
+      "Name": "id",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生 id 属性"
+    },
+    {
+      "Name": "aria-labela11y",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "和 Rate 的 aria-label 属性保持一致"
+    },
+    {
+      "Name": "labela11y",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "和 Rate 的 aria-label 属性保持一致"
+    }
+  ],
+  "ComponentSlots": [],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "分值改变时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: number) => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "setCurrentValue",
+      "Description": "设置当前值",
+      "Type": "Function",
+      "TypeDescription": "(value: number) => void"
+    },
+    {
+      "Name": "resetCurrentValue",
+      "Description": "重置当前值",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "Name": "rate",
+  "Link": "https://element-plus.org/zh-CN/component/rate",
+  "Tag": "rate",
+  "GroupName": "Form 表单组件"
+}

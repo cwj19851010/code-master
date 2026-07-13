@@ -1,0 +1,158 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "prop",
+      "Type": "string, string[]",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "model 的键名。 它可以是一个属性的值(如 a.b.0 或 ['a', 'b', '0'])。 在使用了 validate、resetFields 的方法时，该属性是必填的。"
+    },
+    {
+      "Name": "label",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "标签文本"
+    },
+    {
+      "Name": "label-position",
+      "Type": "enum",
+      "TypeDescription": "'left' | 'right' | 'top'",
+      "DefaultValue": "''",
+      "Description": "表单域标签的位置， 当设置为 left 或 right 时，则也需要设置 label-width 属性 默认会继承 Form的label-position"
+    },
+    {
+      "Name": "label-width",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "标签宽度，例如 '50px'。 可以使用 auto。"
+    },
+    {
+      "Name": "required",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "是否为必填项，如不设置，则会根据校验规则确认"
+    },
+    {
+      "Name": "rules",
+      "Type": "object",
+      "TypeDescription": "Arrayable<FormItemRule>",
+      "DefaultValue": "—",
+      "Description": "表单验证规则, 具体配置见下表, 更多内容可以参考async-validator"
+    },
+    {
+      "Name": "error",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "表单域验证错误时的提示信息。设置该值会导致表单验证状态变为 error，并显示该错误信息。"
+    },
+    {
+      "Name": "show-message",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示校验错误信息"
+    },
+    {
+      "Name": "inline-message",
+      "Type": "string, boolean",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "是否在行内显示校验信息"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'' | 'large' | 'default' | 'small'",
+      "DefaultValue": "—",
+      "Description": "用于控制该表单域下组件的默认尺寸"
+    },
+    {
+      "Name": "for",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "和原生标签相同能力"
+    },
+    {
+      "Name": "validate-status",
+      "Type": "enum",
+      "TypeDescription": "'' | 'error' | 'validating' | 'success'",
+      "DefaultValue": "—",
+      "Description": "formitem 校验的状态"
+    },
+    {
+      "Name": "trigger",
+      "Type": "enum",
+      "TypeDescription": "'blur' | 'change'",
+      "DefaultValue": "—",
+      "Description": "验证逻辑的触发方式"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "表单的内容。",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "label",
+      "Description": "标签位置显示的内容",
+      "Type": "object",
+      "TypeDescription": "{ label: string }"
+    },
+    {
+      "Name": "error",
+      "Description": "验证错误信息的显示内容",
+      "Type": "object",
+      "TypeDescription": "{ error: string }"
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [
+    {
+      "Name": "size",
+      "Description": "表单项大小",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<'' | 'large' | 'default' | 'small'>"
+    },
+    {
+      "Name": "validateMessage",
+      "Description": "校验消息",
+      "Type": "object",
+      "TypeDescription": "Ref<string>"
+    },
+    {
+      "Name": "validateState",
+      "Description": "校验状态",
+      "Type": "object",
+      "TypeDescription": "Ref<'' | 'error' | 'validating' | 'success'>"
+    },
+    {
+      "Name": "validate",
+      "Description": "验证表单项",
+      "Type": "Function",
+      "TypeDescription": "(trigger: string, callback?: FormValidateCallback | undefined) => FormValidationResult"
+    },
+    {
+      "Name": "resetField",
+      "Description": "对该表单项进行重置，将其值重置为初始值并移除校验结果",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "clearValidate",
+      "Description": "移除该表单项的校验结果",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "Name": "form-item",
+  "Link": "https://element-plus.org/zh-CN/component/form",
+  "Tag": "form-item",
+  "GroupName": "Form 表单组件"
+}

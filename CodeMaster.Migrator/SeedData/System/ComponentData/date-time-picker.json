@@ -1,0 +1,356 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "number, string, object",
+      "TypeDescription": "Date | [Date, Date] | [string, string]",
+      "DefaultValue": "—",
+      "Description": "绑定值，如果它是数组，长度应该是 2"
+    },
+    {
+      "Name": "readonly",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "只读"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "禁用"
+    },
+    {
+      "Name": "editable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "文本框可输入"
+    },
+    {
+      "Name": "clearable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示清除按钮"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'large' | 'default' | 'small'",
+      "DefaultValue": "default",
+      "Description": "输入框尺寸"
+    },
+    {
+      "Name": "placeholder",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "非范围选择时的占位内容"
+    },
+    {
+      "Name": "start-placeholder",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "范围选择时开始日期的占位内容"
+    },
+    {
+      "Name": "end-placeholder",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "范围选择时结束日期的占位内容"
+    },
+    {
+      "Name": "arrow-control",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否使用箭头进行时间选择"
+    },
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": "'year' | 'month' | 'date' | 'datetime' | 'week' | 'datetimerange' | 'daterange'",
+      "DefaultValue": "date",
+      "Description": "显示类型"
+    },
+    {
+      "Name": "format",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "YYYY-MM-DD HH:mm:ss",
+      "Description": "显示在输入框中的格式"
+    },
+    {
+      "Name": "popper-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "DateTimePicker 下拉框的类名"
+    },
+    {
+      "Name": "range-separator",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "'-'",
+      "Description": "选择范围时的分隔符"
+    },
+    {
+      "Name": "default-value",
+      "Type": "object",
+      "TypeDescription": "Date | [Date, Date]",
+      "DefaultValue": "—",
+      "Description": "可选，选择器打开时默认显示的时间"
+    },
+    {
+      "Name": "default-time",
+      "Type": "object",
+      "TypeDescription": "Date | [Date, Date]",
+      "DefaultValue": "—",
+      "Description": "选择日期后的默认时间值。 如未指定则默认时间值为 00:00:00"
+    },
+    {
+      "Name": "value-format",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "可选，绑定值的格式。 不指定则绑定值为 Date 对象"
+    },
+    {
+      "Name": "date-format",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "可选，时间选择器下拉列表中显示的日期格式"
+    },
+    {
+      "Name": "time-format",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "可选，时间选择器下拉列表中显示的时间格式"
+    },
+    {
+      "Name": "id",
+      "Type": "string, object",
+      "TypeDescription": "[string, string]",
+      "DefaultValue": "—",
+      "Description": "等价于原生 input id 属性"
+    },
+    {
+      "Name": "name",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "等价于原生 input name 属性"
+    },
+    {
+      "Name": "unlink-panels",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "在范围选择器里取消两个日期面板之间的联动"
+    },
+    {
+      "Name": "prefix-icon",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "Date",
+      "Description": "自定义前缀图标组件"
+    },
+    {
+      "Name": "clear-icon",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "CircleClose",
+      "Description": "自定义清除图标"
+    },
+    {
+      "Name": "shortcuts",
+      "Type": "object",
+      "TypeDescription": "Array<{ text: string, value: Date | Function }>",
+      "DefaultValue": "—",
+      "Description": "设置快捷选项，需要传入数组对象"
+    },
+    {
+      "Name": "disabled-date",
+      "Type": "Function",
+      "TypeDescription": "(data: Date) => boolean",
+      "DefaultValue": "—",
+      "Description": "一个用来判断该日期是否被禁用的函数，接受一个 Date 对象作为参数。 应该返回一个 Boolean 值。"
+    },
+    {
+      "Name": "disabled-hours",
+      "Type": "Function",
+      "TypeDescription": "(role: string, comparingDate?: Dayjs) => number[]",
+      "DefaultValue": "—",
+      "Description": "禁止选择部分小时选项"
+    },
+    {
+      "Name": "disabled-minutes",
+      "Type": "Function",
+      "TypeDescription": "(hour: number, role: string, comparingDate?: Dayjs) => number[]",
+      "DefaultValue": "—",
+      "Description": "禁止选择部分分钟选项"
+    },
+    {
+      "Name": "disabled-seconds",
+      "Type": "Function",
+      "TypeDescription": "(hour: number, minute: number, role: string, comparingDate?: Dayjs) => number[]",
+      "DefaultValue": "—",
+      "Description": "禁止选择部分秒选项"
+    },
+    {
+      "Name": "cell-class-name",
+      "Type": "Function",
+      "TypeDescription": "(data: Date) => string",
+      "DefaultValue": "—",
+      "Description": "设置自定义类名"
+    },
+    {
+      "Name": "teleported",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否将 datetime-picker 的下拉列表插入至 body 元素"
+    },
+    {
+      "Name": "empty-values",
+      "Type": "array",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "组件的空值配置 参考config-provider"
+    },
+    {
+      "Name": "value-on-clear",
+      "Type": "string, number, boolean, Function",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "清空选项的值 参考 config-provider"
+    },
+    {
+      "Name": "show-now",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示 now 按钮"
+    },
+    {
+      "Name": "show-footer",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示 footer"
+    },
+    {
+      "Name": "show-week-number",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "显示周数(除周外)"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义单元格内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "range-separator",
+      "Description": "自定义范围分割符内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "prev-month",
+      "Description": "上个月的图标",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "next-month",
+      "Description": "下个月的图标",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "prev-year",
+      "Description": "上一年图标",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "next-year",
+      "Description": "下一年图标",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "用户确认选定的值时触发",
+      "Type": "Function",
+      "TypeDescription": "(val: typeof v-model) => void"
+    },
+    {
+      "Name": "blur",
+      "Description": "在组件 Input 失去焦点时触发",
+      "Type": "Function",
+      "TypeDescription": "(e: FocusEvent) => void"
+    },
+    {
+      "Name": "focus",
+      "Description": "在组件 Input 获得焦点时触发",
+      "Type": "Function",
+      "TypeDescription": "(e: FocusEvent) => void"
+    },
+    {
+      "Name": "clear",
+      "Description": "可清空的模式下用户点击清空按钮时触发",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "calendar-change",
+      "Description": "如果用户没有选择日期，那默认展示当前日的月份。 仅用于 range",
+      "Type": "Function",
+      "TypeDescription": "(val: [Date, null | Date]) => void"
+    },
+    {
+      "Name": "panel-change",
+      "Description": "当日期面板改变时触发。",
+      "Type": "Function",
+      "TypeDescription": "(date: Date | [Date, Date], mode: 'month' | 'year', view?: string) => void"
+    },
+    {
+      "Name": "visible-change",
+      "Description": "当 DateTimePicker 的下拉列表出现/消失时触发",
+      "Type": "Function",
+      "TypeDescription": "(visibility: boolean) => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "focus",
+      "Description": "使组件获取焦点",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "blur",
+      "Description": "使组件失去焦点",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "Name": "DateTimePicker",
+  "Link": "https://element-plus.org/zh-CN/component/datetime-picker",
+  "Tag": "datetime-picker",
+  "GroupName": "Form 表单组件"
+}

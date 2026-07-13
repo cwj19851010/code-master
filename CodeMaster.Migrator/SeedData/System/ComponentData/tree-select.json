@@ -1,0 +1,32 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "tree",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "tree",
+      "Description": "tree"
+    },
+    {
+      "Name": "select",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "select",
+      "Description": "select"
+    },
+    {
+      "Name": "cacheData",
+      "Type": "object",
+      "TypeDescription": "CacheOption[]",
+      "DefaultValue": "[]",
+      "Description": "懒加载节点的缓存数据，结构与数据相同，用于获取未加载数据的标签"
+    }
+  ],
+  "ComponentSlots": [],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "tree-select",
+  "Link": "https://element-plus.org/zh-CN/component/tree-select",
+  "Tag": "tree-select",
+  "GroupName": "Form 表单组件"
+}

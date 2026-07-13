@@ -1,0 +1,277 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment HostEnvironment
+@{
+    var swaggerEnabled = HostEnvironment.IsDevelopment() || Configuration.GetValue("Swagger:Enabled", false);
+    var clientDownloadUrl = ViewData["ClientDownloadUrl"] as string ?? "/download/client/windows/latest";
+    var clientDownloadVersion = ViewData["ClientDownloadVersion"] as string;
+    var clientDownloadSize = ViewData["ClientDownloadSize"] as string;
+    var clientVersionLabel = string.IsNullOrWhiteSpace(clientDownloadVersion) ? "等待上传最新版" : $"最新版 v{clientDownloadVersion}";
+    var clientVersionMeta = string.IsNullOrWhiteSpace(clientDownloadSize) ? clientVersionLabel : $"{clientVersionLabel} · {clientDownloadSize}";
+    ViewData["Title"] = "CodeMaster - 约定驱动的 .NET + Vue 企业级开发平台";
+    ViewData["Description"] = "CodeMaster 以元数据驱动动态 API、权限、数据库迁移、种子数据和 Vue 页面生成，并通过 MCP 与 Tauri LocalAgent 打通 AI 协作和本地开发能力。";
+}
+
+@section Head {
+    <meta name="keywords" content="CodeMaster,.NET 10,Vue 3,动态API,代码生成,权限生成,数据库迁移,MCP,Tauri,多租户,企业级开发框架" />
+    <script type="application/ld+json">
+    {
+      "@@context": "https://schema.org",
+      "@@type": "SoftwareApplication",
+      "name": "CodeMaster",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Windows, Linux, macOS",
+      "softwareVersion": "@(clientDownloadVersion ?? "preview")",
+      "description": "Convention-driven .NET and Vue enterprise development platform with dynamic APIs, permission generation, database migrations, code generation, MCP workflows and a Tauri LocalAgent client.",
+      "programmingLanguage": ["C#", ".NET", "Vue", "JavaScript"],
+      "featureList": [
+        "Convention-based dynamic API generation",
+        "Automatic menu and permission generation",
+        "EF Core migrations and seed data generation",
+        "Full and incremental .NET and Vue code generation",
+        "Visual entity and page designer",
+        "MCP agent workflows",
+        "Tauri LocalAgent desktop capability",
+        "Multi-tenant enterprise application foundation"
+      ],
+      "downloadUrl": "@clientDownloadUrl",
+      "offers": { "@@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    }
+    </script>
+}
+
+<section class="hero home-hero">
+    <div class="hero-copy">
+        <p class="eyebrow">Convention-driven development platform</p>
+        <h1>CodeMaster</h1>
+        <p class="hero-slogan">把业务约定，变成可运行、可维护、可持续演进的工程。</p>
+        <p class="hero-lead">
+            面向 .NET 10 + Vue 3 团队的企业级快速开发平台。定义项目、模块、实体和字段后，框架负责动态 API、权限、菜单、迁移数据、前后端页面与客户端运行链路，让团队把精力留给真正的业务。
+        </p>
+        <div class="hero-actions">
+            <a class="button primary" href="/register">开始使用</a>
+            <a class="button secondary" href="@clientDownloadUrl">下载客户端</a>
+            <span class="client-version-pill">@clientVersionMeta</span>
+            <a class="button ghost" href="#workflow">了解工作流</a>
+            @if (swaggerEnabled)
+            {
+                <a class="button ghost" href="/swagger">API 文档</a>
+            }
+        </div>
+        <dl class="hero-stats">
+            <div><dt>.NET 10</dt><dd>ASP.NET Core + SqlSugar</dd></div>
+            <div><dt>Vue 3</dt><dd>Element Plus + Vite</dd></div>
+            <div><dt>5 类数据库</dt><dd>统一迁移与初始化链路</dd></div>
+            <div><dt>MCP + Tauri</dt><dd>AI 与本地能力协作</dd></div>
+        </dl>
+    </div>
+</section>
+
+<section class="value-strip" aria-label="CodeMaster 设计原则">
+    <div>
+        <span>01</span>
+        <strong>约定优于配置</strong>
+        <p>按命名、接口和特性推导路由、请求方式、参数绑定与服务注册。</p>
+    </div>
+    <div>
+        <span>02</span>
+        <strong>生成真实工程</strong>
+        <p>生成项目保持独立、纯净，运行时不依赖 CodeMaster 元数据服务。</p>
+    </div>
+    <div>
+        <span>03</span>
+        <strong>全量与增量并行</strong>
+        <p>既能快速初始化，也能在业务演进中精确更新页面、字段和子表。</p>
+    </div>
+    <div>
+        <span>04</span>
+        <strong>Web 与本地统一</strong>
+        <p>同一套业务逻辑服务于浏览器、Tauri 客户端与 MCP 智能体。</p>
+    </div>
+</section>
+
+<section id="workflow" class="section workflow-section">
+    <div class="section-head wide">
+        <p class="eyebrow">From metadata to production</p>
+        <h2>定义一次，贯通 API、权限、数据库与前端</h2>
+        <p>CodeMaster 不把代码生成当作一次性的脚手架。实体元数据会进入一条可重复执行的工程链路，每一步都有明确产物，也允许团队在生成后继续维护真实代码。</p>
+    </div>
+    <ol class="workflow-grid">
+        <li>
+            <span class="step-index">01</span>
+            <div><strong>定义业务模型</strong><p>建立项目、模块、实体、字段、关联和控件属性。</p></div>
+        </li>
+        <li>
+            <span class="step-index">02</span>
+            <div><strong>推导动态 API</strong><p>Application Service 自动注册为控制器，并按约定生成路由、HTTP Method 与参数绑定。</p></div>
+        </li>
+        <li>
+            <span class="step-index">03</span>
+            <div><strong>生成菜单与权限</strong><p>CRUD 能力同步形成权限标识、页面菜单、操作按钮和租户可见范围。</p></div>
+        </li>
+        <li>
+            <span class="step-index">04</span>
+            <div><strong>生成迁移与种子数据</strong><p>EF Core Migrator 创建数据库结构，并初始化菜单、字典、语言和基础业务数据。</p></div>
+        </li>
+        <li>
+            <span class="step-index">05</span>
+            <div><strong>生成前后端代码</strong><p>输出领域实体、DTO、服务、API 调用、查询列表、新增编辑页和详情页。</p></div>
+        </li>
+        <li>
+            <span class="step-index">06</span>
+            <div><strong>持续增量演进</strong><p>字段、排序、子表和模板变化可再次生成，同时保留需要长期维护的用户代码。</p></div>
+        </li>
+    </ol>
+</section>
+
+<section id="features" class="section capabilities-section">
+    <div class="section-head wide">
+        <p class="eyebrow">Framework capabilities</p>
+        <h2>不是后台模板的堆叠，而是一套完整的工程生产体系</h2>
+        <p>从运行时框架到可视化生成，从数据库初始化到智能体调用，关键能力使用同一份模型和规则，减少重复实现与多端分叉。</p>
+    </div>
+    <div class="capability-grid">
+        <article class="capability-card featured">
+            <span class="capability-kicker">Runtime</span>
+            <h3>动态 API 与自动权限</h3>
+            <p>实现 <code>IApplicationService</code> 的服务可自动暴露为 REST API。框架根据方法名与特性生成路由和请求方式，并将权限策略接入统一授权处理器。</p>
+            <ul>
+                <li>服务自动发现与依赖注入</li>
+                <li>GET / POST / PUT / DELETE 约定推导</li>
+                <li>查询、路由与 Body 参数自动绑定</li>
+                <li>菜单权限、按钮权限与租户范围统一管理</li>
+            </ul>
+        </article>
+        <article class="capability-card">
+            <span class="capability-kicker">Convention</span>
+            <h3>约定优于配置</h3>
+            <p>用稳定的工程约定替代散落配置：实体基类决定租户、数据权限和软删除行为，服务接口决定注册与 API，字段元数据决定页面控件和查询方式。</p>
+        </article>
+        <article class="capability-card">
+            <span class="capability-kicker">Database</span>
+            <h3>自动迁移与种子数据</h3>
+            <p>运行时使用 SqlSugar，独立 Migrator 使用 EF Core 管理结构迁移。初始化项目时自动创建迁移、应用数据库，并写入菜单、角色、字典和多语言数据。</p>
+        </article>
+        <article class="capability-card">
+            <span class="capability-kicker">Code generation</span>
+            <h3>全量生成与精确增量</h3>
+            <p>首次生成完整工程，后续根据实体与字段变化更新对应产物。字段顺序、查询表单、列表列、新增编辑页、详情页和子表关系都能参与增量生成。</p>
+        </article>
+        <article class="capability-card">
+            <span class="capability-kicker">Designer</span>
+            <h3>可视化实体与页面设计</h3>
+            <p>字段控件、显示位置、校验、关联实体和子表在设计器中统一配置；页面树、脚本区段和字段脚本支持可视化调整与再生成。</p>
+        </article>
+        <article class="capability-card">
+            <span class="capability-kicker">Enterprise</span>
+            <h3>企业级基础能力</h3>
+            <p>内置用户、角色、部门、岗位、租户、菜单、字典、多语言、数据权限、操作日志、登录日志、在线用户、Quartz 任务与 SignalR 通知。</p>
+        </article>
+        <article class="capability-card">
+            <span class="capability-kicker">AI workflow</span>
+            <h3>MCP 原生协作</h3>
+            <p>智能体通过 MCP 读取项目实体结构，创建或编辑项目、模块、实体与字段，执行初始化、全量或增量生成，而不是绕过平台直接修改元数据。</p>
+        </article>
+        <article class="capability-card">
+            <span class="capability-kicker">Desktop</span>
+            <h3>Tauri + LocalAgent</h3>
+            <p>客户端可以加载部署在服务器上的 Vue 页面，再通过 .NET sidecar 安全调用本地路径、模板、进程和前后端启动能力。Web 与客户端复用核心业务代码。</p>
+        </article>
+        <article class="capability-card upcoming">
+            <span class="capability-kicker">Coming next</span>
+            <h3>UniApp 小程序与移动端</h3>
+            <p>下一版本计划增加 UniApp、小程序与移动端页面生成，复用现有实体、字段、字典和接口元数据，并针对移动端交互提供独立控件模板。敬请期待。</p>
+        </article>
+    </div>
+</section>
+
+<section id="architecture" class="section architecture-section">
+    <div class="architecture-copy">
+        <p class="eyebrow">Clean architecture</p>
+        <h2>平台负责生产，生成项目负责运行</h2>
+        <p>CodeMaster 管理元数据、模板和生成过程；生成后的 .NET + Vue 项目拥有自己的领域模型、数据库、权限和部署方式。两者边界明确，不用把开发平台带进最终业务系统。</p>
+        <div class="architecture-notes">
+            <p><strong>统一核心：</strong>Web、MCP 和客户端最终调用同一组 Application Service，关键逻辑不会分裂成多套。</p>
+            <p><strong>清晰分层：</strong>Domain、Application、Infrastructure、WebApi、Migrator 单向依赖，运行时 ORM 与迁移职责分离。</p>
+            <p><strong>可替换部署：</strong>支持浏览器直接使用，也支持 Tauri 加载远程站点并调用本地能力。</p>
+        </div>
+    </div>
+    <div class="architecture-flow" aria-label="CodeMaster 架构关系">
+        <div class="flow-source">
+            <span>Vue Admin</span>
+            <span>MCP Server</span>
+            <span>Tauri Client</span>
+        </div>
+        <div class="flow-core">
+            <small>共享业务核心</small>
+            <strong>Application Services</strong>
+            <span>Dynamic API · Authorization · CodeGen</span>
+        </div>
+        <div class="flow-output">
+            <span>元数据与模板</span>
+            <span>EF Core Migrator</span>
+            <strong>独立 .NET + Vue 项目</strong>
+        </div>
+    </div>
+</section>
+
+<section class="section product-section">
+    <div class="section-head wide">
+        <p class="eyebrow">Inside CodeMaster</p>
+        <h2>复杂能力，落在可操作的产品界面里</h2>
+        <p>项目管理、模板系统和实体设计器不是彼此孤立的工具，它们共同维护生成工程所需的元数据、页面结构和运行规则。</p>
+    </div>
+    <div class="product-gallery">
+        <figure class="product-shot product-shot-wide">
+            <img src="/site/images/product-template-config.png" alt="CodeMaster 页面模板与控件模板配置界面" loading="lazy" />
+            <figcaption><strong>数据库模板系统</strong><span>页面、控件与子表模板可在线维护，并通过迁移和更新脚本保持环境一致。</span></figcaption>
+        </figure>
+        <figure class="product-shot">
+            <img src="/site/images/product-entity-designer.png" alt="CodeMaster 实体页面设计器" loading="lazy" />
+            <figcaption><strong>实体页面设计器</strong><span>直接查看组件树、页面结构和脚本区段，完成细粒度页面调整。</span></figcaption>
+        </figure>
+        <figure class="product-shot">
+            <img src="/site/images/product-project-list.png" alt="CodeMaster 项目实体管理与代码生成操作界面" loading="lazy" />
+            <figcaption><strong>从实体到代码</strong><span>围绕实体执行设计、增量生成、全量生成、菜单和多语言同步。</span></figcaption>
+        </figure>
+    </div>
+</section>
+
+<section class="section proof-section">
+    <div class="proof-copy">
+        <p class="eyebrow">Built for real projects</p>
+        <h2>保留开发速度，也保留工程控制权</h2>
+        <p>CodeMaster 生成的是团队可以继续阅读、调试、测试和部署的代码。模板负责重复结构，约定负责一致性，开发者仍然拥有最终工程。</p>
+    </div>
+    <div class="proof-points">
+        <span>生成源码可独立运行</span>
+        <span>模板和数据库可版本化</span>
+        <span>多数据库与多租户支持</span>
+        <span>AI 操作受平台模型约束</span>
+        <span>前后端权限语义一致</span>
+        <span>支持本地与服务器部署</span>
+    </div>
+</section>
+
+<section class="section faq">
+    <div class="section-head">
+        <p class="eyebrow">FAQ</p>
+        <h2>关于 CodeMaster</h2>
+    </div>
+    <details open><summary>CodeMaster 和传统后台管理框架有什么不同？</summary><p>传统后台框架通常提供一套现成模块；CodeMaster 更关注持续生产能力。元数据、动态 API、权限、迁移、模板、全量与增量生成、MCP 和本地客户端共同组成一条可反复运行的工程链路。</p></details>
+    <details><summary>动态 API 是否意味着失去接口控制？</summary><p>不会。默认约定负责常规 CRUD，方法仍可通过特性明确指定路由、HTTP Method、权限要求，特殊接口也可以使用普通 Controller。约定减少重复代码，但不限制显式控制。</p></details>
+    <details><summary>生成出来的项目是否依赖 CodeMaster？</summary><p>不依赖。生成项目拥有独立源码、数据库迁移和运行配置，可以单独开发、部署和交付。CodeMaster 负责生产和更新工程，不成为业务系统的运行时前置条件。</p></details>
+    <details><summary>模板修改如何进入现有项目？</summary><p>模板源数据、当前数据库更新脚本和生成规则保持同步。修改后执行全量或增量生成，变更会落到对应页面与脚本产物中。</p></details>
+    <details><summary>客户端必须加载本地 Vue 吗？</summary><p>不必须。Tauri 客户端可以加载服务器上的 Vue 地址，同时通过可信的 .NET sidecar 调用本地路径、进程和项目启动能力。</p></details>
+</section>
+
+<section class="home-cta">
+    <div>
+        <p class="eyebrow">Start building</p>
+        <h2>从第一个实体开始，生成你的业务系统</h2>
+        <p>使用 Web 平台管理模型，或通过 MCP 让智能体按平台规则完成建模与代码生成。</p>
+    </div>
+    <div class="hero-actions">
+        <a class="button primary" href="/register">创建账号</a>
+        <a class="button secondary" href="/download">下载 CodeMaster</a>
+    </div>
+</section>

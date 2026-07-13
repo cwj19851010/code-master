@@ -1,0 +1,67 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "space",
+      "Type": "number, string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "每个 step 的间距，不填写将自适应间距。 支持百分比。"
+    },
+    {
+      "Name": "direction",
+      "Type": "enum",
+      "TypeDescription": "'vertical' | 'horizontal'",
+      "DefaultValue": "horizontal",
+      "Description": "显示方向"
+    },
+    {
+      "Name": "active",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "设置当前激活步骤"
+    },
+    {
+      "Name": "process-status",
+      "Type": "enum",
+      "TypeDescription": "'wait' | 'process' | 'finish' | 'error' | 'success'",
+      "DefaultValue": "process",
+      "Description": "设置当前步骤的状态"
+    },
+    {
+      "Name": "finish-status",
+      "Type": "enum",
+      "TypeDescription": "'wait' | 'process' | 'finish' | 'error' | 'success'",
+      "DefaultValue": "finish",
+      "Description": "设置结束步骤的状态"
+    },
+    {
+      "Name": "align-center",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "进行居中对齐"
+    },
+    {
+      "Name": "simple",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "是否应用简洁风格"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "默认插槽",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "steps",
+  "Link": "https://element-plus.org/zh-CN/component/steps",
+  "Tag": "steps",
+  "GroupName": "Navigation 导航"
+}

@@ -1,0 +1,206 @@
+using Mapster;
+using {{ entity.project_name }}.Core.Dtos;
+using {{ entity.project_name }}.Core.Repositories;
+using {{ entity.project_name }}.Core.Services;
+using {{ entity.project_name }}.Application.Dtos.{{ entity.module_name }};
+using {{ entity.project_name }}.Domain.Entities.{{ entity.module_name }};
+using SqlSugar;
+
+namespace {{ entity.project_name }}.Application.Services.{{ entity.module_name }};
+
+/// <summary>
+/// {{ entity.description }}服务实现
+/// </summary>
+{{~ if entity.is_read_only ~}}
+public class {{ entity.name }}Service : ReadOnlyApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}QueryDto>, I{{ entity.name }}Service
+{
+    public {{ entity.name }}Service(IRepository<{{ entity.name }}> repository, IExcelService? excelService = null, {{ entity.project_name }}.Core.Services.ICacheService? cacheService = null) : base(repository, excelService, cacheService)
+    {
+    }
+{{~ else if entity.is_tree ~}}
+public class {{ entity.name }}Service : TreeApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto, Create{{ entity.name }}Dto, Update{{ entity.name }}Dto>, I{{ entity.name }}Service
+{
+    public {{ entity.name }}Service(IRepository<{{ entity.name }}> repository, ISqlSugarClient db, IExcelService? excelService = null, {{ entity.project_name }}.Core.Services.ICacheService? cacheService = null) : base(repository, excelService, db, cacheService)
+    {
+    }
+
+    protected override async Task<ISugarQueryable<{{ entity.name }}>> CreateFilteredQueryAsync({{ entity.name }}QueryDto input)
+    {
+        var query = (ISugarQueryable<{{ entity.name }}>)Repository.GetQueryable();
+{{~ for field in entity.fields ~}}
+{{~ if field.show_in_search ~}}
+{{~ if field.form_control_type == "date" ~}}
+        query = query.WhereIF(input.{{ field.name }}Start.HasValue, e => e.{{ field.name }} >= input.{{ field.name }}Start.Value);
+        query = query.WhereIF(input.{{ field.name }}End.HasValue, e => e.{{ field.name }} < input.{{ field.name }}End.Value.AddDays(1));
+{{~ else if field.form_control_type == "datetime" ~}}
+        query = query.WhereIF(input.{{ field.name }}Start.HasValue, e => e.{{ field.name }} >= input.{{ field.name }}Start.Value);
+        query = query.WhereIF(input.{{ field.name }}End.HasValue, e => e.{{ field.name }} < input.{{ field.name }}End.Value.AddDays(1));
+{{~ else if field.is_multiple && field.data_type == "string" ~}}
+        if (!string.IsNullOrEmpty(input.{{ field.name }}))
+        {
+            var {{ field.name_lower }}Values = input.{{ field.name }}.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if ({{ field.name_lower }}Values.Length > 0)
+            {
+                var {{ field.name_lower }}Expression = Expressionable.Create<{{ entity.name }}>();
+                foreach (var value in {{ field.name_lower }}Values)
+                {
+                    var current = value;
+                    {{ field.name_lower }}Expression.Or(e => e.{{ field.name }} != null && ("," + e.{{ field.name }} + ",").Contains("," + current + ","));
+                }
+                query = query.Where({{ field.name_lower }}Expression.ToExpression());
+            }
+        }
+{{~ else if field.data_type == "string" ~}}
+        query = query.WhereIF(!string.IsNullOrEmpty(input.{{ field.name }}), e => e.{{ field.name }}!.Contains(input.{{ field.name }}!));
+{{~ else ~}}
+        query = query.WhereIF(input.{{ field.name }}.HasValue, e => e.{{ field.name }} == input.{{ field.name }});
+{{~ end ~}}
+{{~ end ~}}
+{{~ end ~}}
+        return await Task.FromResult(query);
+    }
+{{~ else ~}}
+public class {{ entity.name }}Service : CrudApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto, Create{{ entity.name }}Dto, Update{{ entity.name }}Dto>, I{{ entity.name }}Service
+{
+{{~ if entity.has_one_to_many ~}}
+    private readonly ISqlSugarClient _db;
+    public {{ entity.name }}Service(IRepository<{{ entity.name }}> repository, ISqlSugarClient db, IExcelService? excelService = null, {{ entity.project_name }}.Core.Services.ICacheService? cacheService = null) : base(repository, excelService, cacheService)
+    {
+        _db = db;
+    }
+{{~ else ~}}
+    public {{ entity.name }}Service(IRepository<{{ entity.name }}> repository, IExcelService? excelService = null, {{ entity.project_name }}.Core.Services.ICacheService? cacheService = null) : base(repository, excelService, cacheService)
+    {
+    }
+{{~ end ~}}
+
+    protected override async Task<ISugarQueryable<{{ entity.name }}>> CreateFilteredQueryAsync({{ entity.name }}QueryDto input)
+    {
+        var query = (ISugarQueryable<{{ entity.name }}>)Repository.GetQueryable();
+{{~ for field in entity.fields ~}}
+{{~ if field.show_in_search ~}}
+{{~ if field.form_control_type == "date" ~}}
+        query = query.WhereIF(input.{{ field.name }}Start.HasValue, e => e.{{ field.name }} >= input.{{ field.name }}Start.Value);
+        query = query.WhereIF(input.{{ field.name }}End.HasValue, e => e.{{ field.name }} < input.{{ field.name }}End.Value.AddDays(1));
+{{~ else if field.form_control_type == "datetime" ~}}
+        query = query.WhereIF(input.{{ field.name }}Start.HasValue, e => e.{{ field.name }} >= input.{{ field.name }}Start.Value);
+        query = query.WhereIF(input.{{ field.name }}End.HasValue, e => e.{{ field.name }} < input.{{ field.name }}End.Value.AddDays(1));
+{{~ else if field.is_multiple && field.data_type == "string" ~}}
+        if (!string.IsNullOrEmpty(input.{{ field.name }}))
+        {
+            var {{ field.name_lower }}Values = input.{{ field.name }}.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if ({{ field.name_lower }}Values.Length > 0)
+            {
+                var {{ field.name_lower }}Expression = Expressionable.Create<{{ entity.name }}>();
+                foreach (var value in {{ field.name_lower }}Values)
+                {
+                    var current = value;
+                    {{ field.name_lower }}Expression.Or(e => e.{{ field.name }} != null && ("," + e.{{ field.name }} + ",").Contains("," + current + ","));
+                }
+                query = query.Where({{ field.name_lower }}Expression.ToExpression());
+            }
+        }
+{{~ else if field.data_type == "string" ~}}
+        query = query.WhereIF(!string.IsNullOrEmpty(input.{{ field.name }}), e => e.{{ field.name }}!.Contains(input.{{ field.name }}!));
+{{~ else ~}}
+        query = query.WhereIF(input.{{ field.name }}.HasValue, e => e.{{ field.name }} == input.{{ field.name }});
+{{~ end ~}}
+{{~ end ~}}
+{{~ end ~}}
+        return await Task.FromResult(query);
+    }
+
+    protected override ISugarQueryable<{{ entity.name }}> ApplySorting(ISugarQueryable<{{ entity.name }}> queryable, {{ entity.name }}QueryDto input)
+    {
+        return queryable.OrderBy(e => e.Id);
+    }
+{{~ end ~}}
+
+{{~ if entity.has_one_to_many ~}}
+    /// <summary>
+    /// 获取详情（含子表数据）
+    /// </summary>
+    public override async Task<{{ entity.name }}Dto> GetByIdAsync(long id)
+    {
+        var entity = await _db.Queryable<{{ entity.name }}>()
+{{~ for relation in entity.one_to_many_relations ~}}
+            .Includes(e => e.{{ relation.child_entity_name }}s)
+{{~ end ~}}
+            .Where(e => e.Id == id)
+            .FirstAsync();
+
+        if (entity == null)
+            throw new Exception("数据不存在");
+
+        return entity.Adapt<{{ entity.name }}Dto>();
+    }
+
+    /// <summary>
+    /// 创建（含子表）
+    /// </summary>
+    public override async Task<long> CreateAsync(Create{{ entity.name }}Dto input)
+    {
+        var entity = new {{ entity.name }}();
+        input.Adapt(entity);
+{{~ for relation in entity.one_to_many_relations ~}}
+        entity.{{ relation.child_entity_name }}s = null!;
+{{~ end ~}}
+        var id = await _db.Insertable(entity).ExecuteReturnSnowflakeIdAsync();
+{{~ for relation in entity.one_to_many_relations ~}}
+        if (input.{{ relation.child_entity_name }}s != null)
+        {
+            foreach (var item in input.{{ relation.child_entity_name }}s)
+            {
+                var child = item.Adapt<{{ relation.child_entity_name }}>();
+                child.{{ relation.child_foreign_key }} = id;
+                await _db.Insertable(child).ExecuteReturnSnowflakeIdAsync();
+            }
+        }
+{{~ end ~}}
+        return id;
+    }
+
+    /// <summary>
+    /// 更新（含子表增删改，不查库直接更新）
+    /// </summary>
+    public override async Task<int> UpdateAsync(long id, Update{{ entity.name }}Dto input)
+    {
+        var entity = new {{ entity.name }}();
+        input.Adapt(entity);
+{{~ for relation in entity.one_to_many_relations ~}}
+        entity.{{ relation.child_entity_name }}s = null!;
+{{~ end ~}}
+        entity.Id = id;
+        await _db.Updateable(entity).ExecuteCommandAsync();
+
+{{~ for relation in entity.one_to_many_relations ~}}
+        if (input.{{ relation.child_entity_name }}s != null)
+            await Save{{ relation.child_entity_name }}sAsync(id, input.{{ relation.child_entity_name }}s);
+{{~ end ~}}
+        return 1;
+    }
+
+{{~ for relation in entity.one_to_many_relations ~}}
+    private async Task Save{{ relation.child_entity_name }}sAsync(long masterId, List<Update{{ relation.child_entity_name }}Dto> items)
+    {
+        foreach (var item in items)
+        {
+            switch (item.RowStatus)
+            {
+                case RowStatus.Added:
+                    var newChild = item.Adapt<{{ relation.child_entity_name }}>();
+                    newChild.{{ relation.child_foreign_key }} = masterId;
+                    await _db.Insertable(newChild).ExecuteReturnSnowflakeIdAsync();
+                    break;
+                case RowStatus.Modified:
+                    await _db.Updateable(item.Adapt<{{ relation.child_entity_name }}>()).ExecuteCommandAsync();
+                    break;
+                case RowStatus.Deleted:
+                    await _db.Deleteable<{{ relation.child_entity_name }}>().Where(c => c.Id == item.Id).ExecuteCommandAsync();
+                    break;
+            }
+        }
+    }
+{{~ end ~}}
+{{~ end ~}}
+}

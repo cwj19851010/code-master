@@ -1,0 +1,162 @@
+using System.ComponentModel.DataAnnotations;
+using {{ entity.project_name }}.Core.Dtos;
+using {{ entity.project_name }}.Core.Entities;
+
+namespace {{ entity.project_name }}.Application.Dtos.{{ entity.module_name }};
+
+/// <summary>
+/// {{ entity.description }}DTO
+/// </summary>
+public class {{ entity.name }}Dto : EntityDto, IBaseEntity{{ entity.dto_interface_list }}
+{
+{{~ for field in entity.fields ~}}
+{{~ if !field.is_primary_key ~}}
+    /// <summary>
+    /// {{ field.description }}
+    /// </summary>
+{{~ if field.is_required ~}}    [Required(ErrorMessage = "请输入{{ field.description }}")]
+{{~ end ~}}
+{{~ if field.min_value && field.max_value ~}}    [Range({{ field.min_value }}, {{ field.max_value }})]
+{{~ else if !field.min_value && field.max_value ~}}    [Range(0, {{ field.max_value }})]
+{{~ else if field.min_value && !field.max_value ~}}    [Range({{ field.min_value }}, int.MaxValue)]
+{{~ end ~}}
+{{~ if field.is_email ~}}    [EmailAddress(ErrorMessage = "请输入正确邮箱")]
+{{~ end ~}}
+{{~ if field.is_phone ~}}    [Phone(ErrorMessage = "请输入正确手机号")]
+{{~ end ~}}
+{{~ if field.has_regex_pattern ~}}    [RegularExpression({{ field.regex_pattern_literal }}, ErrorMessage = "格式不正确")]
+{{~ end ~}}
+{{~ if field.is_nullable ~}}
+    public {{ field.data_type }}? {{ field.name }} { get; set; }
+{{~ else ~}}
+    public {{ field.data_type }} {{ field.name }} { get; set; }{{ if field.data_type == "string" }} = string.Empty;{{ end }}
+{{~ end ~}}
+
+{{~ end ~}}
+{{~ end ~}}
+{{~ for relation in entity.one_to_many_relations ~}}
+    /// <summary>
+    /// {{ relation.child_entity_name }}列表
+    /// </summary>
+    public List<{{ relation.child_entity_name }}Dto>? {{ relation.child_entity_name }}s { get; set; }
+
+{{~ end ~}}
+}
+
+/// <summary>
+/// 创建{{ entity.description }}DTO
+/// </summary>
+public class Create{{ entity.name }}Dto : IBaseEntity{{ entity.create_update_dto_interface_list }}
+{
+{{~ for field in entity.fields ~}}
+{{~ if !field.is_primary_key && field.show_in_add_form ~}}
+    /// <summary>
+    /// {{ field.description }}
+    /// </summary>
+{{~ if field.is_required ~}}    [Required(ErrorMessage = "请输入{{ field.description }}")]
+{{~ end ~}}
+{{~ if field.min_value && field.max_value ~}}    [Range({{ field.min_value }}, {{ field.max_value }})]
+{{~ else if !field.min_value && field.max_value ~}}    [Range(0, {{ field.max_value }})]
+{{~ else if field.min_value && !field.max_value ~}}    [Range({{ field.min_value }}, int.MaxValue)]
+{{~ end ~}}
+{{~ if field.is_email ~}}    [EmailAddress(ErrorMessage = "请输入正确邮箱")]
+{{~ end ~}}
+{{~ if field.is_phone ~}}    [Phone(ErrorMessage = "请输入正确手机号")]
+{{~ end ~}}
+{{~ if field.has_regex_pattern ~}}    [RegularExpression({{ field.regex_pattern_literal }}, ErrorMessage = "格式不正确")]
+{{~ end ~}}
+{{~ if field.is_nullable ~}}
+    public {{ field.data_type }}? {{ field.name }} { get; set; }
+{{~ else ~}}
+    public {{ field.data_type }} {{ field.name }} { get; set; }{{ if field.data_type == "string" }} = string.Empty;{{ end }}
+{{~ end ~}}
+
+{{~ end ~}}
+{{~ end ~}}
+{{~ for relation in entity.one_to_many_relations ~}}
+    /// <summary>
+    /// {{ relation.child_entity_name }}列表
+    /// </summary>
+    public List<Create{{ relation.child_entity_name }}Dto>? {{ relation.child_entity_name }}s { get; set; }
+
+{{~ end ~}}
+}
+
+/// <summary>
+/// 更新{{ entity.description }}DTO
+/// </summary>
+public class Update{{ entity.name }}Dto : IBaseEntity, IHasRowStatus{{ entity.create_update_dto_interface_list }}
+{
+    /// <summary>
+    /// 主键ID（子表追踪时需要）
+    /// </summary>
+    public long Id { get; set; }
+
+{{~ for field in entity.fields ~}}
+{{~ if !field.is_primary_key && field.show_in_edit_form ~}}
+    /// <summary>
+    /// {{ field.description }}
+    /// </summary>
+{{~ if field.is_required ~}}    [Required(ErrorMessage = "请输入{{ field.description }}")]
+{{~ end ~}}
+{{~ if field.min_value && field.max_value ~}}    [Range({{ field.min_value }}, {{ field.max_value }})]
+{{~ else if !field.min_value && field.max_value ~}}    [Range(0, {{ field.max_value }})]
+{{~ else if field.min_value && !field.max_value ~}}    [Range({{ field.min_value }}, int.MaxValue)]
+{{~ end ~}}
+{{~ if field.is_email ~}}    [EmailAddress(ErrorMessage = "请输入正确邮箱")]
+{{~ end ~}}
+{{~ if field.is_phone ~}}    [Phone(ErrorMessage = "请输入正确手机号")]
+{{~ end ~}}
+{{~ if field.has_regex_pattern ~}}    [RegularExpression({{ field.regex_pattern_literal }}, ErrorMessage = "格式不正确")]
+{{~ end ~}}
+{{~ if field.is_nullable ~}}
+    public {{ field.data_type }}? {{ field.name }} { get; set; }
+{{~ else ~}}
+    public {{ field.data_type }} {{ field.name }} { get; set; }{{ if field.data_type == "string" }} = string.Empty;{{ end }}
+{{~ end ~}}
+
+{{~ end ~}}
+{{~ end ~}}
+
+    /// <summary>
+    /// 行状态（子表追踪用）
+    /// </summary>
+    public RowStatus RowStatus { get; set; } = RowStatus.Unchanged;
+
+{{~ for relation in entity.one_to_many_relations ~}}
+    /// <summary>
+    /// {{ relation.child_entity_name }}列表
+    /// </summary>
+    public List<Update{{ relation.child_entity_name }}Dto>? {{ relation.child_entity_name }}s { get; set; }
+
+{{~ end ~}}
+}
+
+/// <summary>
+/// {{ entity.description }}查询DTO
+/// </summary>
+public class {{ entity.name }}QueryDto : PagedQueryDto
+{
+{{~ for field in entity.fields ~}}
+{{~ if field.show_in_search ~}}
+{{~ if field.form_control_type == "date" || field.form_control_type == "datetime" ~}}
+    /// <summary>
+    /// {{ field.description }}开始
+    /// </summary>
+    public DateTime? {{ field.name }}Start { get; set; }
+
+    /// <summary>
+    /// {{ field.description }}结束
+    /// </summary>
+    public DateTime? {{ field.name }}End { get; set; }
+
+{{~ else ~}}
+    /// <summary>
+    /// {{ field.description }}
+    /// </summary>
+    public {{ field.data_type }}? {{ field.name }} { get; set; }
+
+{{~ end ~}}
+{{~ end ~}}
+{{~ end ~}}
+}

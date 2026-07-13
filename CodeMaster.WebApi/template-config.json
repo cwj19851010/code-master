@@ -1,0 +1,420 @@
+{
+  "templateVersion": "1.0.0",
+  "description": "CodeMaster 模板配置 - 精确文件列表",
+  "sourceRoot": ".",
+  "templateSettings": {
+    "excludedModules": [
+      "ProjectModule",
+      "ProjectModuleModule",
+      "ModuleEntityModule",
+      "EntityFieldModule"
+    ],
+    "topLevelDirectories": [
+      {
+        "Name": "系统管理",
+        "TitleKey": "system",
+        "Path": "/system",
+        "Icon": "Setting",
+        "Order": 1
+      },
+      {
+        "Name": "监控管理",
+        "TitleKey": "monitor",
+        "Path": "/monitor",
+        "Icon": "Monitor",
+        "Order": 2
+      }
+    ]
+  },
+  "include": {
+    "core": [
+      "CodeMaster.Core/CodeMaster.Core.csproj",
+
+      "CodeMaster.Core/Attributes/ExportColumnAttribute.cs",
+      "CodeMaster.Core/Attributes/ExportForeignKeyAttribute.cs",
+      "CodeMaster.Core/Attributes/ExportIgnoreAttribute.cs",
+      "CodeMaster.Core/Attributes/LogAttribute.cs",
+
+      "CodeMaster.Core/Authorization/DynamicApiPermissionAttribute.cs",
+      "CodeMaster.Core/Authorization/PermissionAttribute.cs",
+
+
+      "CodeMaster.Core/Common/ApiResponse.cs",
+
+      "CodeMaster.Core/Configuration/CacheOptions.cs",
+
+      "CodeMaster.Core/Data/DataFilter.cs",
+      "CodeMaster.Core/Data/DataFilters.cs",
+      "CodeMaster.Core/Data/IDataFilter.cs",
+      "CodeMaster.Core/Data/IDataPermissionContext.cs",
+
+      "CodeMaster.Core/Dtos/CreateDtoBase.cs",
+      "CodeMaster.Core/Dtos/DtoBase.cs",
+      "CodeMaster.Core/Dtos/EntityDto.cs",
+      "CodeMaster.Core/Dtos/PagedQueryDto.cs",
+      "CodeMaster.Core/Dtos/PagedResultDto.cs",
+      "CodeMaster.Core/Dtos/UpdateDtoBase.cs",
+      "CodeMaster.Core/Dtos/IHasRowStatus.cs",
+      "CodeMaster.Core/Dtos/RowStatus.cs",
+
+      "CodeMaster.Core/DynamicApi/DynamicApiAttribute.cs",
+      "CodeMaster.Core/DynamicApi/DynamicApiOptions.cs",
+
+      "CodeMaster.Core/Entities/DataPermissionEntityBase.cs",
+      "CodeMaster.Core/Entities/EntityBase.cs",
+      "CodeMaster.Core/Entities/EntityBaseWithDept.cs",
+      "CodeMaster.Core/Entities/EntityBaseWithTenant.cs",
+      "CodeMaster.Core/Entities/IAuditEntity.cs",
+      "CodeMaster.Core/Entities/IDataPermission.cs",
+      "CodeMaster.Core/Entities/IDept.cs",
+      "CodeMaster.Core/Entities/IEntity.cs",
+      "CodeMaster.Core/Entities/ISoftDelete.cs",
+      "CodeMaster.Core/Entities/ITenant.cs",
+      "CodeMaster.Core/Entities/ITenantEntity.cs",
+      "CodeMaster.Core/Entities/TreeEntityBase.cs",
+
+      "CodeMaster.Core/Enums/BusinessType.cs",
+      "CodeMaster.Core/Enums/OperatorType.cs",
+      "CodeMaster.Core/Enums/PostDataScope.cs",
+
+      "CodeMaster.Core/Exceptions/BusinessException.cs",
+      "CodeMaster.Core/Exceptions/NotFoundException.cs",
+
+      "CodeMaster.Core/Extensions/SoftDeleteExtensions.cs",
+
+      "CodeMaster.Core/Filters/TenantFilter.cs",
+
+      "CodeMaster.Core/MultiTenancy/ITenantContext.cs",
+      "CodeMaster.Core/MultiTenancy/TenantContext.cs",
+
+      "CodeMaster.Core/Repositories/IReadOnlyRepository.cs",
+      "CodeMaster.Core/Repositories/IRepository.cs",
+
+      "CodeMaster.Core/Services/Monitor/INotificationService.cs",
+
+      "CodeMaster.Core/Services/IApplicationService.cs",
+      "CodeMaster.Core/Services/ICacheProvider.cs",
+      "CodeMaster.Core/Services/ICacheService.cs",
+      "CodeMaster.Core/Services/ICrudApplicationService.cs",
+      "CodeMaster.Core/Services/ICrudService.cs",
+      "CodeMaster.Core/Services/IDataPermissionService.cs",
+      "CodeMaster.Core/Services/IExcelService.cs",
+      "CodeMaster.Core/Services/IReadOnlyApplicationService.cs",
+      "CodeMaster.Core/Services/IReadOnlyService.cs",
+      "CodeMaster.Core/Services/ITreeApplicationService.cs"
+    ],
+    "domain": [
+      "CodeMaster.Domain/CodeMaster.Domain.csproj",
+      "CodeMaster.Domain/Entities/Monitor/SysLoginLog.cs",
+      "CodeMaster.Domain/Entities/Monitor/SysOperLog.cs",
+      "CodeMaster.Domain/Entities/Monitor/SysTask.cs",
+      "CodeMaster.Domain/Entities/Monitor/SysTaskLog.cs",
+
+      "CodeMaster.Domain/Entities/System/SysDept.cs",
+      "CodeMaster.Domain/Entities/System/SysDictData.cs",
+      "CodeMaster.Domain/Entities/System/SysDictType.cs",
+      "CodeMaster.Domain/Entities/System/SysFile.cs",
+      "CodeMaster.Domain/Entities/System/SysLang.cs",
+      "CodeMaster.Domain/Entities/System/SysLangText.cs",
+      "CodeMaster.Domain/Entities/System/SysMenu.cs",
+      "CodeMaster.Domain/Entities/System/SysPost.cs",
+      "CodeMaster.Domain/Entities/System/SysRole.cs",
+      "CodeMaster.Domain/Entities/System/SysRoleMenu.cs",
+      "CodeMaster.Domain/Entities/System/SysTenant.cs",
+      "CodeMaster.Domain/Entities/System/SysUser.cs",
+      "CodeMaster.Domain/Entities/System/SysUserRole.cs"
+    ],
+    "application": [
+      "CodeMaster.Application/CodeMaster.Application.csproj",
+
+      "CodeMaster.Application/Dtos/Auth/LoginDto.cs",
+      "CodeMaster.Application/Dtos/Auth/RouteDto.cs",
+      "CodeMaster.Application/Dtos/Auth/UserInfoDto.cs",
+
+      "CodeMaster.Application/Dtos/Monitor/OnlineUserDto.cs",
+      "CodeMaster.Application/Dtos/Monitor/SysLoginLogDto.cs",
+      "CodeMaster.Application/Dtos/Monitor/SysOperLogDto.cs",
+      "CodeMaster.Application/Dtos/Monitor/SysTaskDto.cs",
+      "CodeMaster.Application/Dtos/Monitor/SysTaskLogDto.cs",
+
+      "CodeMaster.Application/Dtos/System/SysDeptDto.cs",
+      "CodeMaster.Application/Dtos/System/SysDictDto.cs",
+      "CodeMaster.Application/Dtos/System/SysFileDto.cs",
+      "CodeMaster.Application/Dtos/System/SysLangDto.cs",
+      "CodeMaster.Application/Dtos/System/SysMenuDto.cs",
+      "CodeMaster.Application/Dtos/System/SysPostDto.cs",
+      "CodeMaster.Application/Dtos/System/SysRoleDto.cs",
+      "CodeMaster.Application/Dtos/System/SysTenantDto.cs",
+      "CodeMaster.Application/Dtos/System/SysUserDto.cs",
+      "CodeMaster.Application/Dtos/System/SysUserExportDto.cs",
+
+      "CodeMaster.Application/Services/Auth/AuthService.cs",
+      "CodeMaster.Application/Services/Auth/JwtService.cs",
+
+      "CodeMaster.Application/Services/Monitor/IOnlineUserService.cs",
+      "CodeMaster.Application/Services/Monitor/OnlineUserService.cs",
+      "CodeMaster.Application/Services/Monitor/SysLoginLogService.cs",
+      "CodeMaster.Application/Services/Monitor/SysOperLogService.cs",
+      "CodeMaster.Application/Services/Monitor/SysTaskLogService.cs",
+      "CodeMaster.Application/Services/Monitor/SysTaskService.cs",
+
+      "CodeMaster.Application/Services/System/ISysTenantService.cs",
+      "CodeMaster.Application/Services/System/SysDeptService.cs",
+      "CodeMaster.Application/Services/System/SysDictService.cs",
+      "CodeMaster.Application/Services/System/SysFileService.cs",
+      "CodeMaster.Application/Services/System/SysLangService.cs",
+      "CodeMaster.Application/Services/System/SysMenuService.cs",
+      "CodeMaster.Application/Services/System/SysPostService.cs",
+      "CodeMaster.Application/Services/System/SysRoleService.cs",
+      "CodeMaster.Application/Services/System/SysTenantService.cs",
+      "CodeMaster.Application/Services/System/SysUserService.cs",
+
+      "CodeMaster.Application/Services/CrudApplicationService.cs",
+      "CodeMaster.Application/Services/CrudServiceBase.cs",
+      "CodeMaster.Application/Services/DataPermissionContext.cs",
+      "CodeMaster.Application/Services/DataPermissionService.cs",
+      "CodeMaster.Application/Services/ReadOnlyApplicationService.cs",
+      "CodeMaster.Application/Services/TreeApplicationService.cs"
+
+
+    ],
+    "infrastructure": [
+      "CodeMaster.Infrastructure/CodeMaster.Infrastructure.csproj",
+
+      "CodeMaster.Infrastructure/Authorization/PermissionAuthorizationHandler.cs",
+      "CodeMaster.Infrastructure/Authorization/PermissionPolicyProvider.cs",
+      "CodeMaster.Infrastructure/Authorization/PermissionRequirement.cs",
+
+      "CodeMaster.Infrastructure/Caching/Extensions/CachingExtensions.cs",
+
+      "CodeMaster.Infrastructure/Caching/Providers/HybridCacheProvider.cs",
+      "CodeMaster.Infrastructure/Caching/Providers/MemoryCacheProvider.cs",
+      "CodeMaster.Infrastructure/Caching/Providers/RedisCacheProvider.cs",
+
+      "CodeMaster.Infrastructure/Caching/CacheService.cs",
+
+      "CodeMaster.Infrastructure/DynamicApi/DynamicApiControllerConvention.cs",
+      "CodeMaster.Infrastructure/DynamicApi/DynamicApiControllerFeatureProvider.cs",
+      "CodeMaster.Infrastructure/DynamicApi/DynamicApiExtensions.cs",
+
+      "CodeMaster.Infrastructure/Middleware/DataPermissionMiddleware.cs",
+      "CodeMaster.Infrastructure/Middleware/RequestLoggingMiddleware.cs",
+
+      "CodeMaster.Infrastructure/ModelBinding/QueryStringModelBinder.cs",
+
+      "CodeMaster.Infrastructure/MultiTenancy/TenantDbManager.cs",
+      "CodeMaster.Infrastructure/MultiTenancy/TenantMiddleware.cs",
+
+      "CodeMaster.Infrastructure/Persistence/Repositories/ReadOnlyRepository.cs",
+      "CodeMaster.Infrastructure/Persistence/Repositories/Repository.cs",
+
+      "CodeMaster.Infrastructure/Persistence/SqlSugar/SqlSugarSetup.cs",
+
+      "CodeMaster.Infrastructure/Services/ExcelService.cs",
+
+      "CodeMaster.Infrastructure/SignalR/IOnlineUserManager.cs",
+      "CodeMaster.Infrastructure/SignalR/NotificationHub.cs",
+      "CodeMaster.Infrastructure/SignalR/NotificationService.cs",
+      "CodeMaster.Infrastructure/SignalR/OnlineUserManager.cs",
+      "CodeMaster.Infrastructure/SignalR/SignalRExtensions.cs",
+      "CodeMaster.Infrastructure/SignalR/SignalRServiceCollectionExtensions.cs",
+
+      "CodeMaster.Infrastructure/TaskScheduling/JobBase.cs",
+      "CodeMaster.Infrastructure/TaskScheduling/JobFactory.cs",
+      "CodeMaster.Infrastructure/TaskScheduling/TaskSchedulerServer.cs",
+
+      "CodeMaster.Infrastructure/TaskScheduling/Jobs/AssemblyJob.cs",
+      "CodeMaster.Infrastructure/TaskScheduling/Jobs/HttpJob.cs",
+      "CodeMaster.Infrastructure/TaskScheduling/Jobs/SqlJob.cs"
+
+    ],
+    "webapi": [
+      "CodeMaster.WebApi/Controllers/AuthController.cs",
+      "CodeMaster.WebApi/Controllers/BaseController.cs",
+      "CodeMaster.WebApi/Controllers/Monitor/OnlineUserController.cs",
+      "CodeMaster.WebApi/Controllers/SysFileController.cs",
+      "CodeMaster.WebApi/Controllers/System/HealthController.cs",
+
+
+      "CodeMaster.WebApi/appsettings.Development.json",
+      "CodeMaster.WebApi/appsettings.json",
+      "CodeMaster.WebApi/CodeMaster.WebApi.csproj",
+
+      "CodeMaster.WebApi/Converters/LongToStringConverter.cs",
+      "CodeMaster.WebApi/Converters/NumberToStringConverter.cs",
+      "CodeMaster.WebApi/Extensions/SwaggerExtensions.cs",
+
+
+      "CodeMaster.WebApi/Filters/DynamicApiOperationFilter.cs",
+      "CodeMaster.WebApi/Filters/GlobalOperationLogFilter.cs",
+      "CodeMaster.WebApi/Hubs/OnlineUserHub.cs",
+      "CodeMaster.WebApi/Program.cs",
+      "CodeMaster.WebApi/Properties/launchSettings.json",
+      "CodeMaster.WebApi/Swagger/DynamicApiDescriptionProvider.cs",
+
+      "CodeMaster.WebApi/translations_export.json"
+    ],
+    "migrator": [
+      "CodeMaster.Migrator/Program.cs",
+      "CodeMaster.Migrator/Persistence/EfCore/CodeMasterDbContext.cs",
+      "CodeMaster.Migrator/Persistence/EfCore/CodeMasterDbContextFactory.cs",
+
+
+      "CodeMaster.Migrator/SeedData/Core/BaseDataModule.cs",
+      "CodeMaster.Migrator/SeedData/Core/GlobalTranslations.cs",
+      "CodeMaster.Migrator/SeedData/Core/LangModule.cs",
+      "CodeMaster.Migrator/SeedData/Core/SystemDirectory.cs",
+
+      "CodeMaster.Migrator/SeedData/Monitor/LoginLogModule.cs",
+      "CodeMaster.Migrator/SeedData/Monitor/MonitorDirectory.cs",
+      "CodeMaster.Migrator/SeedData/Monitor/OnlineUserModule.cs",
+      "CodeMaster.Migrator/SeedData/Monitor/OperLogModule.cs",
+      "CodeMaster.Migrator/SeedData/Monitor/TaskLogModule.cs",
+      "CodeMaster.Migrator/SeedData/Monitor/TaskModule.cs",
+
+      "CodeMaster.Migrator/SeedData/System/DeptModule.cs",
+      "CodeMaster.Migrator/SeedData/System/DictModule.cs",
+      "CodeMaster.Migrator/SeedData/System/MenuModule.cs",
+      "CodeMaster.Migrator/SeedData/System/PostModule.cs",
+      "CodeMaster.Migrator/SeedData/System/RoleModule.cs",
+      "CodeMaster.Migrator/SeedData/System/TenantModule.cs",
+      "CodeMaster.Migrator/SeedData/System/UserModule.cs",
+
+      "CodeMaster.Migrator/SeedData/ISeedModule.cs",
+      "CodeMaster.Migrator/SeedData/ITopLevelDirectory.cs",
+      "CodeMaster.Migrator/SeedData/MenuBuilder.cs",
+
+
+
+      "CodeMaster.Migrator/appsettings.json",
+      "CodeMaster.Migrator/CodeMaster.Migrator.csproj"
+    ],
+    "frontend": [
+      "CodeMaster.Vue/src/api/auth.js",
+      "CodeMaster.Vue/src/api/monitor/online.js",
+      "CodeMaster.Vue/src/api/monitor/task.js",
+      "CodeMaster.Vue/src/api/monitor/tasklog.js",
+      "CodeMaster.Vue/src/api/monitor/loginlog.js",
+      "CodeMaster.Vue/src/api/monitor/operlog.js",
+
+      "CodeMaster.Vue/src/api/system/dept.js",
+      "CodeMaster.Vue/src/api/system/dict.js",
+      "CodeMaster.Vue/src/api/system/file.js",
+      "CodeMaster.Vue/src/api/system/lang.js",
+      "CodeMaster.Vue/src/api/system/menu.js",
+      "CodeMaster.Vue/src/api/system/post.js",
+      "CodeMaster.Vue/src/api/system/role.js",
+      "CodeMaster.Vue/src/api/system/tenant.js",
+      "CodeMaster.Vue/src/api/system/user.js",
+
+      "CodeMaster.Vue/src/assets/images/default-avatar.svg",
+
+      "CodeMaster.Vue/src/App.vue",
+      "CodeMaster.Vue/src/components/Breadcrumb/index.vue",
+      "CodeMaster.Vue/src/components/TabsView/index.vue",
+      "CodeMaster.Vue/src/directives/index.js",
+      "CodeMaster.Vue/src/directives/permission.js",
+      "CodeMaster.Vue/src/i18n/index.js",
+
+      "CodeMaster.Vue/src/layout/components/LanguageSwitcher.vue",
+      "CodeMaster.Vue/src/layout/components/ThemePicker.vue",
+      "CodeMaster.Vue/src/layout/index.vue",
+      "CodeMaster.Vue/src/layout/SidebarItem.vue",
+
+
+      "CodeMaster.Vue/src/main.js",
+      "CodeMaster.Vue/src/router/index.js",
+      "CodeMaster.Vue/src/stores/permission.js",
+      "CodeMaster.Vue/src/stores/settings.js",
+      "CodeMaster.Vue/src/stores/tagsView.js",
+      "CodeMaster.Vue/src/stores/user.js",
+      "CodeMaster.Vue/src/styles/index.scss",
+      "CodeMaster.Vue/src/styles/list-page.scss",
+      "CodeMaster.Vue/src/utils/auth.js",
+      "CodeMaster.Vue/src/utils/dateFormat.js",
+      "CodeMaster.Vue/src/utils/request.js",
+      "CodeMaster.Vue/src/utils/signalr.js",
+      "CodeMaster.Vue/src/utils/tree.js",
+
+      "CodeMaster.Vue/src/views/dashboard/index.vue",
+      "CodeMaster.Vue/src/views/login/index.vue",
+      "CodeMaster.Vue/src/views/monitor/loginlog/detail.vue",
+      "CodeMaster.Vue/src/views/monitor/loginlog/index.vue",
+      "CodeMaster.Vue/src/views/monitor/online.vue",
+      "CodeMaster.Vue/src/views/monitor/operlog/detail.vue",
+      "CodeMaster.Vue/src/views/monitor/operlog/index.vue",
+      "CodeMaster.Vue/src/views/monitor/task/add.vue",
+      "CodeMaster.Vue/src/views/monitor/task/detail.vue",
+      "CodeMaster.Vue/src/views/monitor/task/edit.vue",
+      "CodeMaster.Vue/src/views/monitor/task/index.vue",
+      "CodeMaster.Vue/src/views/monitor/tasklog/detail.vue",
+      "CodeMaster.Vue/src/views/monitor/tasklog/index.vue",
+
+      "CodeMaster.Vue/src/views/redirect/index.vue",
+      "CodeMaster.Vue/src/views/system/dept/add.vue",
+      "CodeMaster.Vue/src/views/system/dept/detail.vue",
+      "CodeMaster.Vue/src/views/system/dept/edit.vue",
+      "CodeMaster.Vue/src/views/system/dept/index.vue",
+
+      "CodeMaster.Vue/src/views/system/dict/data/add.vue",
+      "CodeMaster.Vue/src/views/system/dict/data/detail.vue",
+      "CodeMaster.Vue/src/views/system/dict/data/edit.vue",
+      "CodeMaster.Vue/src/views/system/dict/index.vue",
+      "CodeMaster.Vue/src/views/system/dict/type/add.vue",
+      "CodeMaster.Vue/src/views/system/dict/type/detail.vue",
+      "CodeMaster.Vue/src/views/system/dict/type/edit.vue",
+
+
+      "CodeMaster.Vue/src/views/system/file/detail.vue",
+      "CodeMaster.Vue/src/views/system/file/index.vue",
+
+      "CodeMaster.Vue/src/views/system/lang/index.vue",
+      "CodeMaster.Vue/src/views/system/lang/add.vue",
+      "CodeMaster.Vue/src/views/system/lang/detail.vue",
+      "CodeMaster.Vue/src/views/system/lang/edit.vue",
+      "CodeMaster.Vue/src/views/system/lang/text/add.vue",
+      "CodeMaster.Vue/src/views/system/lang/text/detail.vue",
+      "CodeMaster.Vue/src/views/system/lang/text/edit.vue",
+
+
+
+      "CodeMaster.Vue/src/views/system/menu/add.vue",
+      "CodeMaster.Vue/src/views/system/menu/detail.vue",
+      "CodeMaster.Vue/src/views/system/menu/edit.vue",
+      "CodeMaster.Vue/src/views/system/menu/index.vue",
+
+      "CodeMaster.Vue/src/views/system/post/add.vue",
+      "CodeMaster.Vue/src/views/system/post/detail.vue",
+      "CodeMaster.Vue/src/views/system/post/edit.vue",
+      "CodeMaster.Vue/src/views/system/post/index.vue",
+
+      "CodeMaster.Vue/src/views/system/role/add.vue",
+      "CodeMaster.Vue/src/views/system/role/detail.vue",
+      "CodeMaster.Vue/src/views/system/role/edit.vue",
+      "CodeMaster.Vue/src/views/system/role/index.vue",
+
+      "CodeMaster.Vue/src/views/system/tenant/add.vue",
+      "CodeMaster.Vue/src/views/system/tenant/detail.vue",
+      "CodeMaster.Vue/src/views/system/tenant/edit.vue",
+      "CodeMaster.Vue/src/views/system/tenant/index.vue",
+
+      "CodeMaster.Vue/src/views/system/user/add.vue",
+      "CodeMaster.Vue/src/views/system/user/detail.vue",
+      "CodeMaster.Vue/src/views/system/user/edit.vue",
+      "CodeMaster.Vue/src/views/system/user/index.vue",
+      "CodeMaster.Vue/index.html",
+      "CodeMaster.Vue/package.json",
+      "CodeMaster.Vue/vite.config.js",
+      "CodeMaster.Vue/.env.development",
+      "CodeMaster.Vue/.env.production"
+    ],
+    "root": [
+      ".gitignore",
+      "README.md"
+    ],
+    "sourcegenerator": [
+      "CodeMaster.SourceGenerator/CodeMaster.SourceGenerator.csproj",
+      "CodeMaster.SourceGenerator/DbContextGenerator.cs"
+    ]
+  }
+}

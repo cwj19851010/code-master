@@ -1,0 +1,257 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "append-to",
+      "Type": "CSSSelector, HTMLElement",
+      "TypeDescription": null,
+      "DefaultValue": "body",
+      "Description": "挂载到哪个 DOM 元素"
+    },
+    {
+      "Name": "show-arrow",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示箭头"
+    },
+    {
+      "Name": "placement",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "bottom",
+      "Description": "引导卡片相对于目标元素的位置"
+    },
+    {
+      "Name": "content-style",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "为content自定义样式"
+    },
+    {
+      "Name": "mask",
+      "Type": "Object",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否启用遮罩，通过自定义属性改变遮罩样式以及填充的颜色"
+    },
+    {
+      "Name": "gap",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "Object",
+      "Description": "遮罩和目标之间的透明的间距"
+    },
+    {
+      "Name": "type",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "default",
+      "Description": "类型，影响底色与文字颜色"
+    },
+    {
+      "Name": "model-value",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "打开引导"
+    },
+    {
+      "Name": "current",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "当前值"
+    },
+    {
+      "Name": "scroll-into-view-options",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "Object",
+      "Description": "是否支持当前元素滚动到视窗内，也可传入配置指定滚动视窗的相关参数"
+    },
+    {
+      "Name": "z-index",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "2001",
+      "Description": "Tour 的层级"
+    },
+    {
+      "Name": "show-close",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示关闭按钮"
+    },
+    {
+      "Name": "close-icon",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "自定义关闭图标，默认Close"
+    },
+    {
+      "Name": "close-on-press-escape",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否可以通过按下 ESC 关闭引导"
+    },
+    {
+      "Name": "target-area-clickable",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "启用蒙层时，target 元素区域是否可以点击。"
+    },
+    {
+      "Name": "target",
+      "Type": "Function",
+      "TypeDescription": "() => HTMLElement",
+      "DefaultValue": "—",
+      "Description": "获取引导卡片指向的元素， 为空时居中于屏幕。 自2.5.2以来支持字符串和函数类型。 字符串类型是文档.querySelector的选择器。"
+    },
+    {
+      "Name": "show-arrow",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示箭头"
+    },
+    {
+      "Name": "title",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "标题部分"
+    },
+    {
+      "Name": "description",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "主要描述部分"
+    },
+    {
+      "Name": "placement",
+      "Type": "enum",
+      "TypeDescription": "'top' \\| 'top-start' \\| 'top-end' \\| 'bottom' \\| 'bottom-start' \\| 'bottom-end' \\| 'left' \\| 'left-start' \\| 'left-end' \\| 'right' \\| 'right-start' \\| 'right-end'",
+      "DefaultValue": "bottom",
+      "Description": "引导卡片相对于目标元素的位置"
+    },
+    {
+      "Name": "content-style",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "为content自定义样式"
+    },
+    {
+      "Name": "mask",
+      "Type": "Object",
+      "TypeDescription": "{ style?: CSSProperties; color?: string; }",
+      "DefaultValue": "true",
+      "Description": "是否启用蒙层，也可传入配置改变蒙层样式和填充色"
+    },
+    {
+      "Name": "type",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "default",
+      "Description": "类型，影响底色与文字颜色"
+    },
+    {
+      "Name": "next-button-props",
+      "Type": "Object",
+      "TypeDescription": "{ children: VueNode \\| string; onClick: Function }",
+      "DefaultValue": "—",
+      "Description": "“下一步”按钮的属性"
+    },
+    {
+      "Name": "prev-button-props",
+      "Type": "Object",
+      "TypeDescription": "{ children: VueNode \\| string; onClick: Function }",
+      "DefaultValue": "—",
+      "Description": "“上一步”按钮的属性"
+    },
+    {
+      "Name": "scroll-into-view-options",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "是否支持当前元素滚动到视窗内，也可传入配置指定滚动视窗的相关参数，默认跟随 Tour 的 scrollIntoViewOptions 属性"
+    },
+    {
+      "Name": "show-close",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示关闭按钮"
+    },
+    {
+      "Name": "close-icon",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "自定义关闭图标，默认Close"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "tourStep 组件列表",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "indicators",
+      "Description": "自定义指示器, scope 参数是 { current, total }",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "default",
+      "Description": "主要描述部分",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "header",
+      "Description": "头部",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "close",
+      "Description": "关闭引导时的回调函数",
+      "Type": "Function",
+      "TypeDescription": "(current: number) => void"
+    },
+    {
+      "Name": "finish",
+      "Description": "引导完成时的回调",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "change",
+      "Description": "步骤改变时的回调",
+      "Type": "Function",
+      "TypeDescription": "(current: number) => void"
+    },
+    {
+      "Name": "close",
+      "Description": "关闭引导时的回调函数",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "tour",
+  "Link": "https://element-plus.org/zh-CN/component/tour",
+  "Tag": "tour",
+  "GroupName": "Data 数据展示"
+}

@@ -1,0 +1,43 @@
+@{
+    var clientDownloadUrl = ViewData["ClientDownloadUrl"] as string ?? "/download/client/windows/latest";
+    var clientDownloadVersion = ViewData["ClientDownloadVersion"] as string;
+    var clientDownloadFileName = ViewData["ClientDownloadFileName"] as string;
+    var clientDownloadSize = ViewData["ClientDownloadSize"] as string;
+    var clientDownloadPublishedAt = ViewData["ClientDownloadPublishedAt"] as string;
+    var clientVersionLabel = string.IsNullOrWhiteSpace(clientDownloadVersion) ? "等待上传最新版" : $"最新版 v{clientDownloadVersion}";
+    var clientVersionParts = new System.Collections.Generic.List<string> { clientVersionLabel };
+    if (!string.IsNullOrWhiteSpace(clientDownloadSize)) clientVersionParts.Add(clientDownloadSize);
+    if (!string.IsNullOrWhiteSpace(clientDownloadPublishedAt)) clientVersionParts.Add(clientDownloadPublishedAt);
+    var clientVersionMeta = string.Join(" · ", clientVersionParts);
+    ViewData["Title"] = "下载 CodeMaster - 客户端、源码和示例项目";
+    ViewData["Description"] = "下载 CodeMaster Windows 客户端、源码和示例项目，开始体验 .NET + Vue + MCP 代码生成工作流。";
+}
+
+<section class="page-hero">
+    <p class="eyebrow">Download</p>
+    <h1>下载 CodeMaster</h1>
+    <p>第一阶段建议先提供源码包、Windows 客户端安装包、示例项目和快速启动文档。正式发布时这里可以接 GitHub Releases。</p>
+</section>
+
+<section class="section download-list">
+    <article>
+        <h2>Windows Client</h2>
+        <p>Tauri + LocalAgent 客户端，用来加载 CodeMaster 前端并调用本地启动、路径、进程能力。</p>
+        <p class="download-meta">@clientVersionMeta</p>
+        @if (!string.IsNullOrWhiteSpace(clientDownloadFileName))
+        {
+            <p class="download-file">@clientDownloadFileName</p>
+        }
+        <a class="button primary" href="@clientDownloadUrl">下载 Windows 客户端</a>
+    </article>
+    <article>
+        <h2>Source Code</h2>
+        <p>包含 WebApi、Vue、Migrator、MCP Server、Client 和测试项目。</p>
+        <a class="button secondary" href="#">等待 GitHub 仓库</a>
+    </article>
+    <article>
+        <h2>Demo Project</h2>
+        <p>示例订单系统，用于验证初始化、全量生成、增量生成和启动流程。</p>
+        <a class="button secondary" href="#">等待示例包</a>
+    </article>
+</section>

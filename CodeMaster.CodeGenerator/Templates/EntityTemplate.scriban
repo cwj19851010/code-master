@@ -1,0 +1,10 @@
+namespace {{ entity.project_name }}.Domain.Entities.{{ entity.module_name }};
+
+/// <summary>
+/// {{ entity.description }}（用户自定义部分）
+/// </summary>
+public partial class {{ entity.name }}
+{
+    // 在此添加自定义属性、方法和业务逻辑
+    // 此文件仅在首次生成时创建，后续代码生成不会覆盖
+}

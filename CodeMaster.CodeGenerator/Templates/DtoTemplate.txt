@@ -1,0 +1,65 @@
+using CodeMaster.Core.Dtos;
+
+namespace CodeMaster.Application.Dtos.{{ module_name }};
+
+/// <summary>
+/// {{ description }}查询DTO
+/// </summary>
+public class {{ entity_name }}QueryDto : PagedQueryDto
+{
+{{~ for prop in properties ~}}
+{{~ if prop.name != "Id" && prop.name != "CreateTime" && prop.name != "UpdateTime" && prop.name != "CreateBy" && prop.name != "UpdateBy" && prop.name != "DelFlag" ~}}
+    /// <summary>
+    /// {{ prop.description }}
+    /// </summary>
+    public {{ prop.type }}? {{ prop.name }} { get; set; }
+
+{{~ end ~}}
+{{~ end ~}}
+}
+
+/// <summary>
+/// {{ description }}DTO
+/// </summary>
+public class {{ entity_name }}Dto : DtoBase
+{
+{{~ for prop in properties ~}}
+    /// <summary>
+    /// {{ prop.description }}
+    /// </summary>
+    public {{ prop.type }}{{ if prop.is_nullable }}?{{ end }} {{ prop.name }} { get; set; }
+
+{{~ end ~}}
+}
+
+/// <summary>
+/// 创建{{ description }}DTO
+/// </summary>
+public class Create{{ entity_name }}Dto : CreateDtoBase
+{
+{{~ for prop in properties ~}}
+{{~ if prop.name != "Id" && prop.name != "CreateTime" && prop.name != "UpdateTime" && prop.name != "CreateBy" && prop.name != "UpdateBy" && prop.name != "DelFlag" ~}}
+    /// <summary>
+    /// {{ prop.description }}
+    /// </summary>
+    public {{ prop.type }}{{ if prop.is_nullable }}?{{ end }} {{ prop.name }} { get; set; }
+
+{{~ end ~}}
+{{~ end ~}}
+}
+
+/// <summary>
+/// 更新{{ description }}DTO
+/// </summary>
+public class Update{{ entity_name }}Dto : UpdateDtoBase
+{
+{{~ for prop in properties ~}}
+{{~ if prop.name != "Id" && prop.name != "CreateTime" && prop.name != "UpdateTime" && prop.name != "CreateBy" && prop.name != "UpdateBy" && prop.name != "DelFlag" ~}}
+    /// <summary>
+    /// {{ prop.description }}
+    /// </summary>
+    public {{ prop.type }}{{ if prop.is_nullable }}?{{ end }} {{ prop.name }} { get; set; }
+
+{{~ end ~}}
+{{~ end ~}}
+}

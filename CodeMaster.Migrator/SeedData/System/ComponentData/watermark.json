@@ -1,0 +1,130 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "width",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "120",
+      "Description": "水印的宽度， content 的默认值是它自己的宽度"
+    },
+    {
+      "Name": "height",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "64",
+      "Description": "水印的高度， content 的默认值是它自己的高度"
+    },
+    {
+      "Name": "rotate",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "-22",
+      "Description": "水印的旋转角度, 单位 °"
+    },
+    {
+      "Name": "zIndex",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "9",
+      "Description": "水印元素的z-index值"
+    },
+    {
+      "Name": "image",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "水印图片，建议使用 2x 或 3x 图像"
+    },
+    {
+      "Name": "content",
+      "Type": "string, object",
+      "TypeDescription": "string[]",
+      "DefaultValue": "—",
+      "Description": "水印文本内容"
+    },
+    {
+      "Name": "font",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "字体",
+      "Description": "文字样式"
+    },
+    {
+      "Name": "gap",
+      "Type": "object",
+      "TypeDescription": "[number, number]",
+      "DefaultValue": "[100, 100]",
+      "Description": "水印之间的间距"
+    },
+    {
+      "Name": "offset",
+      "Type": "object",
+      "TypeDescription": "[number, number]",
+      "DefaultValue": "[gap[0]/2, gap[1]/2]",
+      "Description": "水印从容器左上角的偏移 默认值为 gap/2"
+    },
+    {
+      "Name": "color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "rgba(0,0,0,.15)",
+      "Description": "字体颜色"
+    },
+    {
+      "Name": "fontSize",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "16",
+      "Description": "字体大小"
+    },
+    {
+      "Name": "fontWeight",
+      "Type": "enum",
+      "TypeDescription": "'normal' | 'light' | 'weight' | number",
+      "DefaultValue": "normal",
+      "Description": "字重"
+    },
+    {
+      "Name": "fontFamily",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "sans-serif",
+      "Description": "字体"
+    },
+    {
+      "Name": "fontStyle",
+      "Type": "enum",
+      "TypeDescription": "'none' | 'normal' | 'italic' | 'oblique'",
+      "DefaultValue": "normal",
+      "Description": "字体样式"
+    },
+    {
+      "Name": "textAlign",
+      "Type": "enum",
+      "TypeDescription": "'left' | 'right' | 'center' | 'start' | 'end'",
+      "DefaultValue": "center",
+      "Description": "文本对齐"
+    },
+    {
+      "Name": "textBaseline",
+      "Type": "enum",
+      "TypeDescription": "'top' | 'hanging' | 'middle' | 'alphabetic' | 'ideographic' | 'bottom'",
+      "DefaultValue": "hanging",
+      "Description": "文本基线"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "默认",
+      "Description": "添加水印的容器",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "watermark",
+  "Link": "https://element-plus.org/zh-CN/component/watermark",
+  "Tag": "watermark",
+  "GroupName": "Others 其他"
+}

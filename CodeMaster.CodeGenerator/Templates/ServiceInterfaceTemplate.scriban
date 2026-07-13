@@ -1,0 +1,18 @@
+using {{ entity.project_name }}.Core.Services;
+using {{ entity.project_name }}.Application.Dtos.{{ entity.module_name }};
+using {{ entity.project_name }}.Domain.Entities.{{ entity.module_name }};
+
+namespace {{ entity.project_name }}.Application.Services.{{ entity.module_name }};
+
+/// <summary>
+/// {{ entity.description }}服务接口
+/// </summary>
+{{~ if entity.is_read_only ~}}
+public interface I{{ entity.name }}Service : IReadOnlyApplicationService<{{ entity.name }}, {{ entity.name }}Dto>
+{{~ else if entity.is_tree ~}}
+public interface I{{ entity.name }}Service : ITreeApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto, Create{{ entity.name }}Dto, Update{{ entity.name }}Dto>, IApplicationService
+{{~ else ~}}
+public interface I{{ entity.name }}Service : ICrudApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto, Create{{ entity.name }}Dto, Update{{ entity.name }}Dto>, IApplicationService
+{{~ end ~}}
+{
+}

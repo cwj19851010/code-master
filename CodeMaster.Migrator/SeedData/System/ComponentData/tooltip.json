@@ -1,0 +1,242 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "append-to",
+      "Type": "CSSSelector, HTMLElement",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "指示 Tooltip 的内容将附加在哪一个网页元素上"
+    },
+    {
+      "Name": "effect",
+      "Type": "enum",
+      "TypeDescription": "'dark' | 'light'",
+      "DefaultValue": "dark",
+      "Description": "Tooltip 主题，内置了 dark / light 两种"
+    },
+    {
+      "Name": "content",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "显示的内容，也可被 slot#content 覆盖"
+    },
+    {
+      "Name": "raw-content",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "content 中的内容是否作为 HTML 字符串处理"
+    },
+    {
+      "Name": "placement",
+      "Type": "enum",
+      "TypeDescription": "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'",
+      "DefaultValue": "bottom",
+      "Description": "Tooltip 组件出现的位置"
+    },
+    {
+      "Name": "fallback-placements",
+      "Type": "array",
+      "TypeDescription": "Placement[]",
+      "DefaultValue": "—",
+      "Description": "Tooltip 可用的 positions 请查看popper.js 文档"
+    },
+    {
+      "Name": "visible",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "Tooltip 组件可见性"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "Tooltip 组件是否禁用"
+    },
+    {
+      "Name": "offset",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "12",
+      "Description": "出现位置的偏移量"
+    },
+    {
+      "Name": "transition",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "动画名称"
+    },
+    {
+      "Name": "popper-options",
+      "Type": "object",
+      "TypeDescription": null,
+      "DefaultValue": "{}",
+      "Description": "popper.js\n 参数"
+    },
+    {
+      "Name": "arrow-offset",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "5",
+      "Description": "控制Tooltip的箭头相对于弹出窗口的偏移(添加)。"
+    },
+    {
+      "Name": "show-after",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "在触发后多久显示内容，单位毫秒"
+    },
+    {
+      "Name": "show-arrow",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "tooltip 的内容是否有箭头"
+    },
+    {
+      "Name": "hide-after",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "200",
+      "Description": "延迟关闭，单位毫秒"
+    },
+    {
+      "Name": "auto-close",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "tooltip 出现后自动隐藏延时，单位毫秒"
+    },
+    {
+      "Name": "popper-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "为 Tooltip 的 popper 添加类名"
+    },
+    {
+      "Name": "enterable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "鼠标是否可进入到 tooltip 中"
+    },
+    {
+      "Name": "teleported",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否使用 teleport。设置成 true则会被追加到 append-to 的位置"
+    },
+    {
+      "Name": "trigger",
+      "Type": "enum",
+      "TypeDescription": "'hover' | 'click' | 'focus' | 'contextmenu'",
+      "DefaultValue": "hover",
+      "Description": "如何触发 Tooltip"
+    },
+    {
+      "Name": "virtual-triggering",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "用来标识虚拟触发是否被启用"
+    },
+    {
+      "Name": "virtual-ref",
+      "Type": "HTMLElement",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "标识虚拟触发时的触发元素"
+    },
+    {
+      "Name": "trigger-keys",
+      "Type": "Array",
+      "TypeDescription": null,
+      "DefaultValue": "['Enter','Space']",
+      "Description": "当鼠标点击或者聚焦在触发元素上时， 可以定义一组键盘按键并且通过它们来控制 Tooltip 的显示"
+    },
+    {
+      "Name": "persistent",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "当 tooltip 组件长时间不触发且 persistent 属性设置为 false 时, popconfirm 将会被删除"
+    },
+    {
+      "Name": "aria-label",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "和 aria-label 属性保持一致"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "Tooltip 触发 & 引用的元素",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "content",
+      "Description": "自定义内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [
+    {
+      "Name": "popperRef",
+      "Description": "el-popper 组件实例",
+      "Type": "object",
+      "TypeDescription": "Ref<PopperInstance | undefined>"
+    },
+    {
+      "Name": "contentRef",
+      "Description": "el-tooltip-content 组件实例",
+      "Type": "object",
+      "TypeDescription": "Ref<TooltipContentInstance | undefined>"
+    },
+    {
+      "Name": "isFocusInsideContent",
+      "Description": "验证当前焦点事件是否在 el-tooltip-content 中触发",
+      "Type": "Function",
+      "TypeDescription": "() => boolean | undefined"
+    },
+    {
+      "Name": "updatePopper",
+      "Description": "更新 el-popper组件实例",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "onOpen",
+      "Description": "onOpen 方法控制 el-tooltip 显示状态",
+      "Type": "Function",
+      "TypeDescription": "(event?: Event | undefined) => void"
+    },
+    {
+      "Name": "onClose",
+      "Description": "onClose 方法控制 el-tooltip 显示状态",
+      "Type": "Function",
+      "TypeDescription": "(event?: Event | undefined) => void"
+    },
+    {
+      "Name": "hide",
+      "Description": "提供 hide 方法",
+      "Type": "Function",
+      "TypeDescription": "(event?: Event | undefined) => void"
+    }
+  ],
+  "Name": "tooltip",
+  "Link": "https://element-plus.org/zh-CN/component/tooltip",
+  "Tag": "tooltip",
+  "GroupName": "Feedback 反馈组件"
+}

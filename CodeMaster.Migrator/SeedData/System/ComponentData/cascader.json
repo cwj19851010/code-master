@@ -1,0 +1,338 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "string, number, object",
+      "TypeDescription": "string[] | number[] | any",
+      "DefaultValue": "—",
+      "Description": "选中项绑定值"
+    },
+    {
+      "Name": "options",
+      "Type": "object",
+      "TypeDescription": "Record<string, unknown>[]",
+      "DefaultValue": "—",
+      "Description": "选项的数据源， value 和 label 可以通过 CascaderProps 自定义."
+    },
+    {
+      "Name": "props",
+      "Type": "object",
+      "TypeDescription": "CascaderProps",
+      "DefaultValue": "—",
+      "Description": "配置选项, 请参阅下面 CascaderProps 表。"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'large' | 'default' | 'small'",
+      "DefaultValue": "—",
+      "Description": "尺寸"
+    },
+    {
+      "Name": "placeholder",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "输入框占位文本"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "是否禁用"
+    },
+    {
+      "Name": "clearable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "是否支持清空选项"
+    },
+    {
+      "Name": "show-all-levels",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "输入框中是否显示选中值的完整路径"
+    },
+    {
+      "Name": "collapse-tags",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "多选模式下是否折叠Tag"
+    },
+    {
+      "Name": "collapse-tags-tooltip",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "当鼠标悬停于折叠标签的文本时，是否显示所有选中的标签。 要使用此属性，collapse-tags属性必须设定为 true"
+    },
+    {
+      "Name": "max-collapse-tags-tooltip-height",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "collapse tags 的最大高度"
+    },
+    {
+      "Name": "separator",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "' / '",
+      "Description": "用于分隔选项的字符"
+    },
+    {
+      "Name": "filterable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "该选项是否可以被搜索"
+    },
+    {
+      "Name": "filter-method",
+      "Type": "Function",
+      "TypeDescription": "(node: CascaderNode, keyword: string) => boolean",
+      "DefaultValue": "—",
+      "Description": "自定义搜索逻辑，第一个参数是node，第二个参数是keyword，返回的布尔值表示是否保留该选项"
+    },
+    {
+      "Name": "debounce",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "300",
+      "Description": "搜索关键词正在输入时的去抖延迟，单位为毫秒"
+    },
+    {
+      "Name": "before-filter",
+      "Type": "Function",
+      "TypeDescription": "(value: string) => boolean",
+      "DefaultValue": "—",
+      "Description": "过滤函数调用前，所要调用的钩子函数，该函数接收要过滤的值作为参数。 如果该函数的返回值是 false 或者是一个被拒绝的 Promise，那么接下来的过滤逻辑便不会执行。"
+    },
+    {
+      "Name": "popper-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "弹出内容的自定义类名"
+    },
+    {
+      "Name": "teleported",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "弹层是否使用 teleport"
+    },
+    {
+      "Name": "effect",
+      "Type": "enum, string",
+      "TypeDescription": "'dark' | 'light'",
+      "DefaultValue": "light",
+      "Description": "tooltip 主题，内置了 dark / light 两种"
+    },
+    {
+      "Name": "tag-type",
+      "Type": "enum",
+      "TypeDescription": "'success' | 'info' | 'warning' | 'danger'",
+      "DefaultValue": "info",
+      "Description": "标签类型"
+    },
+    {
+      "Name": "tag-effect",
+      "Type": "enum",
+      "TypeDescription": "'light' | 'dark' | 'plain'",
+      "DefaultValue": "light",
+      "Description": "tag effect"
+    },
+    {
+      "Name": "validate-event",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "输入时是否触发表单的校验"
+    },
+    {
+      "Name": "max-collapse-tags",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "1",
+      "Description": "需要显示的 Tag 的最大数量 只有当 collapse-tags 设置为 true 时才会生效。"
+    },
+    {
+      "Name": "empty-values",
+      "Type": "array",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "组件的空值配置 参考config-provider"
+    },
+    {
+      "Name": "value-on-clear",
+      "Type": "string, number, boolean, Function",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "清空选项的值 参考 config-provider"
+    },
+    {
+      "Name": "persistent",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "当下拉框未被激活并且persistent设置为false，下拉框容器会被删除。"
+    },
+    {
+      "Name": "fallback-placements",
+      "Type": "arrary",
+      "TypeDescription": "Placement[]",
+      "DefaultValue": "—",
+      "Description": "Tooltip 可用的 positions 请查看popper.js 文档"
+    },
+    {
+      "Name": "placement",
+      "Type": "enum",
+      "TypeDescription": "'top' | 'top-start' | 'top-end' | 'bottom' | 'bottom-start' | 'bottom-end' | 'left' | 'left-start' | 'left-end' | 'right' | 'right-start' | 'right-end'",
+      "DefaultValue": "bottom-start",
+      "Description": "下拉框出现的位置"
+    },
+    {
+      "Name": "popper-append-to-body",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否将弹出的内容直接插入到 body 元素。 在弹出内容的边框定位出现问题时，可将该属性设置为 false"
+    },
+    {
+      "Name": "show-checked-strategy",
+      "Type": "enum",
+      "TypeDescription": "'parent' | 'child'",
+      "DefaultValue": "child",
+      "Description": "多选模式下已选节点的展示策略。 当你想让显示更简洁时，使用 parent。 当你想显示每个子项时，使用 child。"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义备选项的节点内容，分别为当前节点的 Node 对象和数据",
+      "Type": "object",
+      "TypeDescription": "{ node: any, data: any }"
+    },
+    {
+      "Name": "empty",
+      "Description": "无匹配选项时的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "prefix",
+      "Description": "输入框头部内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "suggestion-item",
+      "Description": "搜索时自定义建议项内容",
+      "Type": "object",
+      "TypeDescription": "{ item: CascaderNode }"
+    },
+    {
+      "Name": "tag",
+      "Description": "自定义tag样式",
+      "Type": "object",
+      "TypeDescription": "{ data: Tag[], deleteTag: (tag: Tag) => void }"
+    },
+    {
+      "Name": "header",
+      "Description": "下拉列表顶部的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "footer",
+      "Description": "下拉列表底部的内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "当绑定值变化时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "(value: CascaderValue) => void"
+    },
+    {
+      "Name": "expand-change",
+      "Description": "当展开节点发生变化时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: CascaderValue) => void"
+    },
+    {
+      "Name": "blur",
+      "Description": "当失去焦点时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: FocusEvent) => void"
+    },
+    {
+      "Name": "focus",
+      "Description": "当获得焦点时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: FocusEvent) => void"
+    },
+    {
+      "Name": "clear",
+      "Description": "可清空的单选模式下用户点击清空按钮时触发",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "visible-change",
+      "Description": "下拉框出现/隐藏时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: boolean) => void"
+    },
+    {
+      "Name": "remove-tag",
+      "Description": "在多选模式下，移除Tag时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: CascaderNode['valueByOption']) => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "getCheckedNodes",
+      "Description": "获取一个当前选中节点的数组。(仅仅是传单) 是否只返回叶选中的节点，默认是 false",
+      "Type": "Function",
+      "TypeDescription": "(leafOnly: boolean) => CascaderNode[] | undefined"
+    },
+    {
+      "Name": "cascaderPanelRef",
+      "Description": "cascader 面板的 ref",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<any>"
+    },
+    {
+      "Name": "togglePopperVisible",
+      "Description": "切换 popper 可见状态",
+      "Type": "Function",
+      "TypeDescription": "(visible?: boolean) => void"
+    },
+    {
+      "Name": "contentRef",
+      "Description": "cascader 内容的 ref",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<any>"
+    },
+    {
+      "Name": "presentText",
+      "Description": "选中的内容文本",
+      "Type": "object",
+      "TypeDescription": "ComputedRef<string>"
+    }
+  ],
+  "Name": "cascader",
+  "Link": "https://element-plus.org/zh-CN/component/cascader",
+  "Tag": "cascader",
+  "GroupName": "Form 表单组件"
+}

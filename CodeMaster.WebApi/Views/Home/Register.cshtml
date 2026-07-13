@@ -1,0 +1,70 @@
+@{
+    ViewData["Title"] = "注册 CodeMaster 账号";
+    ViewData["Description"] = "使用邮箱验证码注册 CodeMaster 账号，或通过 GitHub 登录并绑定到同一套 CodeMaster 用户体系。";
+}
+
+<section class="auth-page">
+    <div class="auth-copy">
+        <p class="eyebrow">Account</p>
+        <h1>加入 CodeMaster</h1>
+        <p>邮箱注册和 GitHub 登录都会绑定到同一个 CodeMaster 用户体系。后续论坛、下载、反馈和后台权限都复用这套账号。</p>
+        <ul>
+            <li>邮箱验证码注册</li>
+            <li>GitHub OAuth 登录</li>
+            <li>论坛账号天然复用</li>
+        </ul>
+    </div>
+    <form class="auth-form" id="registerForm">
+        <label>邮箱<input type="email" name="email" required placeholder="you@example.com" /></label>
+        <button class="button secondary" type="button" id="sendCode">发送验证码</button>
+        <label>验证码<input name="code" required maxlength="6" placeholder="6 位验证码" /></label>
+        <label>昵称<input name="nickName" placeholder="你的昵称" /></label>
+        <label>密码<input type="password" name="password" required minlength="6" placeholder="至少 6 位" /></label>
+        <button class="button primary" type="submit">注册并登录</button>
+        <a class="button github" id="githubLogin" href="/api/account/github/login">使用 GitHub 登录</a>
+        <p class="form-message" id="formMessage"></p>
+    </form>
+</section>
+
+@section Scripts {
+<script>
+const form = document.getElementById('registerForm')
+const message = document.getElementById('formMessage')
+const githubLogin = document.getElementById('githubLogin')
+githubLogin.href = new URL('/api/account/github/login', window.location.origin).toString()
+document.getElementById('sendCode').addEventListener('click', async () => {
+  const email = form.email.value
+  message.textContent = '正在发送验证码...'
+  const response = await fetch('/api/account/send-register-code', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, purpose: 'register' })
+  })
+  const result = await response.json()
+  message.textContent = response.ok ? '验证码已发送，请查看邮箱。开发环境可能会输出到后端日志。' : result.message
+})
+form.addEventListener('submit', async (event) => {
+  event.preventDefault()
+  message.textContent = '正在创建账号...'
+  const response = await fetch('/api/account/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email: form.email.value,
+      code: form.code.value,
+      nickName: form.nickName.value,
+      password: form.password.value
+    })
+  })
+  const result = await response.json()
+  if (!response.ok || result.code !== 200) {
+    message.textContent = result.message || '注册失败'
+    return
+  }
+  localStorage.setItem('Admin-Token', result.data.accessToken)
+  localStorage.setItem('access_token', result.data.accessToken)
+  localStorage.setItem('token', result.data.accessToken)
+  window.location.href = '/index.html#/login?registered=success'
+})
+</script>
+}

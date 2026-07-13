@@ -1,0 +1,11 @@
+using CodeMaster.Core.Services;
+using CodeMaster.Application.Dtos.{{ module_name }};
+
+namespace CodeMaster.Application.Services.{{ module_name }};
+
+/// <summary>
+/// {{ description }}服务接口
+/// </summary>
+public interface I{{ entity_name }}Service : ICrudService<{{ entity_name }}Dto, Create{{ entity_name }}Dto, Update{{ entity_name }}Dto, {{ entity_name }}QueryDto>
+{
+}

@@ -1,0 +1,25 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "height",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "60px",
+      "Description": "顶栏高度"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "header",
+  "Link": "https://element-plus.org/zh-CN/component/container",
+  "Tag": "header",
+  "GroupName": "Basic 基础组件"
+}

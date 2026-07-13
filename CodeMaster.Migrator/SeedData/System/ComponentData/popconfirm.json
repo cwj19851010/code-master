@@ -1,0 +1,121 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "title",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "标题"
+    },
+    {
+      "Name": "confirm-button-text",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "确认按钮文字"
+    },
+    {
+      "Name": "cancel-button-text",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "取消按钮文字"
+    },
+    {
+      "Name": "confirm-button-type",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "primary",
+      "Description": "确认按钮类型"
+    },
+    {
+      "Name": "cancel-button-type",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "text",
+      "Description": "取消按钮类型"
+    },
+    {
+      "Name": "icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "QuestionFilled",
+      "Description": "自定义图标"
+    },
+    {
+      "Name": "icon-color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "#f90",
+      "Description": "Icon 颜色"
+    },
+    {
+      "Name": "hide-icon",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否隐藏 Icon"
+    },
+    {
+      "Name": "hide-after",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "200",
+      "Description": "关闭时的延迟"
+    },
+    {
+      "Name": "teleported",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否将 popover 的下拉列表插入至 body 元素"
+    },
+    {
+      "Name": "persistent",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "当 popover 组件长时间不触发且 persistent 属性设置为 false 时, popover 将会被删除"
+    },
+    {
+      "Name": "width",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "150",
+      "Description": "弹层宽度，最小宽度 150px"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "reference",
+      "Description": "触发 Popconfirm 显示的 HTML 元素",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "actions",
+      "Description": "页脚的内容",
+      "Type": "object",
+      "TypeDescription": "{ confirm: (e: MouseEvent) => void, cancel: (e: MouseEvent) => void }"
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "confirm",
+      "Description": "点击确认按钮时触发",
+      "Type": "Function",
+      "TypeDescription": "(e: MouseEvent) => void"
+    },
+    {
+      "Name": "cancel",
+      "Description": "点击取消按钮时触发",
+      "Type": "Function",
+      "TypeDescription": "(e: MouseEvent) => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "popconfirm",
+  "Link": "https://element-plus.org/zh-CN/component/popconfirm",
+  "Tag": "popconfirm",
+  "GroupName": "Feedback 反馈组件"
+}

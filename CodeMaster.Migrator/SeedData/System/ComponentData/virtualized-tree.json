@@ -1,0 +1,346 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "data",
+      "Type": "object",
+      "TypeDescription": "Array<{[key: string]: any}>",
+      "DefaultValue": "—",
+      "Description": "展示数据"
+    },
+    {
+      "Name": "empty-text",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "内容为空的时候展示的文本"
+    },
+    {
+      "Name": "props",
+      "Type": "object",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "配置选项，具体看下表"
+    },
+    {
+      "Name": "highlight-current",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否高亮当前选中节点"
+    },
+    {
+      "Name": "expand-on-click-node",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否在点击节点的时候展开或者收缩节点， 默认值为 true，如果为 false，则只有点箭头图标的时候才会展开或者收缩节点"
+    },
+    {
+      "Name": "check-on-click-node",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否在点击节点的时候选中节点，默认值为 false，即只有在点击复选框时才会选中节点"
+    },
+    {
+      "Name": "check-on-click-leaf",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "点击叶节点(最后一个子节点)时是否检查或取消节点"
+    },
+    {
+      "Name": "default-expanded-keys",
+      "Type": "object",
+      "TypeDescription": "Array<string | number>",
+      "DefaultValue": "—",
+      "Description": "默认展开的节点的 key 的数组"
+    },
+    {
+      "Name": "show-checkbox",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "节点是否可被选择"
+    },
+    {
+      "Name": "check-strictly",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "在显示复选框的情况下，是否严格的遵循父子不互相关联的做法，默认为 false"
+    },
+    {
+      "Name": "default-checked-keys",
+      "Type": "object",
+      "TypeDescription": "Array<string | number>",
+      "DefaultValue": "—",
+      "Description": "默认勾选的节点的 key 的数组"
+    },
+    {
+      "Name": "current-node-key",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "当前选中的节点"
+    },
+    {
+      "Name": "filter-method",
+      "Type": "Function",
+      "TypeDescription": "(query: string, data: TreeNodeData, node: TreeNode) => boolean",
+      "DefaultValue": "—",
+      "Description": "对树节点进行筛选时执行的方法，返回 true 表示这个节点可以显示， 返回 false 则表示这个节点会被隐藏"
+    },
+    {
+      "Name": "indent",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "16",
+      "Description": "相邻级节点间的水平缩进，单位为像素"
+    },
+    {
+      "Name": "icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "自定义树节点图标组件"
+    },
+    {
+      "Name": "item-size",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "26",
+      "Description": "自定义树节点的高度"
+    },
+    {
+      "Name": "scrollbar-always-on",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "总是显示滚动条"
+    },
+    {
+      "Name": "value",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "id",
+      "Description": "每个树节点用来作为唯一标识的属性，在整棵树中应该是唯一的"
+    },
+    {
+      "Name": "label",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "label",
+      "Description": "指定节点标签为节点对象的某个属性值"
+    },
+    {
+      "Name": "children",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "children",
+      "Description": "指定子树为节点对象的某个属性值"
+    },
+    {
+      "Name": "disabled",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "disabled",
+      "Description": "指定节点选择框是否禁用为节点对象的某个属性值"
+    },
+    {
+      "Name": "class",
+      "Type": "string, Function",
+      "TypeDescription": "(data: TreeNodeData, node: TreeNode) => string | {[key: string]: boolean}",
+      "DefaultValue": "—",
+      "Description": "自定义节点类名"
+    },
+    {
+      "Name": "filter",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "对树节点进行筛选操作"
+    },
+    {
+      "Name": "getCheckedNodes",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "若节点可被选择（即show-checkbox为 true），则返回目前被选中的节点所组成的数组"
+    },
+    {
+      "Name": "getCheckedKeys",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "若节点可被选择（即 show-checkbox 为 true），则返回目前被选中的节点的 key 所组成的数组"
+    },
+    {
+      "Name": "setCheckedKeys",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "通过 keys 设置目前勾选的节点"
+    },
+    {
+      "Name": "setChecked",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "通过 key 设置某个节点的勾选状态"
+    },
+    {
+      "Name": "setExpandedKeys",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "设置当前展开的节点"
+    },
+    {
+      "Name": "getHalfCheckedNodes",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "如果节点可用被选中 (show-checkbox 为 true), 它将返回当前半选中的节点组成的数组"
+    },
+    {
+      "Name": "getHalfCheckedKeys",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "若节点可被选中(show-checkbox 为 true)，则返回目前半选中的节点的 key 所组成的数组"
+    },
+    {
+      "Name": "getCurrentKey",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "获取当前被选中节点的 key，若没有节点被选中则返回 undefined"
+    },
+    {
+      "Name": "getCurrentNode",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "获取当前被选中节点的 data，若没有节点被选中则返回 undefined"
+    },
+    {
+      "Name": "setCurrentKey",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "通过 key 设置某个节点的当前选中状态"
+    },
+    {
+      "Name": "getNode",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "通过 key 或 data 获取节点"
+    },
+    {
+      "Name": "expandNode",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "展开指定节点"
+    },
+    {
+      "Name": "collapseNode",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "折叠指定节点"
+    },
+    {
+      "Name": "setData",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "当数据量非常庞大的时候，总是使用响应式数据将导致性能表现不佳，所以我们提供一种显式设置的方式来避免此种情况"
+    },
+    {
+      "Name": "scrollTo",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "滚动到给定位置"
+    },
+    {
+      "Name": "scrollToNode",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": null,
+      "Description": "使用给定的滚动策略滚动至指定位置"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "-",
+      "Description": "自定义树节点的内容。 作用域参数为 { node: TreeNode, data: TreeNodeData }",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "empty",
+      "Description": "当数据为空时自定义的内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "node-click",
+      "Description": "当节点被点击的时候触发",
+      "Type": "",
+      "TypeDescription": null
+    },
+    {
+      "Name": "node-drop",
+      "Description": "拖放到节点时触发器",
+      "Type": "",
+      "TypeDescription": null
+    },
+    {
+      "Name": "node-contextmenu",
+      "Description": "当节点被鼠标右键点击时会触发该事件",
+      "Type": "",
+      "TypeDescription": null
+    },
+    {
+      "Name": "check-change",
+      "Description": "节点选中状态发生变化时的回调",
+      "Type": "",
+      "TypeDescription": null
+    },
+    {
+      "Name": "check",
+      "Description": "当复选框被点击的时候触发",
+      "Type": "",
+      "TypeDescription": null
+    },
+    {
+      "Name": "current-change",
+      "Description": "当前选中节点变化时触发的事件",
+      "Type": "",
+      "TypeDescription": null
+    },
+    {
+      "Name": "node-expand",
+      "Description": "节点被展开时触发的事件",
+      "Type": "",
+      "TypeDescription": null
+    },
+    {
+      "Name": "node-collapse",
+      "Description": "节点被收起时触发的事件",
+      "Type": "",
+      "TypeDescription": null
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "VirtualizedTree",
+  "Link": "https://element-plus.org/zh-CN/component/tree-v2",
+  "Tag": "tree-v2",
+  "GroupName": "Data 数据展示"
+}

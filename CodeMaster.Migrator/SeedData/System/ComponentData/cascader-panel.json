@@ -1,0 +1,173 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "string, number, object",
+      "TypeDescription": "string[] | number[] | any",
+      "DefaultValue": "—",
+      "Description": "选中项绑定值"
+    },
+    {
+      "Name": "options",
+      "Type": "object",
+      "TypeDescription": "Record<string, unknown>[]",
+      "DefaultValue": "—",
+      "Description": "选项的数据源， value 和 label 可以通过 CascaderProps 自定义."
+    },
+    {
+      "Name": "props",
+      "Type": "object",
+      "TypeDescription": "CascaderProps",
+      "DefaultValue": "—",
+      "Description": "配置选项, 请参阅下面 CascaderProps 表。"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "下级节点的自定义内容，它们分别是当前节点对象和节点数据。",
+      "Type": "object",
+      "TypeDescription": "{ node: any, data: any }"
+    },
+    {
+      "Name": "empty",
+      "Description": "没有数据时面板的内容。",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "当选中节点变化时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: CascaderValue | undefined) => void"
+    },
+    {
+      "Name": "update:modelValue",
+      "Description": "当绑定值变化时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "(value: CascaderValue | undefined) => void"
+    },
+    {
+      "Name": "expand-change",
+      "Description": "当展开节点发生变化时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: CascaderNodePathValue) => void"
+    },
+    {
+      "Name": "close",
+      "Description": "面板的关闭事件，提供给 Cascader 以便做更好的判断。",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "getCheckedNodes",
+      "Description": "获取一个当前选中节点的数组。(仅仅是传单) 是否只返回叶选中的节点，默认是 false",
+      "Type": "Function",
+      "TypeDescription": "(leafOnly: boolean) => CascaderNode[] | undefined"
+    },
+    {
+      "Name": "clearCheckedNodes",
+      "Description": "清空选中的节点",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "expandTrigger",
+      "Description": "次级菜单的展开方式",
+      "Type": "enum",
+      "TypeDescription": "'click' | 'hover'"
+    },
+    {
+      "Name": "multiple",
+      "Description": "是否多选",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "checkStrictly",
+      "Description": "是否严格的遵守父子节点不互相关联",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "emitPath",
+      "Description": "在选中节点改变时，是否返回由该节点所在的各级菜单的值所组成的数组，若设置 false，则只返回该节点的值",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "lazy",
+      "Description": "是否动态加载子节点，需与 lazyLoad 方法结合使用",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "lazyLoad",
+      "Description": "加载动态数据的方法，仅在 lazy 为 true 时有效",
+      "Type": "Function",
+      "TypeDescription": "(node: Node, resolve: Resolve) => void"
+    },
+    {
+      "Name": "value",
+      "Description": "指定选项的值为选项对象的某个属性值",
+      "Type": "string",
+      "TypeDescription": null
+    },
+    {
+      "Name": "label",
+      "Description": "指定选项标签为选项对象的某个属性值",
+      "Type": "string",
+      "TypeDescription": null
+    },
+    {
+      "Name": "children",
+      "Description": "指定选项的子选项为选项对象的某个属性值",
+      "Type": "string",
+      "TypeDescription": null
+    },
+    {
+      "Name": "disabled",
+      "Description": "指定选项的禁用为选项对象的某个属性值",
+      "Type": "string",
+      "TypeDescription": null
+    },
+    {
+      "Name": "leaf",
+      "Description": "指定选项的叶子节点的标志位为选项对象的某个属性值",
+      "Type": "string",
+      "TypeDescription": null
+    },
+    {
+      "Name": "hoverThreshold",
+      "Description": "hover 时展开菜单的灵敏度阈值",
+      "Type": "number",
+      "TypeDescription": null
+    },
+    {
+      "Name": "checkOnClickNode",
+      "Description": "点击节点时是否选中或取消选中该节点",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "checkOnClickLeaf",
+      "Description": "点击叶子节点（最后一级子节点）时，是否选中或取消选中该节点",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "showPrefix",
+      "Description": "是否显示单选框或复选框的前缀（图标）",
+      "Type": "boolean",
+      "TypeDescription": null
+    }
+  ],
+  "Name": "cascader-panel",
+  "Link": "https://element-plus.org/zh-CN/component/cascader",
+  "Tag": "cascader-panel",
+  "GroupName": "Form 表单组件"
+}

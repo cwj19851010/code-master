@@ -1,0 +1,151 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "string, number, boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中项绑定值"
+    },
+    {
+      "Name": "value",
+      "Type": "string, number, boolean, object",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中状态的值（只有在checkbox-group或者绑定对象类型为array时有效）"
+    },
+    {
+      "Name": "label",
+      "Type": "string, number, boolean, object",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中状态的值，只有在绑定对象类型为 array 时有效。 如果没有 value， label则作为value使用"
+    },
+    {
+      "Name": "true-value",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中时的值"
+    },
+    {
+      "Name": "false-value",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "没有选中时的值"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用"
+    },
+    {
+      "Name": "border",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示边框"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'large' | 'default' | 'small'",
+      "DefaultValue": "—",
+      "Description": "Checkbox 的尺寸"
+    },
+    {
+      "Name": "name",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生 name 属性"
+    },
+    {
+      "Name": "checked",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "当前是否勾选"
+    },
+    {
+      "Name": "indeterminate",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "设置不确定状态，仅负责样式控制"
+    },
+    {
+      "Name": "validate-event",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "输入时是否触发表单的校验"
+    },
+    {
+      "Name": "tabindex",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "输入框的 tabindex"
+    },
+    {
+      "Name": "id",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "input id"
+    },
+    {
+      "Name": "aria-controlsa11y",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "与 aria-control\n一致, 当 indeterminate为 true时生效"
+    },
+    {
+      "Name": "true-label",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "选中时的值"
+    },
+    {
+      "Name": "false-label",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "没有选中时的值"
+    },
+    {
+      "Name": "controlsa11y",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "和 aria-control\n一致。当 indeterminate 为 true 时生效"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "change",
+      "Description": "当绑定值变化时触发的事件",
+      "Type": "Function",
+      "TypeDescription": "(value: string | number | boolean) => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "checkbox",
+  "Link": "https://element-plus.org/zh-CN/component/checkbox",
+  "Tag": "checkbox",
+  "GroupName": "Form 表单组件"
+}

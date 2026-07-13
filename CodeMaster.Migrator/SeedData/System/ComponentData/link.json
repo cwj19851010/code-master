@@ -1,0 +1,66 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "default",
+      "Description": "类型"
+    },
+    {
+      "Name": "underline",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "hover",
+      "Description": "控制下划线是否出现"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用状态"
+    },
+    {
+      "Name": "href",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生 href 属性"
+    },
+    {
+      "Name": "target",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "_self",
+      "Description": "同原生 target 属性"
+    },
+    {
+      "Name": "icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "图标组件"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "icon",
+      "Description": "自定义图标组件",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "link",
+  "Link": "https://element-plus.org/zh-CN/component/link",
+  "Tag": "link",
+  "GroupName": "Basic 基础组件"
+}

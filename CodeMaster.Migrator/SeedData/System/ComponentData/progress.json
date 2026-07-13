@@ -1,0 +1,116 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "percentage",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "percentage"
+    },
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "line",
+      "Description": "进度条类型"
+    },
+    {
+      "Name": "stroke-width",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "6",
+      "Description": "进度条的宽度"
+    },
+    {
+      "Name": "text-inside",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "进度条显示文字内置在进度条内（仅 type 为 'line' 时可用）"
+    },
+    {
+      "Name": "status",
+      "Type": "enum",
+      "TypeDescription": "'success' | 'exception' | 'warning'",
+      "DefaultValue": "—",
+      "Description": "进度条当前状态"
+    },
+    {
+      "Name": "indeterminate",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为动画进度条"
+    },
+    {
+      "Name": "duration",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "3",
+      "Description": "控制动画进度条速度和条纹进度条流动速度"
+    },
+    {
+      "Name": "color",
+      "Type": "string, function, Array",
+      "TypeDescription": "{ color: string; percentage: number }[]",
+      "DefaultValue": "''",
+      "Description": "进度条背景色 （会覆盖 status 状态颜色）"
+    },
+    {
+      "Name": "width",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "126",
+      "Description": "环形进度条画布宽度（只在 type 为 circle 或 dashboard 时可用）"
+    },
+    {
+      "Name": "show-text",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示进度条文字内容"
+    },
+    {
+      "Name": "stroke-linecap",
+      "Type": "enum",
+      "TypeDescription": "'butt' | 'round' | 'square'",
+      "DefaultValue": "round",
+      "Description": "circle/dashboard 类型路径两端的形状"
+    },
+    {
+      "Name": "format",
+      "Type": "Function",
+      "TypeDescription": "(percentage: number) => string",
+      "DefaultValue": "—",
+      "Description": "指定进度条文字内容"
+    },
+    {
+      "Name": "striped",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "在进度条上增加条纹"
+    },
+    {
+      "Name": "striped-flow",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "让进度条上的条纹流动起来"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义内容",
+      "Type": "object",
+      "TypeDescription": "{ percentage: number }"
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "progress",
+  "Link": "https://element-plus.org/zh-CN/component/progress",
+  "Tag": "progress",
+  "GroupName": "Data 数据展示"
+}

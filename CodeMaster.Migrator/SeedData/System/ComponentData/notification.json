@@ -1,0 +1,107 @@
+{
+  "ComponentsProperties": [],
+  "ComponentSlots": [],
+  "ComponentEvents": [],
+  "ComponentExposes": [
+    {
+      "Name": "title",
+      "Description": "title",
+      "Type": "string",
+      "TypeDescription": null
+    },
+    {
+      "Name": "message",
+      "Description": "通知栏正文内容",
+      "Type": "string, VNode, Function",
+      "TypeDescription": "() => VNode"
+    },
+    {
+      "Name": "dangerouslyUseHTMLString",
+      "Description": "是否将 message 属性作为 HTML 片段处理",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "type",
+      "Description": "通知的类型",
+      "Type": "enum",
+      "TypeDescription": "'primary' (2.9.11) | 'success' | 'warning' | 'info' | 'error' | ''"
+    },
+    {
+      "Name": "icon",
+      "Description": "自定义图标。 若设置了 type，则 icon 会被覆盖",
+      "Type": "string, Component",
+      "TypeDescription": null
+    },
+    {
+      "Name": "customClass",
+      "Description": "自定义类名",
+      "Type": "string",
+      "TypeDescription": null
+    },
+    {
+      "Name": "duration",
+      "Description": "显示时间, 单位为毫秒。 值为 0 则不会自动关闭",
+      "Type": "number",
+      "TypeDescription": null
+    },
+    {
+      "Name": "position",
+      "Description": "自定义弹出位置",
+      "Type": "enum",
+      "TypeDescription": "'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'"
+    },
+    {
+      "Name": "showClose",
+      "Description": "是否显示关闭按钮",
+      "Type": "boolean",
+      "TypeDescription": null
+    },
+    {
+      "Name": "onClose",
+      "Description": "关闭时的回调函数",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "onClick",
+      "Description": "点击 Notification 时的回调函数",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "offset",
+      "Description": "相对屏幕顶部的偏移量 偏移的距离，在同一时刻，所有的 Notification 实例应当具有一个相同的偏移量",
+      "Type": "number",
+      "TypeDescription": null
+    },
+    {
+      "Name": "appendTo",
+      "Description": "设置 notification 的根元素，默认为 document.body",
+      "Type": "CSSSelector, HTMLElement",
+      "TypeDescription": null
+    },
+    {
+      "Name": "zIndex",
+      "Description": "初始 zIndex",
+      "Type": "number",
+      "TypeDescription": null
+    },
+    {
+      "Name": "closeIcon",
+      "Description": "自定义关闭图标",
+      "Type": "string, Component",
+      "TypeDescription": null
+    },
+    {
+      "Name": "close",
+      "Description": "关闭当前的 Notification",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "Name": "notification",
+  "Link": "https://element-plus.org/zh-CN/component/notification",
+  "Tag": "notification",
+  "GroupName": "Feedback 反馈组件"
+}

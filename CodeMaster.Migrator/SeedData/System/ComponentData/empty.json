@@ -1,0 +1,51 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "image",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "empty 组件的图像地址"
+    },
+    {
+      "Name": "image-size",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "empty 组件的图像尺寸（宽度）"
+    },
+    {
+      "Name": "description",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "empty 组件的描述信息"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "作为底部内容的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "image",
+      "Description": "作为图像的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "description",
+      "Description": "作为描述的内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "empty",
+  "Link": "https://element-plus.org/zh-CN/component/empty",
+  "Tag": "empty",
+  "GroupName": "Data 数据展示"
+}

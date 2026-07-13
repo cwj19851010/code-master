@@ -1,0 +1,20 @@
+-- 添加字典管理相关翻译
+INSERT INTO sys_lang_texts (lang_code, lang_key, lang_text) VALUES
+('zh-CN', 'dictName', '字典名称'),
+('en-US', 'dictName', 'Dictionary Name'),
+('zh-CN', 'dictType', '字典类型'),
+('en-US', 'dictType', 'Dictionary Type'),
+('zh-CN', 'please_input_dictName', '请输入字典名称'),
+('en-US', 'please_input_dictName', 'Please input dictionary name'),
+('zh-CN', 'please_input_dictType', '请输入字典类型'),
+('en-US', 'please_input_dictType', 'Please input dictionary type'),
+('zh-CN', 'please_select_dictType', '请选择字典类型'),
+('en-US', 'please_select_dictType', 'Please select dictionary type'),
+('zh-CN', 'add_dict_type', '新增字典类型'),
+('en-US', 'add_dict_type', 'Add Dictionary Type'),
+('zh-CN', 'add_dict_data', '新增字典数据'),
+('en-US', 'add_dict_data', 'Add Dictionary Data'),
+('zh-CN', 'edit_dict_type', '编辑字典类型'),
+('en-US', 'edit_dict_type', 'Edit Dictionary Type'),
+('zh-CN', 'edit_dict_data', '编辑字典数据'),
+('en-US', 'edit_dict_data', 'Edit Dictionary Data');

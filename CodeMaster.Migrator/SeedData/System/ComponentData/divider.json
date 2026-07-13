@@ -1,0 +1,39 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "direction",
+      "Type": "enum",
+      "TypeDescription": "'horizontal' | 'vertical'",
+      "DefaultValue": "horizontal",
+      "Description": "设置分割线方向"
+    },
+    {
+      "Name": "border-style",
+      "Type": "enum",
+      "TypeDescription": "'none' | 'solid' | 'hidden' | 'dashed' | ...",
+      "DefaultValue": "solid",
+      "Description": "设置分隔符样式"
+    },
+    {
+      "Name": "content-position",
+      "Type": "enum",
+      "TypeDescription": "'left' | 'right' | 'center'",
+      "DefaultValue": "center",
+      "Description": "自定义分隔线内容的位置"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "设置分割线文案的位置",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "divider",
+  "Link": "https://element-plus.org/zh-CN/component/divider",
+  "Tag": "divider",
+  "GroupName": "Others 其他"
+}

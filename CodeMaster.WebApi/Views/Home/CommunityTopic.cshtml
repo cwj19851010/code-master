@@ -1,0 +1,108 @@
+@model CodeMaster.WebApi.Models.CommunityTopicViewModel
+@{
+    ViewData["Title"] = $"{Model.Topic.Title} - CodeMaster 社区";
+    ViewData["Description"] = Model.Topic.Content.Length > 120 ? Model.Topic.Content.Substring(0, 120) : Model.Topic.Content;
+}
+
+<section class="page-hero topic-hero">
+    <p class="eyebrow">@Model.Topic.CategoryName</p>
+    <h1>@Model.Topic.Title</h1>
+    <p>@Model.Topic.AuthorName 发布于 @Model.Topic.CreateTime.ToString("yyyy-MM-dd HH:mm")，@Model.Topic.ViewCount 次浏览，@Model.Topic.ReplyCount 条回复。</p>
+</section>
+
+<section class="section topic-detail-page">
+    <article class="topic-detail-card">
+        <div class="topic-detail-meta">
+            <span>@Model.Topic.CategoryName</span>
+            @if (Model.Topic.IsPinned)
+            {
+                <span>置顶</span>
+            }
+            @if (Model.Topic.IsFeatured)
+            {
+                <span>精华</span>
+            }
+        </div>
+        <div class="topic-content">@Model.Topic.Content</div>
+    </article>
+
+    <section class="reply-section">
+        <div class="reply-head">
+            <h2>回复</h2>
+            <span>@Model.Replies.Count 条</span>
+        </div>
+
+        @if (!Model.Replies.Any())
+        {
+            <div class="empty-state">
+                <h3>还没有回复</h3>
+                <p>你可以成为第一个参与讨论的人。</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var reply in Model.Replies)
+            {
+                <article class="reply-row">
+                    <div class="reply-avatar">@reply.AuthorName.FirstOrDefault()</div>
+                    <div>
+                        <div class="reply-meta">
+                            <strong>@reply.AuthorName</strong>
+                            <span>@reply.CreateTime.ToString("yyyy-MM-dd HH:mm")</span>
+                            @if (reply.IsAccepted)
+                            {
+                                <span>已采纳</span>
+                            }
+                        </div>
+                        <p>@reply.Content</p>
+                    </div>
+                </article>
+            }
+        }
+
+        <form id="replyForm" class="reply-form">
+            <h2>发表回复</h2>
+            <textarea name="content" rows="6" required minlength="2" placeholder="写下你的看法、补充信息或解决方案"></textarea>
+            <div class="form-actions">
+                <button class="button primary" type="submit">回复</button>
+                <a class="button secondary" href="/community">返回社区</a>
+                <span id="replyMessage" class="form-message"></span>
+            </div>
+        </form>
+    </section>
+</section>
+
+@section Scripts {
+<script>
+const tokenKeys = ['Admin-Token', 'access_token', 'token']
+const getToken = () => tokenKeys.map(key => localStorage.getItem(key)).find(Boolean)
+const replyMessage = document.getElementById('replyMessage')
+document.getElementById('replyForm').addEventListener('submit', async (event) => {
+  event.preventDefault()
+  const token = getToken()
+  if (!token) {
+    window.location.href = '/register'
+    return
+  }
+  const form = event.currentTarget
+  replyMessage.textContent = '正在回复...'
+  const response = await fetch('/api/community/replies', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({
+      topicId: Number('@Model.Topic.Id'),
+      content: form.content.value
+    })
+  })
+  const result = await response.json().catch(() => ({}))
+  if (!response.ok || result.code !== 200) {
+    replyMessage.textContent = result.message || '回复失败，请稍后再试'
+    return
+  }
+  window.location.reload()
+})
+</script>
+}

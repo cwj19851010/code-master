@@ -1,0 +1,2990 @@
+{
+  "exportTime": "2026-02-21 23:25:54",
+  "totalKeys": 373,
+  "translations": [
+{
+      "key": "action",
+      "category": "common",
+      "translations": {
+        "en-US": "Actions",
+        "zh-CN": "操作"
+      }
+    },
+{
+      "key": "action_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Operation failed",
+        "zh-CN": "操作失败"
+      }
+    },
+{
+      "key": "action_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Operation succeeded",
+        "zh-CN": "操作成功"
+      }
+    },
+{
+      "key": "add",
+      "category": "common",
+      "translations": {
+        "en-US": "Add",
+        "zh-CN": "新增"
+      }
+    },
+{
+      "key": "add_dept",
+      "category": "common",
+      "translations": {
+        "en-US": "Add department",
+        "zh-CN": "新增部门"
+      }
+    },
+{
+      "key": "add_dict_data",
+      "category": "",
+      "translations": {
+        "en-US": "Add Dictionary Data",
+        "zh-CN": "添加字典数据"
+      }
+    },
+{
+      "key": "add_dict_type",
+      "category": "",
+      "translations": {
+        "en-US": "Add Dictionary Type",
+        "zh-CN": "添加字典类型"
+      }
+    },
+{
+      "key": "add_menu",
+      "category": "common",
+      "translations": {
+        "en-US": "Add menu",
+        "zh-CN": "新增菜单"
+      }
+    },
+{
+      "key": "add_post",
+      "category": "common",
+      "translations": {
+        "en-US": "Add post",
+        "zh-CN": "新增职位"
+      }
+    },
+{
+      "key": "add_role",
+      "category": "common",
+      "translations": {
+        "en-US": "Add role",
+        "zh-CN": "新增角色"
+      }
+    },
+{
+      "key": "add_task",
+      "category": "",
+      "translations": {
+        "en-US": "Add Task",
+        "zh-CN": "添加任务"
+      }
+    },
+{
+      "key": "add_tenant",
+      "category": "common",
+      "translations": {
+        "en-US": "Add tenant",
+        "zh-CN": "新增租户"
+      }
+    },
+{
+      "key": "add_user",
+      "category": "common",
+      "translations": {
+        "en-US": "Add user",
+        "zh-CN": "新增用户"
+      }
+    },
+{
+      "key": "addMenu",
+      "category": "",
+      "translations": {
+        "en-US": "Add Menu",
+        "zh-CN": "新增菜单"
+      }
+    },
+{
+      "key": "admin",
+      "category": "common",
+      "translations": {
+        "en-US": "Admin",
+        "zh-CN": "管理员"
+      }
+    },
+{
+      "key": "api_url_placeholder",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter API URL",
+        "zh-CN": "请输入API地址"
+      }
+    },
+{
+      "key": "app_name",
+      "category": "common",
+      "translations": {
+        "en-US": "CodeMaster",
+        "zh-CN": "CodeMaster"
+      }
+    },
+{
+      "key": "back",
+      "category": "common",
+      "translations": {
+        "en-US": "Back",
+        "zh-CN": "返回"
+      }
+    },
+{
+      "key": "backend_port",
+      "category": "",
+      "translations": {
+        "en-US": "Backend Port",
+        "zh-CN": "后端端口"
+      }
+    },
+{
+      "key": "batch_delete",
+      "category": "common",
+      "translations": {
+        "en-US": "Batch delete",
+        "zh-CN": "批量删除"
+      }
+    },
+{
+      "key": "batch_delete_confirm",
+      "category": "common",
+      "translations": {
+        "en-US": "Delete {count} selected items?",
+        "zh-CN": "确认删除选中的 {count} 项？"
+      }
+    },
+{
+      "key": "batch_delete_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Batch delete succeeded",
+        "zh-CN": "批量删除成功"
+      }
+    },
+{
+      "key": "batchDelete",
+      "category": "common",
+      "translations": {
+        "en-US": "Batch Delete",
+        "zh-CN": "批量删除"
+      }
+    },
+{
+      "key": "begin_time",
+      "category": "",
+      "translations": {
+        "en-US": "Begin Time",
+        "zh-CN": "开始时间"
+      }
+    },
+{
+      "key": "browser",
+      "category": "common",
+      "translations": {
+        "en-US": "Browser",
+        "zh-CN": "浏览器"
+      }
+    },
+{
+      "key": "business_type",
+      "category": "common",
+      "translations": {
+        "en-US": "Business type",
+        "zh-CN": "业务类型"
+      }
+    },
+{
+      "key": "business_type_clean",
+      "category": "common",
+      "translations": {
+        "en-US": "Clean",
+        "zh-CN": "清空数据"
+      }
+    },
+{
+      "key": "business_type_delete",
+      "category": "common",
+      "translations": {
+        "en-US": "Delete",
+        "zh-CN": "删除"
+      }
+    },
+{
+      "key": "business_type_export",
+      "category": "common",
+      "translations": {
+        "en-US": "Export",
+        "zh-CN": "导出"
+      }
+    },
+{
+      "key": "business_type_force",
+      "category": "common",
+      "translations": {
+        "en-US": "Force",
+        "zh-CN": "强退"
+      }
+    },
+{
+      "key": "business_type_gencode",
+      "category": "common",
+      "translations": {
+        "en-US": "Generate code",
+        "zh-CN": "生成代码"
+      }
+    },
+{
+      "key": "business_type_grant",
+      "category": "common",
+      "translations": {
+        "en-US": "Grant",
+        "zh-CN": "授权"
+      }
+    },
+{
+      "key": "business_type_import",
+      "category": "common",
+      "translations": {
+        "en-US": "Import",
+        "zh-CN": "导入"
+      }
+    },
+{
+      "key": "business_type_insert",
+      "category": "common",
+      "translations": {
+        "en-US": "Insert",
+        "zh-CN": "新增"
+      }
+    },
+{
+      "key": "business_type_other",
+      "category": "common",
+      "translations": {
+        "en-US": "Other",
+        "zh-CN": "其他"
+      }
+    },
+{
+      "key": "business_type_update",
+      "category": "common",
+      "translations": {
+        "en-US": "Update",
+        "zh-CN": "修改"
+      }
+    },
+{
+      "key": "button",
+      "category": "",
+      "translations": {
+        "en-US": "Button",
+        "zh-CN": "按钮"
+      }
+    },
+{
+      "key": "cache",
+      "category": "",
+      "translations": {
+        "en-US": "Cache",
+        "zh-CN": "缓存"
+      }
+    },
+{
+      "key": "cancel",
+      "category": "common",
+      "translations": {
+        "en-US": "Cancel",
+        "zh-CN": "取消"
+      }
+    },
+{
+      "key": "category",
+      "category": "common",
+      "translations": {
+        "en-US": "Category",
+        "zh-CN": "分类"
+      }
+    },
+{
+      "key": "clear_all",
+      "category": "common",
+      "translations": {
+        "en-US": "Clear all",
+        "zh-CN": "清空全部"
+      }
+    },
+{
+      "key": "clear_all_confirm",
+      "category": "common",
+      "translations": {
+        "en-US": "Clear all operation logs?",
+        "zh-CN": "确认清空所有操作日志？"
+      }
+    },
+{
+      "key": "code",
+      "category": "common",
+      "translations": {
+        "en-US": "Code",
+        "zh-CN": "编码"
+      }
+    },
+{
+      "key": "component",
+      "category": "",
+      "translations": {
+        "en-US": "Component",
+        "zh-CN": "组件路径"
+      }
+    },
+{
+      "key": "component_path",
+      "category": "common",
+      "translations": {
+        "en-US": "Component path",
+        "zh-CN": "组件路径"
+      }
+    },
+{
+      "key": "confirm",
+      "category": "common",
+      "translations": {
+        "en-US": "Confirm",
+        "zh-CN": "确定"
+      }
+    },
+{
+      "key": "connect_time",
+      "category": "common",
+      "translations": {
+        "en-US": "Connect time",
+        "zh-CN": "连接时间"
+      }
+    },
+{
+      "key": "connection_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Connection failed",
+        "zh-CN": "连接失败"
+      }
+    },
+{
+      "key": "connection_id",
+      "category": "common",
+      "translations": {
+        "en-US": "Connection ID",
+        "zh-CN": "连接ID"
+      }
+    },
+{
+      "key": "connection_string",
+      "category": "",
+      "translations": {
+        "en-US": "Connection String",
+        "zh-CN": "连接字符串"
+      }
+    },
+{
+      "key": "connection_string_tip",
+      "category": "",
+      "translations": {
+        "en-US": "Database connection string, e.g.: Server=localhost;Database=test;",
+        "zh-CN": "数据库连接字符串，如：Server=localhost;Database=test;"
+      }
+    },
+{
+      "key": "connection_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Connection succeeded",
+        "zh-CN": "连接成功"
+      }
+    },
+{
+      "key": "copyright",
+      "category": "common",
+      "translations": {
+        "en-US": "Copyright",
+        "zh-CN": "版权所有"
+      }
+    },
+{
+      "key": "core_features",
+      "category": "common",
+      "translations": {
+        "en-US": "Core features",
+        "zh-CN": "核心特性"
+      }
+    },
+{
+      "key": "create_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Create failed",
+        "zh-CN": "创建失败"
+      }
+    },
+{
+      "key": "create_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Create succeeded",
+        "zh-CN": "创建成功"
+      }
+    },
+{
+      "key": "create_time",
+      "category": "common",
+      "translations": {
+        "en-US": "Created time",
+        "zh-CN": "创建时间"
+      }
+    },
+{
+      "key": "createMenu",
+      "category": "",
+      "translations": {
+        "en-US": "Create Menu",
+        "zh-CN": "新增菜单"
+      }
+    },
+{
+      "key": "cron_expression",
+      "category": "",
+      "translations": {
+        "en-US": "Cron Expression",
+        "zh-CN": "Cron表达式"
+      }
+    },
+{
+      "key": "cron_expression_placeholder",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter cron expression",
+        "zh-CN": "请输入Cron表达式"
+      }
+    },
+{
+      "key": "cron_expression_tip",
+      "category": "",
+      "translations": {
+        "en-US": "Cron expression, e.g.: 0 0/5 * * * ? means execute every 5 minutes",
+        "zh-CN": "Cron表达式，例如：0 0/5 * * * ? 表示每5分钟执行一次"
+      }
+    },
+{
+      "key": "data",
+      "category": "common",
+      "translations": {
+        "en-US": "Data",
+        "zh-CN": "数据"
+      }
+    },
+{
+      "key": "data_scope",
+      "category": "common",
+      "translations": {
+        "en-US": "Data scope",
+        "zh-CN": "数据可见范围"
+      }
+    },
+{
+      "key": "data_scope_all",
+      "category": "common",
+      "translations": {
+        "en-US": "All",
+        "zh-CN": "全部"
+      }
+    },
+{
+      "key": "data_scope_dept",
+      "category": "common",
+      "translations": {
+        "en-US": "Department",
+        "zh-CN": "部门内"
+      }
+    },
+{
+      "key": "data_scope_self",
+      "category": "common",
+      "translations": {
+        "en-US": "Self",
+        "zh-CN": "本人"
+      }
+    },
+{
+      "key": "database_type",
+      "category": "",
+      "translations": {
+        "en-US": "Database Type",
+        "zh-CN": "数据库类型"
+      }
+    },
+{
+      "key": "db_connection",
+      "category": "common",
+      "translations": {
+        "en-US": "DB connection",
+        "zh-CN": "数据库连接"
+      }
+    },
+{
+      "key": "db_mysql",
+      "category": "",
+      "translations": {
+        "en-US": "MySQL",
+        "zh-CN": "MySQL"
+      }
+    },
+{
+      "key": "db_oracle",
+      "category": "",
+      "translations": {
+        "en-US": "Oracle",
+        "zh-CN": "Oracle"
+      }
+    },
+{
+      "key": "db_postgresql",
+      "category": "",
+      "translations": {
+        "en-US": "PostgreSQL",
+        "zh-CN": "PostgreSQL"
+      }
+    },
+{
+      "key": "db_sqlite",
+      "category": "",
+      "translations": {
+        "en-US": "SQLite",
+        "zh-CN": "SQLite"
+      }
+    },
+{
+      "key": "db_sqlserver",
+      "category": "",
+      "translations": {
+        "en-US": "SQL Server",
+        "zh-CN": "SQL Server"
+      }
+    },
+{
+      "key": "db_type",
+      "category": "common",
+      "translations": {
+        "en-US": "DB type",
+        "zh-CN": "数据库类型"
+      }
+    },
+{
+      "key": "delete",
+      "category": "common",
+      "translations": {
+        "en-US": "Delete",
+        "zh-CN": "删除"
+      }
+    },
+{
+      "key": "delete_confirm",
+      "category": "common",
+      "translations": {
+        "en-US": "Confirm delete?",
+        "zh-CN": "确认删除？"
+      }
+    },
+{
+      "key": "delete_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Delete failed",
+        "zh-CN": "删除失败"
+      }
+    },
+{
+      "key": "delete_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Delete succeeded",
+        "zh-CN": "删除成功"
+      }
+    },
+{
+      "key": "deleteMenu",
+      "category": "",
+      "translations": {
+        "en-US": "Delete Menu",
+        "zh-CN": "删除菜单"
+      }
+    },
+{
+      "key": "dept",
+      "category": "common",
+      "translations": {
+        "en-US": "Department",
+        "zh-CN": "部门"
+      }
+    },
+{
+      "key": "dept.add",
+      "category": "page",
+      "translations": {
+        "en-US": "Add Department",
+        "zh-CN": "新增部门"
+      }
+    },
+{
+      "key": "dept.detail",
+      "category": "page",
+      "translations": {
+        "en-US": "Department Detail",
+        "zh-CN": "部门详情"
+      }
+    },
+{
+      "key": "dept.edit",
+      "category": "page",
+      "translations": {
+        "en-US": "Edit Department",
+        "zh-CN": "编辑部门"
+      }
+    },
+{
+      "key": "description_en",
+      "category": "",
+      "translations": {
+        "en-US": "Description (EN)",
+        "zh-CN": "项目描述(英文)"
+      }
+    },
+{
+      "key": "dict",
+      "category": "common",
+      "translations": {
+        "en-US": "Dictionary",
+        "zh-CN": "字典"
+      }
+    },
+{
+      "key": "dict.add",
+      "category": "page",
+      "translations": {
+        "en-US": "Add Dictionary",
+        "zh-CN": "新增字典"
+      }
+    },
+{
+      "key": "dict.detail",
+      "category": "page",
+      "translations": {
+        "en-US": "Dictionary Detail",
+        "zh-CN": "字典详情"
+      }
+    },
+{
+      "key": "dict.edit",
+      "category": "page",
+      "translations": {
+        "en-US": "Edit Dictionary",
+        "zh-CN": "编辑字典"
+      }
+    },
+{
+      "key": "dictName",
+      "category": "",
+      "translations": {
+        "en-US": "Dictionary Name",
+        "zh-CN": "字典名称"
+      }
+    },
+{
+      "key": "dictType",
+      "category": "",
+      "translations": {
+        "en-US": "Dictionary Type",
+        "zh-CN": "字典类型"
+      }
+    },
+{
+      "key": "directory",
+      "category": "",
+      "translations": {
+        "en-US": "Directory",
+        "zh-CN": "目录"
+      }
+    },
+{
+      "key": "disabled",
+      "category": "",
+      "translations": {
+        "en-US": "Disabled",
+        "zh-CN": "停用"
+      }
+    },
+{
+      "key": "display_name",
+      "category": "",
+      "translations": {
+        "en-US": "Display Name",
+        "zh-CN": "显示名称"
+      }
+    },
+{
+      "key": "display_name_en",
+      "category": "",
+      "translations": {
+        "en-US": "Display Name (EN)",
+        "zh-CN": "显示名称(英文)"
+      }
+    },
+{
+      "key": "download",
+      "category": "common",
+      "translations": {
+        "en-US": "Download",
+        "zh-CN": "下载"
+      }
+    },
+{
+      "key": "download_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Download failed",
+        "zh-CN": "下载失败"
+      }
+    },
+{
+      "key": "edit",
+      "category": "common",
+      "translations": {
+        "en-US": "Edit",
+        "zh-CN": "编辑"
+      }
+    },
+{
+      "key": "edit_dept",
+      "category": "common",
+      "translations": {
+        "en-US": "Edit department",
+        "zh-CN": "编辑部门"
+      }
+    },
+{
+      "key": "edit_dict_data",
+      "category": "",
+      "translations": {
+        "en-US": "Edit Dict Data",
+        "zh-CN": "编辑字典数据"
+      }
+    },
+{
+      "key": "edit_dict_type",
+      "category": "",
+      "translations": {
+        "en-US": "Edit Dict Type",
+        "zh-CN": "编辑字典类型"
+      }
+    },
+{
+      "key": "edit_menu",
+      "category": "common",
+      "translations": {
+        "en-US": "Edit menu",
+        "zh-CN": "编辑菜单"
+      }
+    },
+{
+      "key": "edit_post",
+      "category": "common",
+      "translations": {
+        "en-US": "Edit post",
+        "zh-CN": "编辑职位"
+      }
+    },
+{
+      "key": "edit_role",
+      "category": "common",
+      "translations": {
+        "en-US": "Edit role",
+        "zh-CN": "编辑角色"
+      }
+    },
+{
+      "key": "edit_task",
+      "category": "",
+      "translations": {
+        "en-US": "Edit Task",
+        "zh-CN": "编辑任务"
+      }
+    },
+{
+      "key": "edit_tenant",
+      "category": "common",
+      "translations": {
+        "en-US": "Edit tenant",
+        "zh-CN": "编辑租户"
+      }
+    },
+{
+      "key": "edit_user",
+      "category": "common",
+      "translations": {
+        "en-US": "Edit user",
+        "zh-CN": "编辑用户"
+      }
+    },
+{
+      "key": "editMenu",
+      "category": "",
+      "translations": {
+        "en-US": "Edit Menu",
+        "zh-CN": "编辑菜单"
+      }
+    },
+{
+      "key": "elapsed",
+      "category": "common",
+      "translations": {
+        "en-US": "Elapsed(ms)",
+        "zh-CN": "耗时(ms)"
+      }
+    },
+{
+      "key": "email",
+      "category": "common",
+      "translations": {
+        "en-US": "Email",
+        "zh-CN": "邮箱"
+      }
+    },
+{
+      "key": "end_time",
+      "category": "",
+      "translations": {
+        "en-US": "End Time",
+        "zh-CN": "结束时间"
+      }
+    },
+{
+      "key": "error_msg",
+      "category": "common",
+      "translations": {
+        "en-US": "Error message",
+        "zh-CN": "错误信息"
+      }
+    },
+{
+      "key": "expire_time",
+      "category": "common",
+      "translations": {
+        "en-US": "Expire time",
+        "zh-CN": "到期时间"
+      }
+    },
+{
+      "key": "export",
+      "category": "button",
+      "translations": {
+        "en-US": "Export",
+        "zh-CN": "导出"
+      }
+    },
+{
+      "key": "feature_codegen",
+      "category": "common",
+      "translations": {
+        "en-US": "Code generation",
+        "zh-CN": "代码生成"
+      }
+    },
+{
+      "key": "feature_ddd",
+      "category": "common",
+      "translations": {
+        "en-US": "DDD architecture",
+        "zh-CN": "DDD架构"
+      }
+    },
+{
+      "key": "feature_multitenant",
+      "category": "common",
+      "translations": {
+        "en-US": "Multi-tenant",
+        "zh-CN": "多租户"
+      }
+    },
+{
+      "key": "feature_orm",
+      "category": "common",
+      "translations": {
+        "en-US": "ORM integration",
+        "zh-CN": "ORM集成"
+      }
+    },
+{
+      "key": "feature_rbac",
+      "category": "common",
+      "translations": {
+        "en-US": "RBAC",
+        "zh-CN": "RBAC权限"
+      }
+    },
+{
+      "key": "feature_ui",
+      "category": "common",
+      "translations": {
+        "en-US": "Modern UI",
+        "zh-CN": "现代UI"
+      }
+    },
+{
+      "key": "file",
+      "category": "common",
+      "translations": {
+        "en-US": "File management",
+        "zh-CN": "文件管理"
+      }
+    },
+{
+      "key": "file_name",
+      "category": "common",
+      "translations": {
+        "en-US": "File name",
+        "zh-CN": "文件名"
+      }
+    },
+{
+      "key": "file_path",
+      "category": "common",
+      "translations": {
+        "en-US": "File path",
+        "zh-CN": "文件路径"
+      }
+    },
+{
+      "key": "file_size",
+      "category": "common",
+      "translations": {
+        "en-US": "File size",
+        "zh-CN": "文件大小"
+      }
+    },
+{
+      "key": "file_size_limit",
+      "category": "common",
+      "translations": {
+        "en-US": "File size cannot exceed {size}MB",
+        "zh-CN": "文件大小不能超过 {size}MB"
+      }
+    },
+{
+      "key": "file_type",
+      "category": "common",
+      "translations": {
+        "en-US": "File type",
+        "zh-CN": "文件类型"
+      }
+    },
+{
+      "key": "file_type_limit",
+      "category": "common",
+      "translations": {
+        "en-US": "Only {types} files are allowed",
+        "zh-CN": "只能上传 {types} 格式的文件"
+      }
+    },
+{
+      "key": "force_offline",
+      "category": "common",
+      "translations": {
+        "en-US": "Forced offline",
+        "zh-CN": "强制下线"
+      }
+    },
+{
+      "key": "force_offline_confirm",
+      "category": "common",
+      "translations": {
+        "en-US": "Force this user offline?",
+        "zh-CN": "确认强制下线该用户？"
+      }
+    },
+{
+      "key": "frontend_port",
+      "category": "",
+      "translations": {
+        "en-US": "Frontend Port",
+        "zh-CN": "前端端口"
+      }
+    },
+{
+      "key": "gender",
+      "category": "common",
+      "translations": {
+        "en-US": "Gender",
+        "zh-CN": "性别"
+      }
+    },
+{
+      "key": "gender_female",
+      "category": "common",
+      "translations": {
+        "en-US": "Female",
+        "zh-CN": "女"
+      }
+    },
+{
+      "key": "gender_male",
+      "category": "common",
+      "translations": {
+        "en-US": "Male",
+        "zh-CN": "男"
+      }
+    },
+{
+      "key": "gender_unknown",
+      "category": "common",
+      "translations": {
+        "en-US": "Unknown",
+        "zh-CN": "未知"
+      }
+    },
+{
+      "key": "hide",
+      "category": "",
+      "translations": {
+        "en-US": "Hide",
+        "zh-CN": "隐藏"
+      }
+    },
+{
+      "key": "hostOnly",
+      "category": "",
+      "translations": {
+        "en-US": "Host Only",
+        "zh-CN": "宿主专用"
+      }
+    },
+{
+      "key": "icon",
+      "category": "common",
+      "translations": {
+        "en-US": "Icon",
+        "zh-CN": "图标"
+      }
+    },
+{
+      "key": "import",
+      "category": "button",
+      "translations": {
+        "en-US": "Import",
+        "zh-CN": "导入"
+      }
+    },
+{
+      "key": "init_error",
+      "category": "",
+      "translations": {
+        "en-US": "Init Error",
+        "zh-CN": "初始化错误"
+      }
+    },
+{
+      "key": "initialized_at",
+      "category": "",
+      "translations": {
+        "en-US": "Initialized At",
+        "zh-CN": "初始化时间"
+      }
+    },
+{
+      "key": "interval_second",
+      "category": "",
+      "translations": {
+        "en-US": "Interval (seconds)",
+        "zh-CN": "执行间隔(秒)"
+      }
+    },
+{
+      "key": "invoke_target",
+      "category": "",
+      "translations": {
+        "en-US": "Invoke Target",
+        "zh-CN": "调用目标"
+      }
+    },
+{
+      "key": "invoke_target_placeholder",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter invoke target",
+        "zh-CN": "请输入调用目标"
+      }
+    },
+{
+      "key": "invoke_target_tip",
+      "category": "",
+      "translations": {
+        "en-US": "Assembly format: ClassName.MethodName; HTTP format: URL; SQL format: SQL statement",
+        "zh-CN": "程序集格式：类名.方法名；HTTP格式：URL地址；SQL格式：SQL语句"
+      }
+    },
+{
+      "key": "is_default",
+      "category": "common",
+      "translations": {
+        "en-US": "Default",
+        "zh-CN": "默认"
+      }
+    },
+{
+      "key": "isCache",
+      "category": "",
+      "translations": {
+        "en-US": "Cache",
+        "zh-CN": "是否缓存"
+      }
+    },
+{
+      "key": "isolation_logical",
+      "category": "common",
+      "translations": {
+        "en-US": "Logical isolation",
+        "zh-CN": "逻辑隔离"
+      }
+    },
+{
+      "key": "isolation_physical",
+      "category": "common",
+      "translations": {
+        "en-US": "Physical isolation",
+        "zh-CN": "物理隔离"
+      }
+    },
+{
+      "key": "isolation_type",
+      "category": "common",
+      "translations": {
+        "en-US": "Isolation type",
+        "zh-CN": "隔离类型"
+      }
+    },
+{
+      "key": "job_group",
+      "category": "",
+      "translations": {
+        "en-US": "Job Group",
+        "zh-CN": "任务组名"
+      }
+    },
+{
+      "key": "json_result",
+      "category": "common",
+      "translations": {
+        "en-US": "Response",
+        "zh-CN": "返回结果"
+      }
+    },
+{
+      "key": "key",
+      "category": "common",
+      "translations": {
+        "en-US": "Key",
+        "zh-CN": "键"
+      }
+    },
+{
+      "key": "label",
+      "category": "common",
+      "translations": {
+        "en-US": "Label",
+        "zh-CN": "标签"
+      }
+    },
+{
+      "key": "lang",
+      "category": "common",
+      "translations": {
+        "en-US": "Language",
+        "zh-CN": "语言"
+      }
+    },
+{
+      "key": "lang.add",
+      "category": "page",
+      "translations": {
+        "en-US": "Add Language",
+        "zh-CN": "新增语言"
+      }
+    },
+{
+      "key": "lang.detail",
+      "category": "page",
+      "translations": {
+        "en-US": "Language Detail",
+        "zh-CN": "语言详情"
+      }
+    },
+{
+      "key": "lang.edit",
+      "category": "page",
+      "translations": {
+        "en-US": "Edit Language",
+        "zh-CN": "编辑语言"
+      }
+    },
+{
+      "key": "lang_key",
+      "category": "",
+      "translations": {
+        "en-US": "Lang Key",
+        "zh-CN": "国际化键"
+      }
+    },
+{
+      "key": "lang_key_tip",
+      "category": "",
+      "translations": {
+        "en-US": "If lang key is provided, the frontend will display translated text; otherwise, it will display the label directly",
+        "zh-CN": "如果填写了国际化键，前端将优先显示翻译文本；如果为空，则直接显示标签内容"
+      }
+    },
+{
+      "key": "last_active_time",
+      "category": "common",
+      "translations": {
+        "en-US": "Last active",
+        "zh-CN": "最后活跃时间"
+      }
+    },
+{
+      "key": "leader",
+      "category": "common",
+      "translations": {
+        "en-US": "Leader",
+        "zh-CN": "负责人"
+      }
+    },
+{
+      "key": "load_dept_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Load departments failed",
+        "zh-CN": "加载部门失败"
+      }
+    },
+{
+      "key": "load_menu_failed",
+      "category": "",
+      "translations": {
+        "en-US": "Failed to load menu",
+        "zh-CN": "加载菜单失败"
+      }
+    },
+{
+      "key": "load_online_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Load online users failed",
+        "zh-CN": "加载在线用户失败"
+      }
+    },
+{
+      "key": "load_post_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Load posts failed",
+        "zh-CN": "加载职位失败"
+      }
+    },
+{
+      "key": "loadFailed",
+      "category": "",
+      "translations": {
+        "en-US": "Load Failed",
+        "zh-CN": "加载失败"
+      }
+    },
+{
+      "key": "login",
+      "category": "common",
+      "translations": {
+        "en-US": "Login",
+        "zh-CN": "登录"
+      }
+    },
+{
+      "key": "login_expired",
+      "category": "common",
+      "translations": {
+        "en-US": "Session expired, please login again",
+        "zh-CN": "登录已过期，请重新登录"
+      }
+    },
+{
+      "key": "login_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Login failed",
+        "zh-CN": "登录失败"
+      }
+    },
+{
+      "key": "login_ip",
+      "category": "common",
+      "translations": {
+        "en-US": "Login IP",
+        "zh-CN": "登录IP"
+      }
+    },
+{
+      "key": "login_loading",
+      "category": "common",
+      "translations": {
+        "en-US": "Logging in...",
+        "zh-CN": "登录中..."
+      }
+    },
+{
+      "key": "login_status",
+      "category": "common",
+      "translations": {
+        "en-US": "Login status",
+        "zh-CN": "登录状态"
+      }
+    },
+{
+      "key": "login_status_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Failed",
+        "zh-CN": "失败"
+      }
+    },
+{
+      "key": "login_status_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Success",
+        "zh-CN": "成功"
+      }
+    },
+{
+      "key": "login_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Login succeeded",
+        "zh-CN": "登录成功"
+      }
+    },
+{
+      "key": "login_time",
+      "category": "common",
+      "translations": {
+        "en-US": "Login time",
+        "zh-CN": "登录时间"
+      }
+    },
+{
+      "key": "login_title",
+      "category": "common",
+      "translations": {
+        "en-US": "CodeMaster · Rapid Development Platform",
+        "zh-CN": "代码大师 · 快速开发平台"
+      }
+    },
+{
+      "key": "loginlog",
+      "category": "common",
+      "translations": {
+        "en-US": "Login log",
+        "zh-CN": "登录日志"
+      }
+    },
+{
+      "key": "loginlog_detail",
+      "category": "",
+      "translations": {
+        "en-US": "Login Log Detail",
+        "zh-CN": "登录日志详情"
+      }
+    },
+{
+      "key": "logo_path",
+      "category": "",
+      "translations": {
+        "en-US": "Logo Path",
+        "zh-CN": "Logo路径"
+      }
+    },
+{
+      "key": "logout",
+      "category": "common",
+      "translations": {
+        "en-US": "Sign out",
+        "zh-CN": "退出登录"
+      }
+    },
+{
+      "key": "logout_confirm",
+      "category": "common",
+      "translations": {
+        "en-US": "Confirm sign out?",
+        "zh-CN": "确认退出登录？"
+      }
+    },
+{
+      "key": "logout_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Signed out",
+        "zh-CN": "退出成功"
+      }
+    },
+{
+      "key": "menu",
+      "category": "common",
+      "translations": {
+        "en-US": "Menu",
+        "zh-CN": "菜单"
+      }
+    },
+{
+      "key": "menu.add",
+      "category": "page",
+      "translations": {
+        "en-US": "Add Menu",
+        "zh-CN": "新增菜单"
+      }
+    },
+{
+      "key": "menu.detail",
+      "category": "page",
+      "translations": {
+        "en-US": "Menu Detail",
+        "zh-CN": "菜单详情"
+      }
+    },
+{
+      "key": "menu.edit",
+      "category": "page",
+      "translations": {
+        "en-US": "Edit Menu",
+        "zh-CN": "编辑菜单"
+      }
+    },
+{
+      "key": "menu_permission",
+      "category": "",
+      "translations": {
+        "en-US": "Menu Permission",
+        "zh-CN": "菜单权限"
+      }
+    },
+{
+      "key": "menu_type",
+      "category": "common",
+      "translations": {
+        "en-US": "Menu type",
+        "zh-CN": "菜单类型"
+      }
+    },
+{
+      "key": "menu_type_btn",
+      "category": "common",
+      "translations": {
+        "en-US": "Button",
+        "zh-CN": "按钮"
+      }
+    },
+{
+      "key": "menu_type_dir",
+      "category": "common",
+      "translations": {
+        "en-US": "Directory",
+        "zh-CN": "目录"
+      }
+    },
+{
+      "key": "menu_type_menu",
+      "category": "common",
+      "translations": {
+        "en-US": "Menu",
+        "zh-CN": "菜单"
+      }
+    },
+{
+      "key": "menuDetail",
+      "category": "",
+      "translations": {
+        "en-US": "Menu Detail",
+        "zh-CN": "菜单详情"
+      }
+    },
+{
+      "key": "menuName",
+      "category": "",
+      "translations": {
+        "en-US": "Menu Name",
+        "zh-CN": "菜单名称"
+      }
+    },
+{
+      "key": "menuScope",
+      "category": "",
+      "translations": {
+        "en-US": "Menu Scope",
+        "zh-CN": "菜单范围"
+      }
+    },
+{
+      "key": "menuType",
+      "category": "",
+      "translations": {
+        "en-US": "Menu Type",
+        "zh-CN": "菜单类型"
+      }
+    },
+{
+      "key": "monitor",
+      "category": "menu",
+      "translations": {
+        "en-US": "System Monitor",
+        "zh-CN": "系统监控"
+      }
+    },
+{
+      "key": "msg",
+      "category": "common",
+      "translations": {
+        "en-US": "Message",
+        "zh-CN": "提示消息"
+      }
+    },
+{
+      "key": "name",
+      "category": "common",
+      "translations": {
+        "en-US": "Name",
+        "zh-CN": "名称"
+      }
+    },
+{
+      "key": "nickname",
+      "category": "common",
+      "translations": {
+        "en-US": "Nickname",
+        "zh-CN": "昵称"
+      }
+    },
+{
+      "key": "no",
+      "category": "common",
+      "translations": {
+        "en-US": "No",
+        "zh-CN": "否"
+      }
+    },
+{
+      "key": "noCache",
+      "category": "",
+      "translations": {
+        "en-US": "No Cache",
+        "zh-CN": "不缓存"
+      }
+    },
+{
+      "key": "normal",
+      "category": "",
+      "translations": {
+        "en-US": "Normal",
+        "zh-CN": "正常"
+      }
+    },
+{
+      "key": "online_user",
+      "category": "common",
+      "translations": {
+        "en-US": "Online users",
+        "zh-CN": "在线用户"
+      }
+    },
+{
+      "key": "oper_ip",
+      "category": "common",
+      "translations": {
+        "en-US": "IP address",
+        "zh-CN": "操作IP"
+      }
+    },
+{
+      "key": "oper_name",
+      "category": "common",
+      "translations": {
+        "en-US": "Operator",
+        "zh-CN": "操作人员"
+      }
+    },
+{
+      "key": "oper_param",
+      "category": "common",
+      "translations": {
+        "en-US": "Request params",
+        "zh-CN": "请求参数"
+      }
+    },
+{
+      "key": "oper_time",
+      "category": "common",
+      "translations": {
+        "en-US": "Operation time",
+        "zh-CN": "操作时间"
+      }
+    },
+{
+      "key": "oper_url",
+      "category": "common",
+      "translations": {
+        "en-US": "Request URL",
+        "zh-CN": "请求地址"
+      }
+    },
+{
+      "key": "operator_type",
+      "category": "common",
+      "translations": {
+        "en-US": "Operator type",
+        "zh-CN": "操作类别"
+      }
+    },
+{
+      "key": "operator_type_manage",
+      "category": "common",
+      "translations": {
+        "en-US": "Backend user",
+        "zh-CN": "后台用户"
+      }
+    },
+{
+      "key": "operator_type_mobile",
+      "category": "common",
+      "translations": {
+        "en-US": "Mobile user",
+        "zh-CN": "手机端用户"
+      }
+    },
+{
+      "key": "operator_type_other",
+      "category": "common",
+      "translations": {
+        "en-US": "Other",
+        "zh-CN": "其他"
+      }
+    },
+{
+      "key": "operlog",
+      "category": "common",
+      "translations": {
+        "en-US": "Operation log",
+        "zh-CN": "操作日志"
+      }
+    },
+{
+      "key": "operlog_detail",
+      "category": "",
+      "translations": {
+        "en-US": "Operation Log Detail",
+        "zh-CN": "操作日志详情"
+      }
+    },
+{
+      "key": "orderNum",
+      "category": "",
+      "translations": {
+        "en-US": "Order",
+        "zh-CN": "排序号"
+      }
+    },
+{
+      "key": "os",
+      "category": "common",
+      "translations": {
+        "en-US": "OS",
+        "zh-CN": "操作系统"
+      }
+    },
+{
+      "key": "parentDept",
+      "category": "",
+      "translations": {
+        "en-US": "Parent Department",
+        "zh-CN": "上级部门"
+      }
+    },
+{
+      "key": "parentMenu",
+      "category": "",
+      "translations": {
+        "en-US": "Parent Menu",
+        "zh-CN": "上级菜单"
+      }
+    },
+{
+      "key": "password",
+      "category": "common",
+      "translations": {
+        "en-US": "Password",
+        "zh-CN": "密码"
+      }
+    },
+{
+      "key": "password_length_error",
+      "category": "",
+      "translations": {
+        "en-US": "Password length must be between 6 and 20 characters",
+        "zh-CN": "密码长度必须在6-20个字符之间"
+      }
+    },
+{
+      "key": "path",
+      "category": "",
+      "translations": {
+        "en-US": "Path",
+        "zh-CN": "路由路径"
+      }
+    },
+{
+      "key": "permission_code",
+      "category": "common",
+      "translations": {
+        "en-US": "Permission",
+        "zh-CN": "权限标识"
+      }
+    },
+{
+      "key": "perms",
+      "category": "",
+      "translations": {
+        "en-US": "Permissions",
+        "zh-CN": "权限标识"
+      }
+    },
+{
+      "key": "phone",
+      "category": "common",
+      "translations": {
+        "en-US": "Phone",
+        "zh-CN": "手机号"
+      }
+    },
+{
+      "key": "please_input_category",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter category",
+        "zh-CN": "请输入分类"
+      }
+    },
+{
+      "key": "please_input_code",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter code",
+        "zh-CN": "请输入编码"
+      }
+    },
+{
+      "key": "please_input_component",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter component path",
+        "zh-CN": "请输入组件路径"
+      }
+    },
+{
+      "key": "please_input_connection_string",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter connection string",
+        "zh-CN": "请输入连接字符串"
+      }
+    },
+{
+      "key": "please_input_cron_expression",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter cron expression",
+        "zh-CN": "请输入Cron表达式"
+      }
+    },
+{
+      "key": "please_input_db_connection",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter connection string",
+        "zh-CN": "请输入数据库连接"
+      }
+    },
+{
+      "key": "please_input_dictName",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter dictionary name",
+        "zh-CN": "请输入字典名称"
+      }
+    },
+{
+      "key": "please_input_dictType",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter dictionary type",
+        "zh-CN": "请输入字典类型"
+      }
+    },
+{
+      "key": "please_input_display_name",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter display name",
+        "zh-CN": "请输入显示名称"
+      }
+    },
+{
+      "key": "please_input_email",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter email",
+        "zh-CN": "请输入邮箱"
+      }
+    },
+{
+      "key": "please_input_email_valid",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter a valid email",
+        "zh-CN": "请输入正确的邮箱"
+      }
+    },
+{
+      "key": "please_input_icon",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter icon",
+        "zh-CN": "请输入图标"
+      }
+    },
+{
+      "key": "please_input_invoke_target",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter invoke target",
+        "zh-CN": "请输入调用目标"
+      }
+    },
+{
+      "key": "please_input_job_group",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter job group",
+        "zh-CN": "请输入任务组名"
+      }
+    },
+{
+      "key": "please_input_key",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter key",
+        "zh-CN": "请输入键"
+      }
+    },
+{
+      "key": "please_input_label",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter label",
+        "zh-CN": "请输入标签"
+      }
+    },
+{
+      "key": "please_input_lang_key",
+      "category": "",
+      "translations": {
+        "en-US": "Please input lang key",
+        "zh-CN": "请输入国际化键"
+      }
+    },
+{
+      "key": "please_input_leader",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter leader",
+        "zh-CN": "请输入负责人"
+      }
+    },
+{
+      "key": "please_input_name",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter name",
+        "zh-CN": "请输入名称"
+      }
+    },
+{
+      "key": "please_input_nickname",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter nickname",
+        "zh-CN": "请输入昵称"
+      }
+    },
+{
+      "key": "please_input_password",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter password",
+        "zh-CN": "请输入密码"
+      }
+    },
+{
+      "key": "please_input_permission",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter permission",
+        "zh-CN": "请输入权限标识"
+      }
+    },
+{
+      "key": "please_input_phone",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter phone",
+        "zh-CN": "请输入手机号"
+      }
+    },
+{
+      "key": "please_input_remark",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter remark",
+        "zh-CN": "请输入备注"
+      }
+    },
+{
+      "key": "please_input_route",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter route path",
+        "zh-CN": "请输入路由地址"
+      }
+    },
+{
+      "key": "please_input_task_name",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter task name",
+        "zh-CN": "请输入任务名称"
+      }
+    },
+{
+      "key": "please_input_username",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter username",
+        "zh-CN": "请输入用户名"
+      }
+    },
+{
+      "key": "please_input_value",
+      "category": "common",
+      "translations": {
+        "en-US": "Please enter value",
+        "zh-CN": "请输入值"
+      }
+    },
+{
+      "key": "please_select",
+      "category": "",
+      "translations": {
+        "en-US": "Please select",
+        "zh-CN": "请选择"
+      }
+    },
+{
+      "key": "please_select_database_type",
+      "category": "",
+      "translations": {
+        "en-US": "Please select database type",
+        "zh-CN": "请选择数据库类型"
+      }
+    },
+{
+      "key": "please_select_db_type",
+      "category": "common",
+      "translations": {
+        "en-US": "Please select DB type",
+        "zh-CN": "请选择数据库类型"
+      }
+    },
+{
+      "key": "please_select_delete",
+      "category": "common",
+      "translations": {
+        "en-US": "Please select items to delete",
+        "zh-CN": "请选择要删除的数据"
+      }
+    },
+{
+      "key": "please_select_dept",
+      "category": "common",
+      "translations": {
+        "en-US": "Please select department",
+        "zh-CN": "请选择部门"
+      }
+    },
+{
+      "key": "please_select_dictType",
+      "category": "",
+      "translations": {
+        "en-US": "Please select dictionary type",
+        "zh-CN": "请选择字典类型"
+      }
+    },
+{
+      "key": "please_select_expire_time",
+      "category": "common",
+      "translations": {
+        "en-US": "Please select expire time",
+        "zh-CN": "请选择到期时间"
+      }
+    },
+{
+      "key": "please_select_isolation",
+      "category": "common",
+      "translations": {
+        "en-US": "Please select isolation type",
+        "zh-CN": "请选择隔离类型"
+      }
+    },
+{
+      "key": "please_select_lang",
+      "category": "common",
+      "translations": {
+        "en-US": "Please select language",
+        "zh-CN": "请选择语言"
+      }
+    },
+{
+      "key": "please_select_menu_type",
+      "category": "common",
+      "translations": {
+        "en-US": "Please select menu type",
+        "zh-CN": "请选择菜单类型"
+      }
+    },
+{
+      "key": "please_select_post",
+      "category": "common",
+      "translations": {
+        "en-US": "Please select post",
+        "zh-CN": "请选择职位"
+      }
+    },
+{
+      "key": "please_select_role",
+      "category": "",
+      "translations": {
+        "en-US": "Please select role",
+        "zh-CN": "请选择角色"
+      }
+    },
+{
+      "key": "please_select_status",
+      "category": "common",
+      "translations": {
+        "en-US": "Please select status",
+        "zh-CN": "请选择状态"
+      }
+    },
+{
+      "key": "please_select_task_type",
+      "category": "",
+      "translations": {
+        "en-US": "Please select task type",
+        "zh-CN": "请选择任务类型"
+      }
+    },
+{
+      "key": "please_select_type",
+      "category": "common",
+      "translations": {
+        "en-US": "Please select type",
+        "zh-CN": "请选择类型"
+      }
+    },
+{
+      "key": "pleaseEnter",
+      "category": "",
+      "translations": {
+        "en-US": "Please Enter",
+        "zh-CN": "请输入"
+      }
+    },
+{
+      "key": "pleaseSelect",
+      "category": "",
+      "translations": {
+        "en-US": "Please Select",
+        "zh-CN": "请选择"
+      }
+    },
+{
+      "key": "post",
+      "category": "common",
+      "translations": {
+        "en-US": "Post",
+        "zh-CN": "职位"
+      }
+    },
+{
+      "key": "post.add",
+      "category": "page",
+      "translations": {
+        "en-US": "Add Post",
+        "zh-CN": "新增岗位"
+      }
+    },
+{
+      "key": "post.detail",
+      "category": "page",
+      "translations": {
+        "en-US": "Post Detail",
+        "zh-CN": "岗位详情"
+      }
+    },
+{
+      "key": "post.edit",
+      "category": "page",
+      "translations": {
+        "en-US": "Edit Post",
+        "zh-CN": "编辑岗位"
+      }
+    },
+{
+      "key": "post_add",
+      "category": "",
+      "translations": {
+        "en-US": "Add Post",
+        "zh-CN": "新增职位"
+      }
+    },
+{
+      "key": "post_detail",
+      "category": "",
+      "translations": {
+        "en-US": "Post Detail",
+        "zh-CN": "职位详情"
+      }
+    },
+{
+      "key": "post_edit",
+      "category": "",
+      "translations": {
+        "en-US": "Edit Post",
+        "zh-CN": "编辑职位"
+      }
+    },
+{
+      "key": "profile",
+      "category": "common",
+      "translations": {
+        "en-US": "Profile",
+        "zh-CN": "个人中心"
+      }
+    },
+{
+      "key": "prompt",
+      "category": "common",
+      "translations": {
+        "en-US": "Prompt",
+        "zh-CN": "提示"
+      }
+    },
+{
+      "key": "query_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Query failed",
+        "zh-CN": "查询失败"
+      }
+    },
+{
+      "key": "refresh",
+      "category": "common",
+      "translations": {
+        "en-US": "Refresh",
+        "zh-CN": "刷新"
+      }
+    },
+{
+      "key": "remark",
+      "category": "common",
+      "translations": {
+        "en-US": "Remark",
+        "zh-CN": "备注"
+      }
+    },
+{
+      "key": "request_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Request failed",
+        "zh-CN": "请求失败"
+      }
+    },
+{
+      "key": "request_method",
+      "category": "common",
+      "translations": {
+        "en-US": "Request method",
+        "zh-CN": "请求方式"
+      }
+    },
+{
+      "key": "reset",
+      "category": "common",
+      "translations": {
+        "en-US": "Reset",
+        "zh-CN": "重置"
+      }
+    },
+{
+      "key": "role",
+      "category": "common",
+      "translations": {
+        "en-US": "Role",
+        "zh-CN": "角色"
+      }
+    },
+{
+      "key": "role.add",
+      "category": "page",
+      "translations": {
+        "en-US": "Add Role",
+        "zh-CN": "新增角色"
+      }
+    },
+{
+      "key": "role.detail",
+      "category": "page",
+      "translations": {
+        "en-US": "Role Detail",
+        "zh-CN": "角色详情"
+      }
+    },
+{
+      "key": "role.edit",
+      "category": "page",
+      "translations": {
+        "en-US": "Edit Role",
+        "zh-CN": "编辑角色"
+      }
+    },
+{
+      "key": "route_path",
+      "category": "common",
+      "translations": {
+        "en-US": "Route path",
+        "zh-CN": "路由地址"
+      }
+    },
+{
+      "key": "run_times",
+      "category": "",
+      "translations": {
+        "en-US": "Run Times",
+        "zh-CN": "执行次数"
+      }
+    },
+{
+      "key": "save",
+      "category": "common",
+      "translations": {
+        "en-US": "Save",
+        "zh-CN": "保存"
+      }
+    },
+{
+      "key": "saveFailed",
+      "category": "",
+      "translations": {
+        "en-US": "Save Failed",
+        "zh-CN": "保存失败"
+      }
+    },
+{
+      "key": "search",
+      "category": "common",
+      "translations": {
+        "en-US": "Search",
+        "zh-CN": "查询"
+      }
+    },
+{
+      "key": "select_file",
+      "category": "common",
+      "translations": {
+        "en-US": "Select file",
+        "zh-CN": "选择文件"
+      }
+    },
+{
+      "key": "shared",
+      "category": "",
+      "translations": {
+        "en-US": "Shared",
+        "zh-CN": "共享"
+      }
+    },
+{
+      "key": "show",
+      "category": "",
+      "translations": {
+        "en-US": "Show",
+        "zh-CN": "显示"
+      }
+    },
+{
+      "key": "signalr_no_token",
+      "category": "common",
+      "translations": {
+        "en-US": "No token, cannot connect SignalR",
+        "zh-CN": "未找到token，无法连接SignalR"
+      }
+    },
+{
+      "key": "sort",
+      "category": "common",
+      "translations": {
+        "en-US": "Sort",
+        "zh-CN": "排序"
+      }
+    },
+{
+      "key": "sql_text_placeholder",
+      "category": "",
+      "translations": {
+        "en-US": "Please enter SQL statement",
+        "zh-CN": "请输入SQL语句"
+      }
+    },
+{
+      "key": "status",
+      "category": "common",
+      "translations": {
+        "en-US": "Status",
+        "zh-CN": "状态"
+      }
+    },
+{
+      "key": "status_disabled",
+      "category": "common",
+      "translations": {
+        "en-US": "Disabled",
+        "zh-CN": "停用"
+      }
+    },
+{
+      "key": "status_init_failed",
+      "category": "",
+      "translations": {
+        "en-US": "Initialize Failed",
+        "zh-CN": "初始化失败"
+      }
+    },
+{
+      "key": "status_initialized",
+      "category": "",
+      "translations": {
+        "en-US": "Initialized",
+        "zh-CN": "已初始化"
+      }
+    },
+{
+      "key": "status_normal",
+      "category": "common",
+      "translations": {
+        "en-US": "Active",
+        "zh-CN": "正常"
+      }
+    },
+{
+      "key": "status_not_initialized",
+      "category": "",
+      "translations": {
+        "en-US": "Not Initialized",
+        "zh-CN": "未初始化"
+      }
+    },
+{
+      "key": "status_paused",
+      "category": "",
+      "translations": {
+        "en-US": "Paused",
+        "zh-CN": "已暂停"
+      }
+    },
+{
+      "key": "status_running",
+      "category": "",
+      "translations": {
+        "en-US": "Running",
+        "zh-CN": "运行中"
+      }
+    },
+{
+      "key": "status_stopped",
+      "category": "",
+      "translations": {
+        "en-US": "Stopped",
+        "zh-CN": "已停止"
+      }
+    },
+{
+      "key": "system",
+      "category": "common",
+      "translations": {
+        "en-US": "System",
+        "zh-CN": "系统管理"
+      }
+    },
+{
+      "key": "system.menu.monitor",
+      "category": "common",
+      "translations": {
+        "en-US": "Monitor",
+        "zh-CN": "监控中心"
+      }
+    },
+{
+      "key": "system.menu.task",
+      "category": "menu",
+      "translations": {
+        "en-US": "Task Management",
+        "zh-CN": "任务管理"
+      }
+    },
+{
+      "key": "system.menu.tasklog",
+      "category": "menu",
+      "translations": {
+        "en-US": "Task Log",
+        "zh-CN": "任务日志"
+      }
+    },
+{
+      "key": "task_add",
+      "category": "",
+      "translations": {
+        "en-US": "Add Task",
+        "zh-CN": "新增任务"
+      }
+    },
+{
+      "key": "task_detail",
+      "category": "",
+      "translations": {
+        "en-US": "Task Detail",
+        "zh-CN": "任务详情"
+      }
+    },
+{
+      "key": "task_edit",
+      "category": "",
+      "translations": {
+        "en-US": "Edit Task",
+        "zh-CN": "编辑任务"
+      }
+    },
+{
+      "key": "task_id",
+      "category": "",
+      "translations": {
+        "en-US": "Task ID",
+        "zh-CN": "任务ID"
+      }
+    },
+{
+      "key": "task_name",
+      "category": "",
+      "translations": {
+        "en-US": "Task Name",
+        "zh-CN": "任务名称"
+      }
+    },
+{
+      "key": "task_type",
+      "category": "",
+      "translations": {
+        "en-US": "Task Type",
+        "zh-CN": "任务类型"
+      }
+    },
+{
+      "key": "task_type_assembly",
+      "category": "",
+      "translations": {
+        "en-US": "Assembly",
+        "zh-CN": "程序集"
+      }
+    },
+{
+      "key": "task_type_http",
+      "category": "",
+      "translations": {
+        "en-US": "HTTP Request",
+        "zh-CN": "HTTP请求"
+      }
+    },
+{
+      "key": "task_type_sql",
+      "category": "",
+      "translations": {
+        "en-US": "SQL Script",
+        "zh-CN": "SQL脚本"
+      }
+    },
+{
+      "key": "tasklog_detail",
+      "category": "",
+      "translations": {
+        "en-US": "Task Log Detail",
+        "zh-CN": "任务日志详情"
+      }
+    },
+{
+      "key": "tenant",
+      "category": "common",
+      "translations": {
+        "en-US": "Tenant",
+        "zh-CN": "租户"
+      }
+    },
+{
+      "key": "tenant.add",
+      "category": "page",
+      "translations": {
+        "en-US": "Add Tenant",
+        "zh-CN": "新增租户"
+      }
+    },
+{
+      "key": "tenant.detail",
+      "category": "page",
+      "translations": {
+        "en-US": "Tenant Detail",
+        "zh-CN": "租户详情"
+      }
+    },
+{
+      "key": "tenant.edit",
+      "category": "page",
+      "translations": {
+        "en-US": "Edit Tenant",
+        "zh-CN": "编辑租户"
+      }
+    },
+{
+      "key": "tenantOnly",
+      "category": "",
+      "translations": {
+        "en-US": "Tenant Only",
+        "zh-CN": "租户专用"
+      }
+    },
+{
+      "key": "test_connection",
+      "category": "common",
+      "translations": {
+        "en-US": "Test connection",
+        "zh-CN": "测试连接"
+      }
+    },
+{
+      "key": "text",
+      "category": "common",
+      "translations": {
+        "en-US": "Text",
+        "zh-CN": "文本"
+      }
+    },
+{
+      "key": "theme_business_gray",
+      "category": "common",
+      "translations": {
+        "en-US": "Business gray",
+        "zh-CN": "商务灰"
+      }
+    },
+{
+      "key": "theme_dark",
+      "category": "common",
+      "translations": {
+        "en-US": "Dark mode",
+        "zh-CN": "暗黑模式"
+      }
+    },
+{
+      "key": "theme_switch",
+      "category": "common",
+      "translations": {
+        "en-US": "Switch theme",
+        "zh-CN": "主题切换"
+      }
+    },
+{
+      "key": "theme_switch_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Switched to {theme}",
+        "zh-CN": "已切换到{theme}主题"
+      }
+    },
+{
+      "key": "theme_tech_blue",
+      "category": "common",
+      "translations": {
+        "en-US": "Tech blue",
+        "zh-CN": "科技蓝"
+      }
+    },
+{
+      "key": "title",
+      "category": "common",
+      "translations": {
+        "en-US": "Module",
+        "zh-CN": "操作模块"
+      }
+    },
+{
+      "key": "title_key",
+      "category": "common",
+      "translations": {
+        "en-US": "Title key",
+        "zh-CN": "标题键"
+      }
+    },
+{
+      "key": "titleKey",
+      "category": "",
+      "translations": {
+        "en-US": "Title Key",
+        "zh-CN": "标题键"
+      }
+    },
+{
+      "key": "topLevel",
+      "category": "",
+      "translations": {
+        "en-US": "Top Level",
+        "zh-CN": "顶级"
+      }
+    },
+{
+      "key": "total_depts",
+      "category": "common",
+      "translations": {
+        "en-US": "Total departments",
+        "zh-CN": "部门总数"
+      }
+    },
+{
+      "key": "total_menus",
+      "category": "common",
+      "translations": {
+        "en-US": "Total menus",
+        "zh-CN": "菜单总数"
+      }
+    },
+{
+      "key": "total_roles",
+      "category": "common",
+      "translations": {
+        "en-US": "Total roles",
+        "zh-CN": "角色总数"
+      }
+    },
+{
+      "key": "total_users",
+      "category": "common",
+      "translations": {
+        "en-US": "Total users",
+        "zh-CN": "用户总数"
+      }
+    },
+{
+      "key": "type",
+      "category": "common",
+      "translations": {
+        "en-US": "Type",
+        "zh-CN": "类型"
+      }
+    },
+{
+      "key": "update_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Update failed",
+        "zh-CN": "更新失败"
+      }
+    },
+{
+      "key": "update_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Update succeeded",
+        "zh-CN": "更新成功"
+      }
+    },
+{
+      "key": "updateMenu",
+      "category": "",
+      "translations": {
+        "en-US": "Update Menu",
+        "zh-CN": "修改菜单"
+      }
+    },
+{
+      "key": "upload",
+      "category": "common",
+      "translations": {
+        "en-US": "Upload",
+        "zh-CN": "上传"
+      }
+    },
+{
+      "key": "upload_failed",
+      "category": "common",
+      "translations": {
+        "en-US": "Upload failed",
+        "zh-CN": "上传失败"
+      }
+    },
+{
+      "key": "upload_file",
+      "category": "common",
+      "translations": {
+        "en-US": "Upload file",
+        "zh-CN": "上传文件"
+      }
+    },
+{
+      "key": "upload_success",
+      "category": "common",
+      "translations": {
+        "en-US": "Upload succeeded",
+        "zh-CN": "上传成功"
+      }
+    },
+{
+      "key": "upload_time",
+      "category": "common",
+      "translations": {
+        "en-US": "Upload time",
+        "zh-CN": "上传时间"
+      }
+    },
+{
+      "key": "upload_user",
+      "category": "common",
+      "translations": {
+        "en-US": "Uploader",
+        "zh-CN": "上传人"
+      }
+    },
+{
+      "key": "user",
+      "category": "common",
+      "translations": {
+        "en-US": "User",
+        "zh-CN": "用户"
+      }
+    },
+{
+      "key": "user.add",
+      "category": "page",
+      "translations": {
+        "en-US": "Add User",
+        "zh-CN": "新增用户"
+      }
+    },
+{
+      "key": "user.detail",
+      "category": "page",
+      "translations": {
+        "en-US": "User Detail",
+        "zh-CN": "用户详情"
+      }
+    },
+{
+      "key": "user.edit",
+      "category": "page",
+      "translations": {
+        "en-US": "Edit User",
+        "zh-CN": "编辑用户"
+      }
+    },
+{
+      "key": "user_id",
+      "category": "common",
+      "translations": {
+        "en-US": "User ID",
+        "zh-CN": "用户ID"
+      }
+    },
+{
+      "key": "username",
+      "category": "common",
+      "translations": {
+        "en-US": "Username",
+        "zh-CN": "用户名"
+      }
+    },
+{
+      "key": "validate_length_2_20",
+      "category": "common",
+      "translations": {
+        "en-US": "Length must be 2 to 20",
+        "zh-CN": "长度必须在2到20之间"
+      }
+    },
+{
+      "key": "validate_length_2_30",
+      "category": "common",
+      "translations": {
+        "en-US": "Length must be 2 to 30",
+        "zh-CN": "长度必须在2到30之间"
+      }
+    },
+{
+      "key": "validate_length_2_50",
+      "category": "common",
+      "translations": {
+        "en-US": "Length must be 2 to 50",
+        "zh-CN": "长度必须在2到50之间"
+      }
+    },
+{
+      "key": "validate_length_6_20",
+      "category": "common",
+      "translations": {
+        "en-US": "Length must be 6 to 20",
+        "zh-CN": "长度必须在6到20之间"
+      }
+    },
+{
+      "key": "value",
+      "category": "common",
+      "translations": {
+        "en-US": "Value",
+        "zh-CN": "值"
+      }
+    },
+{
+      "key": "view",
+      "category": "button",
+      "translations": {
+        "en-US": "View",
+        "zh-CN": "详情"
+      }
+    },
+{
+      "key": "view_dict_data",
+      "category": "",
+      "translations": {
+        "en-US": "Dict Data Detail",
+        "zh-CN": "字典数据详情"
+      }
+    },
+{
+      "key": "view_dict_type",
+      "category": "",
+      "translations": {
+        "en-US": "Dict Type Detail",
+        "zh-CN": "字典类型详情"
+      }
+    },
+{
+      "key": "view_function_not_implemented",
+      "category": "common",
+      "translations": {
+        "en-US": "View function not implemented",
+        "zh-CN": "查看功能尚未实现"
+      }
+    },
+{
+      "key": "viewMenu",
+      "category": "",
+      "translations": {
+        "en-US": "View Menu",
+        "zh-CN": "查看菜单"
+      }
+    },
+{
+      "key": "visible",
+      "category": "",
+      "translations": {
+        "en-US": "Visible",
+        "zh-CN": "显示状态"
+      }
+    },
+{
+      "key": "welcome_desc",
+      "category": "common",
+      "translations": {
+        "en-US": "Enterprise rapid development platform out of the box",
+        "zh-CN": "开箱即用的企业级快速开发平台"
+      }
+    },
+{
+      "key": "welcome_title",
+      "category": "common",
+      "translations": {
+        "en-US": "Welcome to CodeMaster",
+        "zh-CN": "欢迎使用 CodeMaster"
+      }
+    },
+{
+      "key": "welcome_use_app",
+      "category": "common",
+      "translations": {
+        "en-US": "Get started",
+        "zh-CN": "开始使用"
+      }
+    },
+{
+      "key": "yes",
+      "category": "common",
+      "translations": {
+        "en-US": "Yes",
+        "zh-CN": "是"
+      }
+    }
+  ]
+}

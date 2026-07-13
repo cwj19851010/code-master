@@ -1,0 +1,76 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "Back",
+      "Description": "Page Header 的图标 Icon 组件"
+    },
+    {
+      "Name": "title",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "Page Header 的主标题，默认是 Back (内置 a11y)"
+    },
+    {
+      "Name": "content",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "Page Header 的内容"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "icon",
+      "Description": "图标内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "title",
+      "Description": "标题内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "content",
+      "Description": "内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "extra",
+      "Description": "扩展设置",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "breadcrumb",
+      "Description": "面包屑导航内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "default",
+      "Description": "默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "back",
+      "Description": "点击左侧区域触发",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "page-header",
+  "Link": "https://element-plus.org/zh-CN/component/page-header",
+  "Tag": "page-header",
+  "GroupName": "Navigation 导航"
+}

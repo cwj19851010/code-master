@@ -1,0 +1,179 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "locale",
+      "Type": "object",
+      "TypeDescription": null,
+      "DefaultValue": "en",
+      "Description": "翻译文本对象"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": null,
+      "DefaultValue": "default",
+      "Description": "全局组件大小"
+    },
+    {
+      "Name": "zIndex",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "全局初始化 zIndex 的值"
+    },
+    {
+      "Name": "namespace",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "el",
+      "Description": "全局组件类名称前缀 (需要配合 $namespace\n 使用)"
+    },
+    {
+      "Name": "button",
+      "Type": "object",
+      "TypeDescription": null,
+      "DefaultValue": "详见下表",
+      "Description": "按钮相关配置，详见下表"
+    },
+    {
+      "Name": "link",
+      "Type": "object",
+      "TypeDescription": null,
+      "DefaultValue": "详见下表",
+      "Description": "链接相关的配置， 见下表"
+    },
+    {
+      "Name": "message",
+      "Type": "object",
+      "TypeDescription": null,
+      "DefaultValue": "详见下表",
+      "Description": "消息相关配置， 详见下表"
+    },
+    {
+      "Name": "experimental-features",
+      "Type": "object",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "将要添加的实验阶段的功能，所有功能都是默认设置为 false"
+    },
+    {
+      "Name": "empty-values",
+      "Type": "array",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "输入类组件空值"
+    },
+    {
+      "Name": "value-on-clear",
+      "Type": "string, number, boolean, Function",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "输入类组件清空值"
+    },
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": "'primary' | 'success' | 'warning' | 'danger' | 'info' | 'text' (deprecated)",
+      "DefaultValue": "—",
+      "Description": "按钮类型，在设置color时，后者优先。"
+    },
+    {
+      "Name": "autoInsertSpace",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "两个中文字符之间自动插入空格(仅当文本长度为 2 且所有字符均为中文时才生效)"
+    },
+    {
+      "Name": "plain",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为朴素按钮"
+    },
+    {
+      "Name": "round",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否为圆角按钮"
+    },
+    {
+      "Name": "type",
+      "Type": "enum",
+      "TypeDescription": "'primary' | 'success' | 'warning' | 'danger' | 'info' | 'default'",
+      "DefaultValue": "default",
+      "Description": "type"
+    },
+    {
+      "Name": "underline",
+      "Type": "enum",
+      "TypeDescription": "'always' | 'hover' | 'never' | boolean",
+      "DefaultValue": "hover",
+      "Description": "控制下划线是否出现"
+    },
+    {
+      "Name": "shadow",
+      "Type": "enum",
+      "TypeDescription": "always | never | hover",
+      "DefaultValue": "—",
+      "Description": "设置阴影显示时机"
+    },
+    {
+      "Name": "max",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "可同时显示的消息最大数量"
+    },
+    {
+      "Name": "grouping",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "合并内容相同的消息，不支持 VNode 类型的消息"
+    },
+    {
+      "Name": "duration",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "显示时间，单位为毫秒。 设为 0 则不会自动关闭"
+    },
+    {
+      "Name": "showClose",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "是否显示关闭按钮"
+    },
+    {
+      "Name": "offset",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "Message 距离窗口顶部的偏移量"
+    },
+    {
+      "Name": "plain",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "是否纯色"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "config-provider",
+  "Link": "https://element-plus.org/zh-CN/component/config-provider",
+  "Tag": "config-provider",
+  "GroupName": "配置组件"
+}

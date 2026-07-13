@@ -1,0 +1,72 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "size",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "-",
+      "Description": "面板大小(像素或百分比)"
+    },
+    {
+      "Name": "min",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "-",
+      "Description": "面板最小尺寸(像素或百分比)"
+    },
+    {
+      "Name": "max",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "-",
+      "Description": "面板的最大尺寸(像素或百分比)"
+    },
+    {
+      "Name": "resizable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否可以调整面板大小"
+    },
+    {
+      "Name": "collapsible",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "面板是否可折叠"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "面板的默认内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "start-collapsible",
+      "Description": "自定义起始折叠按钮的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "end-collapsible",
+      "Description": "结束可折叠按钮的自定义内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "update:size",
+      "Description": "当面板大小改变时触发",
+      "Type": "Function",
+      "TypeDescription": "(size: number) => void"
+    }
+  ],
+  "ComponentExposes": [],
+  "Name": "splitter-panel",
+  "Link": "https://element-plus.org/zh-CN/component/splitter",
+  "Tag": "splitter-panel",
+  "GroupName": "Basic 基础组件"
+}

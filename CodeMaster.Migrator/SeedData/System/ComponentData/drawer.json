@@ -1,0 +1,241 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "model-value",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示 Drawer"
+    },
+    {
+      "Name": "append-to-body",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "Drawer 自身是否插入至 body 元素上。嵌套的 Drawer 必须指定该属性并赋值为 true"
+    },
+    {
+      "Name": "append-to",
+      "Type": "CSSSelector, HTMLElement",
+      "TypeDescription": null,
+      "DefaultValue": "body",
+      "Description": "挂载到哪个 DOM 元素 将覆盖 append-to-body"
+    },
+    {
+      "Name": "lock-scroll",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否在 Drawer 出现时将 body 滚动锁定"
+    },
+    {
+      "Name": "before-close",
+      "Type": "Function",
+      "TypeDescription": "(done: (cancel?: boolean) => void) => void(done 是个 function type 接受一个 boolean 参数, 执行 done 使用 true 参数或不提供参数将会终止关闭)",
+      "DefaultValue": "—",
+      "Description": "关闭前的回调，会暂停 Drawer 的关闭"
+    },
+    {
+      "Name": "close-on-click-modal",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否可以通过点击 modal 关闭 Drawer"
+    },
+    {
+      "Name": "close-on-press-escape",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否可以通过按下 ESC 关闭 Drawer"
+    },
+    {
+      "Name": "open-delay",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "Drawer 打开的延时时间，单位毫秒"
+    },
+    {
+      "Name": "close-delay",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "0",
+      "Description": "Drawer 关闭的延时时间，单位毫秒"
+    },
+    {
+      "Name": "destroy-on-close",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "控制是否在关闭 Drawer 之后将子元素全部销毁"
+    },
+    {
+      "Name": "modal",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否需要遮罩层"
+    },
+    {
+      "Name": "direction",
+      "Type": "enum",
+      "TypeDescription": "'rtl' | 'ltr' | 'ttb' | 'btt'",
+      "DefaultValue": "rtl",
+      "Description": "Drawer 打开的方向"
+    },
+    {
+      "Name": "show-close",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否显示关闭按钮"
+    },
+    {
+      "Name": "size",
+      "Type": "number, string",
+      "TypeDescription": null,
+      "DefaultValue": "30%",
+      "Description": "Drawer 窗体的大小, 当使用 number 类型时, 以像素为单位, 当使用 string 类型时, 请传入 'x%', 否则便会以 number 类型解释"
+    },
+    {
+      "Name": "title",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "Drawer 的标题，也可通过具名 slot （见下表）传入"
+    },
+    {
+      "Name": "with-header",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "控制是否显示 header 栏, 默认为 true, 当此项为 false 时, title attribute 和 title slot 均不生效"
+    },
+    {
+      "Name": "modal-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "遮罩层的自定义类名"
+    },
+    {
+      "Name": "header-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "header 部分的自定义 class 名"
+    },
+    {
+      "Name": "body-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "body 部分的自定义 class 名"
+    },
+    {
+      "Name": "footer-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "footer 部分的自定义 class 名"
+    },
+    {
+      "Name": "z-index",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "设置 z-index"
+    },
+    {
+      "Name": "header-aria-level",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "2",
+      "Description": "header 的 aria-level 属性"
+    },
+    {
+      "Name": "custom-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "Drawer 的自定义类名"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "Drawer 的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "header",
+      "Description": "Drawer 标题的内容；会替换标题部分，但不会移除关闭按钮。",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "footer",
+      "Description": "Drawer 页脚部分",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "title",
+      "Description": "与 header 作用相同 请使用 header",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "open",
+      "Description": "Drawer 打开的回调",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "opened",
+      "Description": "Drawer 打开动画结束时的回调",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "close",
+      "Description": "Drawer 关闭的回调",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "closed",
+      "Description": "Drawer 关闭动画结束时的回调",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "open-auto-focus",
+      "Description": "输入焦点聚焦在 Drawer 内容时的回调",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "close-auto-focus",
+      "Description": "输入焦点从 Drawer 内容失焦时的回调",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "handleClose",
+      "Description": "用于关闭 Drawer, 该方法会调用传入的 before-close 方法",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "Name": "drawer",
+  "Link": "https://element-plus.org/zh-CN/component/drawer",
+  "Tag": "drawer",
+  "GroupName": "Feedback 反馈组件"
+}

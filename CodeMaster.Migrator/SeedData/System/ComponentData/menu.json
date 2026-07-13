@@ -1,0 +1,196 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "mode",
+      "Type": "enum",
+      "TypeDescription": "'horizontal' | 'vertical'",
+      "DefaultValue": "vertical",
+      "Description": "菜单展示模式"
+    },
+    {
+      "Name": "collapse",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否水平折叠收起菜单（仅在 mode 为 vertical 时可用）"
+    },
+    {
+      "Name": "ellipsis",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否省略多余的子项（仅在横向模式生效）"
+    },
+    {
+      "Name": "ellipsis-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "自定义省略图标 (仅在水平模式下可用)"
+    },
+    {
+      "Name": "popper-offset",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "6",
+      "Description": "弹出层的偏移量(对所有子菜单有效)"
+    },
+    {
+      "Name": "default-active",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "页面加载时默认激活菜单的 index"
+    },
+    {
+      "Name": "default-openeds",
+      "Type": "object",
+      "TypeDescription": "string[]",
+      "DefaultValue": "[]",
+      "Description": "默认打开的 sub-menu 的 index 的数组"
+    },
+    {
+      "Name": "unique-opened",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否只保持一个子菜单的展开"
+    },
+    {
+      "Name": "menu-trigger",
+      "Type": "enum",
+      "TypeDescription": "'hover' | 'click'",
+      "DefaultValue": "hover",
+      "Description": "子菜单打开的触发方式，只在 mode 为 horizontal 时有效。"
+    },
+    {
+      "Name": "router",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否启用 vue-router 模式。 启用该模式会在激活导航时以 index 作为 path 进行路由跳转 使用 default-active 来设置加载时的激活项。"
+    },
+    {
+      "Name": "collapse-transition",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "是否开启折叠动画"
+    },
+    {
+      "Name": "popper-effect",
+      "Type": "enum, string",
+      "TypeDescription": "'dark' | 'light'",
+      "DefaultValue": "dark",
+      "Description": "Tooltip 主题，内置了 dark / light 两种主题，当菜单折叠时生效。"
+    },
+    {
+      "Name": "close-on-click-outside",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "可选，单击外部时是否折叠菜单"
+    },
+    {
+      "Name": "popper-class",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "为 popper 添加类名"
+    },
+    {
+      "Name": "show-timeout",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "300",
+      "Description": "菜单出现前的延迟"
+    },
+    {
+      "Name": "hide-timeout",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "300",
+      "Description": "菜单消失前的延迟"
+    },
+    {
+      "Name": "background-color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "#ffffff",
+      "Description": "菜单的背景颜色 (十六进制格式) (推荐在样式类中使用 --el-menu-bg-color)"
+    },
+    {
+      "Name": "text-color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "#303133",
+      "Description": "菜单的文字颜色 (十六进制格式) (推荐在样式类中使用 --el-menu-text-color)"
+    },
+    {
+      "Name": "active-text-color",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "#409eff",
+      "Description": "活动菜单项的文本颜色（十六进制格式）（推荐使用 css var --el-menu-active-color）"
+    },
+    {
+      "Name": "persistent",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "当菜单处于非活动状态且 persistent 为 false 时，下拉菜单将被销毁"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "select",
+      "Description": "菜单激活回调",
+      "Type": "Function",
+      "TypeDescription": "MenuSelectEvent"
+    },
+    {
+      "Name": "open",
+      "Description": "sub-menu 展开的回调",
+      "Type": "Function",
+      "TypeDescription": "MenuOpenEvent"
+    },
+    {
+      "Name": "close",
+      "Description": "sub-menu 收起的回调",
+      "Type": "Function",
+      "TypeDescription": "MenuCloseEvent"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "open",
+      "Description": "打开一个特定的子菜单，参数是要打开的子菜单的索引",
+      "Type": "Function",
+      "TypeDescription": "(index: string) => void"
+    },
+    {
+      "Name": "close",
+      "Description": "关闭一个特定的子菜单，参数是要关闭子菜单的索引",
+      "Type": "Function",
+      "TypeDescription": "(index: string) => void"
+    },
+    {
+      "Name": "updateActiveIndex",
+      "Description": "通过索引激活指定菜单",
+      "Type": "Function",
+      "TypeDescription": "(index: string) => void"
+    }
+  ],
+  "Name": "菜单",
+  "Link": "https://element-plus.org/zh-CN/component/menu",
+  "Tag": "menu",
+  "GroupName": "Navigation 导航"
+}

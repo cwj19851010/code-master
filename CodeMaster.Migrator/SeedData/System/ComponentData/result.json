@@ -1,0 +1,57 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "title",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "result 组件的标题"
+    },
+    {
+      "Name": "sub-title",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "result 组件的副标题"
+    },
+    {
+      "Name": "icon",
+      "Type": "enum",
+      "TypeDescription": "'primary' (2.9.11) | 'success' | 'warning' | 'info' | 'error'",
+      "DefaultValue": "info",
+      "Description": "result 组件的图标类型"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "icon",
+      "Description": "icon 内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "title",
+      "Description": "result title 的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "sub-title",
+      "Description": "sub title 的内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "extra",
+      "Description": "内容额外区域的内容",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "result",
+  "Link": "https://element-plus.org/zh-CN/component/result",
+  "Tag": "result",
+  "GroupName": "Data 数据展示"
+}

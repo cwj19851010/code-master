@@ -1,0 +1,381 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "type",
+      "Type": "string",
+      "TypeDescription": "'text' | 'textarea' | 'password' | 'button' | 'checkbox' | 'file' | 'number' | 'radio' | ...",
+      "DefaultValue": "text",
+      "Description": "类型"
+    },
+    {
+      "Name": "model-value",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "绑定值"
+    },
+    {
+      "Name": "maxlength",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "同原生 maxlength 属性"
+    },
+    {
+      "Name": "minlength",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生属性，最小输入长度"
+    },
+    {
+      "Name": "show-word-limit",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示统计字数, 只在 type 为 'text' 或 'textarea' 的时候生效"
+    },
+    {
+      "Name": "placeholder",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "输入框占位文本"
+    },
+    {
+      "Name": "clearable",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示清除按钮，只有当 type 不是 textarea时生效"
+    },
+    {
+      "Name": "formatter",
+      "Type": "Function",
+      "TypeDescription": "(value: string | number) => string",
+      "DefaultValue": "—",
+      "Description": "指定输入值的格式。(只有当 type 是\"text\"时才能工作)"
+    },
+    {
+      "Name": "parser",
+      "Type": "Function",
+      "TypeDescription": "(value: string) => string",
+      "DefaultValue": "—",
+      "Description": "指定从格式化器输入中提取的值。(仅当 type 是\"text\"时才起作用)"
+    },
+    {
+      "Name": "show-password",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否显示切换密码图标"
+    },
+    {
+      "Name": "disabled",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否禁用"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'large' | 'default' | 'small'",
+      "DefaultValue": "—",
+      "Description": "输入框尺寸，只在 type 不为 'textarea' 时有效"
+    },
+    {
+      "Name": "prefix-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "自定义前缀图标"
+    },
+    {
+      "Name": "suffix-icon",
+      "Type": "string, Component",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "自定义后缀图标"
+    },
+    {
+      "Name": "rows",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "2",
+      "Description": "输入框行数，仅 type 为 'textarea' 时有效"
+    },
+    {
+      "Name": "autosize",
+      "Type": "boolean, object",
+      "TypeDescription": "{ minRows?: number, maxRows?: number }",
+      "DefaultValue": "false",
+      "Description": "textarea 高度是否自适应，仅 type 为 'textarea' 时生效。 可以接受一个对象，比如: { minRows: 2, maxRows: 6 }"
+    },
+    {
+      "Name": "autocomplete",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "off",
+      "Description": "原生 autocomplete 属性"
+    },
+    {
+      "Name": "name",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "等价于原生 input name 属性"
+    },
+    {
+      "Name": "readonly",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "原生 readonly 属性，是否只读"
+    },
+    {
+      "Name": "max",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生 max 属性，设置最大值"
+    },
+    {
+      "Name": "min",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生属性，设置最小值"
+    },
+    {
+      "Name": "step",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生属性，设置输入字段的合法数字间隔"
+    },
+    {
+      "Name": "resize",
+      "Type": "enum",
+      "TypeDescription": "'none' | 'both' | 'horizontal' | 'vertical'",
+      "DefaultValue": "—",
+      "Description": "控制是否能被用户缩放"
+    },
+    {
+      "Name": "autofocus",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "原生属性，自动获取焦点"
+    },
+    {
+      "Name": "form",
+      "Type": "",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "原生属性"
+    },
+    {
+      "Name": "aria-labela11y",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "等价于原生 input aria-label 属性"
+    },
+    {
+      "Name": "tabindex",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "输入框的 tabindex"
+    },
+    {
+      "Name": "validate-event",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "true",
+      "Description": "输入时是否触发表单的校验"
+    },
+    {
+      "Name": "input-style",
+      "Type": "string, object",
+      "TypeDescription": "CSSProperties | CSSProperties[] | string[]",
+      "DefaultValue": "{}",
+      "Description": "input 元素或 textarea 元素的 style"
+    },
+    {
+      "Name": "labela11y",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "等价于原生 input aria-label 属性"
+    },
+    {
+      "Name": "inputmode",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "—",
+      "Description": "等价于原生 input inputmode 属性"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "prefix",
+      "Description": "输入框头部内容，只对非 type=\"textarea\" 有效",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "suffix",
+      "Description": "输入框尾部内容，只对非 type=\"textarea\" 有效",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "prepend",
+      "Description": "输入框前置内容，只对非 type=\"textarea\" 有效",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "append",
+      "Description": "输入框后置内容，只对非 type=\"textarea\" 有效",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [
+    {
+      "Name": "blur",
+      "Description": "当选择器的输入框失去焦点时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: FocusEvent) => void"
+    },
+    {
+      "Name": "focus",
+      "Description": "当选择器的输入框获得焦点时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: FocusEvent) => void"
+    },
+    {
+      "Name": "change",
+      "Description": "仅当 modelValue 改变时，当输入框失去焦点或用户按Enter时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: string | number) => void"
+    },
+    {
+      "Name": "input",
+      "Description": "在 Input 值改变时触发",
+      "Type": "Function",
+      "TypeDescription": "(value: string | number) => void"
+    },
+    {
+      "Name": "clear",
+      "Description": "在点击由 clearable 属性生成的清空按钮时触发",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "keydown",
+      "Description": "按下键时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: KeyboardEvent | Event) => void"
+    },
+    {
+      "Name": "mouseleave",
+      "Description": "当鼠标进入输入框时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: MouseEvent) => void"
+    },
+    {
+      "Name": "mouseenter",
+      "Description": "当鼠标离开输入框时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: MouseEvent) => void"
+    },
+    {
+      "Name": "compositionstart",
+      "Description": "输入法输入开始时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: CompositionEvent) => void"
+    },
+    {
+      "Name": "compositionupdate",
+      "Description": "输入法输入改变时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: CompositionEvent) => void"
+    },
+    {
+      "Name": "compositionend",
+      "Description": "输入法输入完成时触发",
+      "Type": "Function",
+      "TypeDescription": "(event: CompositionEvent) => void"
+    }
+  ],
+  "ComponentExposes": [
+    {
+      "Name": "blur",
+      "Description": "使 input 失去焦点",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "clear",
+      "Description": "清除 input 值",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "focus",
+      "Description": "使 input 获取焦点",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "input",
+      "Description": "Input HTML 元素",
+      "Type": "object",
+      "TypeDescription": "Ref<HTMLInputElement>"
+    },
+    {
+      "Name": "ref",
+      "Description": "HTML元素 input 或 textarea",
+      "Type": "object",
+      "TypeDescription": "Ref<HTMLInputElement | HTMLTextAreaElement>"
+    },
+    {
+      "Name": "resizeTextarea",
+      "Description": "改变 textarea 大小",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "select",
+      "Description": "选中 input 中的文字",
+      "Type": "Function",
+      "TypeDescription": "() => void"
+    },
+    {
+      "Name": "textarea",
+      "Description": "HTML textarea 元素",
+      "Type": "object",
+      "TypeDescription": "Ref<HTMLTextAreaElement>"
+    },
+    {
+      "Name": "textareaStyle",
+      "Description": "textarea 的样式",
+      "Type": "object",
+      "TypeDescription": "Ref<StyleValue>"
+    },
+    {
+      "Name": "isComposing",
+      "Description": "是否是输入 composing 状态",
+      "Type": "object",
+      "TypeDescription": "Ref<boolean>"
+    }
+  ],
+  "Name": "input",
+  "Link": "https://element-plus.org/zh-CN/component/input",
+  "Tag": "input",
+  "GroupName": "Form 表单组件"
+}

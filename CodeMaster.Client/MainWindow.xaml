@@ -1,0 +1,66 @@
+﻿<Window x:Class="CodeMaster.Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CodeMaster.Client"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        mc:Ignorable="d"
+        Title="CodeMaster Client" Height="900" Width="1400"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部工具栏 -->
+        <Border Grid.Row="0" Background="#2c3e50" Padding="10">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="CodeMaster Client"
+                          Foreground="White"
+                          FontSize="16"
+                          FontWeight="Bold"
+                          VerticalAlignment="Center"
+                          Margin="0,0,20,0"/>
+                <TextBox x:Name="UrlTextBox"
+                        Width="400"
+                        Height="30"
+                        VerticalContentAlignment="Center"
+                        Text="http://localhost:5170"
+                        Margin="0,0,10,0"/>
+                <Button x:Name="NavigateButton"
+                       Content="导航"
+                       Width="80"
+                       Height="30"
+                       Click="NavigateButton_Click"
+                       Margin="0,0,10,0"/>
+                <Button x:Name="RefreshButton"
+                       Content="刷新"
+                       Width="80"
+                       Height="30"
+                       Click="RefreshButton_Click"
+                       Margin="0,0,10,0"/>
+                <Button x:Name="DevToolsButton"
+                       Content="开发者工具"
+                       Width="100"
+                       Height="30"
+                       Click="DevToolsButton_Click"/>
+            </StackPanel>
+        </Border>
+
+        <!-- WebView2 -->
+        <wv2:WebView2 x:Name="WebView"
+                     Grid.Row="1"
+                     Source="http://localhost:5170"/>
+
+        <!-- 底部状态栏 -->
+        <Border Grid.Row="2" Background="#34495e" Padding="10">
+            <TextBlock x:Name="StatusTextBlock"
+                      Text="就绪"
+                      Foreground="White"
+                      FontSize="12"/>
+        </Border>
+    </Grid>
+</Window>

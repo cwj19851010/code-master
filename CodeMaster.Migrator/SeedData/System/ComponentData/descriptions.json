@@ -1,0 +1,79 @@
+{
+  "ComponentsProperties": [
+    {
+      "Name": "border",
+      "Type": "boolean",
+      "TypeDescription": null,
+      "DefaultValue": "false",
+      "Description": "是否带有边框"
+    },
+    {
+      "Name": "column",
+      "Type": "number",
+      "TypeDescription": null,
+      "DefaultValue": "3",
+      "Description": "一行 Descriptions Item 的数量"
+    },
+    {
+      "Name": "direction",
+      "Type": "enum",
+      "TypeDescription": "'vertical' | 'horizontal'",
+      "DefaultValue": "horizontal",
+      "Description": "排列的方向"
+    },
+    {
+      "Name": "size",
+      "Type": "enum",
+      "TypeDescription": "'' | 'large' | 'default' | 'small'",
+      "DefaultValue": "—",
+      "Description": "列表的尺寸"
+    },
+    {
+      "Name": "title",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "标题文本，显示在左上方"
+    },
+    {
+      "Name": "extra",
+      "Type": "string",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "操作区文本，显示在右上方"
+    },
+    {
+      "Name": "label-width",
+      "Type": "string, number",
+      "TypeDescription": null,
+      "DefaultValue": "''",
+      "Description": "每一列的标签宽度"
+    }
+  ],
+  "ComponentSlots": [
+    {
+      "Name": "default",
+      "Description": "自定义默认内容",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "title",
+      "Description": "自定义标题，显示在左上方",
+      "Type": null,
+      "TypeDescription": null
+    },
+    {
+      "Name": "extra",
+      "Description": "自定义操作区，显示在右上方",
+      "Type": null,
+      "TypeDescription": null
+    }
+  ],
+  "ComponentEvents": [],
+  "ComponentExposes": [],
+  "Name": "descriptions",
+  "Link": "https://element-plus.org/zh-CN/component/descriptions",
+  "Tag": "descriptions",
+  "GroupName": "Data 数据展示"
+}
