@@ -88,7 +88,30 @@ Thumbs.db
 .claude/
 .cursor/
 .reasonix/
+.agents/
+AGENTS.md
+CLAUDE.md
 openspec/
+
+# Internal planning and AI-generated progress notes
+*_SUMMARY.md
+*_FIX*.md
+CACHE_IMPLEMENTATION.md
+SUMMARY.md
+PROGRESS.md
+PROJECT_CHECKLIST.md
+DEVELOPMENT_PLAN.md
+CODE_GENERATION_TEST.md
+GETTING_STARTED.md
+QUICKSTART.md
+README_DATABASE.md
+TASK_ASSIGNMENT.md
+CodeMaster.Client/IMPLEMENTATION_SUMMARY.md
+CodeMaster.Client/QUICK_START.md
+docs/open-source-release-checklist.md
+docs/phase-1-closeout-and-roadmap.md
+docs/ProjectSummary.md
+docs/public-portal-auth-community.md
 
 # Local publish and generated smoke-test output
 artifacts/
