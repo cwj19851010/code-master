@@ -98,6 +98,11 @@ Migrations-Sqlite/
 OrderManager.Application/
 OrderManager.Domain/
 OrderManager.Vue/
+Database/
+DbCheck/
+FixDatabase/
+Generated/
+TranslationCleaner/
 
 # Local database backups and template snapshots
 *.db.bak_*
