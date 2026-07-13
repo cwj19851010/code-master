@@ -132,6 +132,14 @@ translations_clean.json
 webapi.pid
 
 # Root-level scratch scripts used during manual repair/smoke testing
+/*.csx
+/*.py
+/*.sql
+/*.ps1
+/*.bat
+/*.cmd
+/*.sh
+/Check*.csproj
 /add_*.py
 /AddColumnFix.cs
 /api_create.py
