@@ -1,5 +1,6 @@
 using System.Text.Json;
 using CodeMaster.Application.Services.CodeGen;
+using CodeMaster.McpServer.Services;
 using SqlSugar;
 
 namespace CodeMaster.McpServer.Tools;
@@ -13,13 +14,20 @@ public class QueryTool
     private readonly IModuleEntityService _entityService;
     private readonly IEntityFieldService _fieldService;
     private readonly ISqlSugarClient _db;
+    private readonly ProjectContextResolver _contextResolver;
 
-    public QueryTool(IProjectModuleService moduleService, IModuleEntityService entityService, IEntityFieldService fieldService, ISqlSugarClient db)
+    public QueryTool(
+        IProjectModuleService moduleService,
+        IModuleEntityService entityService,
+        IEntityFieldService fieldService,
+        ISqlSugarClient db,
+        ProjectContextResolver contextResolver)
     {
         _moduleService = moduleService;
         _entityService = entityService;
         _fieldService = fieldService;
         _db = db;
+        _contextResolver = contextResolver;
     }
 
     public static McpTool Definition => new()
@@ -35,7 +43,8 @@ public class QueryTool
                 level = new { type = "string", description = "Query level: projects, modules, entities, or fields." },
                 projectId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Project id for modules/entities queries." },
                 moduleId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Optional module id for entities queries." },
-                entityId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Entity id for fields queries." }
+                entityId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Entity id for fields queries." },
+                workspacePath = new { type = "string", description = "Optional generated project directory. Used to resolve projectId from .codemaster/project-context.json." }
             },
             required = new[] { "level" }
         })!
@@ -44,6 +53,7 @@ public class QueryTool
     public async Task<object?> HandleAsync(object? input)
     {
         var args = (QueryInput?)input ?? throw new ArgumentException("Invalid input");
+        args.ProjectId = await McpProjectContextHelper.ResolveProjectIdAsync(_contextResolver, args.ProjectId, args.WorkspacePath);
         return args.Level switch
         {
             "projects" => await ListProjectsAsync(),
@@ -142,4 +152,5 @@ public class QueryInput
     public long? ProjectId { get; set; }
     public long? ModuleId { get; set; }
     public long? EntityId { get; set; }
+    public string? WorkspacePath { get; set; }
 }

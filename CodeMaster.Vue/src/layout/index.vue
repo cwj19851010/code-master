@@ -39,7 +39,7 @@
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>{{ t('profile') }}</el-dropdown-item>
+                <el-dropdown-item @click="router.push('/profile/mcp-token')">MCP Token</el-dropdown-item>
                 <el-dropdown-item divided @click="handleLogout">{{ t('logout') }}</el-dropdown-item>
               </el-dropdown-menu>
             </template>

@@ -124,6 +124,16 @@ public class LocalCodegenExecutionService
                 project.BackendPort ?? 0);
         }
 
+        await _initializationService.WriteProjectContextAsync(
+            projectPath,
+            project.ProjectName,
+            project.Id.ToString(),
+            project.DisplayName,
+            project.DatabaseType.ToString(),
+            project.FrontendPort ?? 0,
+            project.BackendPort ?? 0,
+            request.ServerBaseUrl);
+
         return LocalExecutionResult.Ok("项目初始化完成", new InitializeStepResultDto
         {
             Success = true,
@@ -184,9 +194,20 @@ public class LocalCodegenExecutionService
                     : LocalExecutionResult.Fail(backendStart.Message, backendStart.Output);
             case 11:
                 var frontendStart = await ProjectProcessLauncher.StartFrontendAsync(project.ProjectName, projectPath, project.FrontendPort);
-                return frontendStart.Success
-                    ? StepOk(frontendStart.Message, "start_frontend", 100, frontendStart.Output)
-                    : LocalExecutionResult.Fail(frontendStart.Message, frontendStart.Output);
+                if (!frontendStart.Success)
+                    return LocalExecutionResult.Fail(frontendStart.Message, frontendStart.Output);
+
+                await _initializationService.WriteProjectContextAsync(
+                    projectPath,
+                    project.ProjectName,
+                    project.Id.ToString(),
+                    project.DisplayName,
+                    project.DatabaseType.ToString(),
+                    project.FrontendPort ?? 0,
+                    project.BackendPort ?? 0,
+                    request.ServerBaseUrl);
+
+                return StepOk(frontendStart.Message, "start_frontend", 100, frontendStart.Output);
             default:
                 return LocalExecutionResult.Fail($"Unsupported initialization step: {step}");
         }

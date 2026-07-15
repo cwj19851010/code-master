@@ -4,10 +4,28 @@ CodeMaster.McpServer exposes CodeMaster project metadata and code generation wor
 
 ## Tools
 
+- `codemaster_login`: validate and save a CodeMaster MCP token in `~/.codemaster/mcp-auth.json`.
+- `codemaster_logout`: remove saved MCP tokens.
+- `codemaster_whoami`: validate and show the saved MCP identity.
+- `resolve_project_context`: read `.codemaster/project-context.json` from a generated project directory.
 - `query_project`: inspect projects, modules, entities, fields, and relations.
 - `analyze_requirements`: return a CodeMaster-oriented schema checklist and example payload.
 - `create_or_update_entity`: create or add fields/relations without deleting existing metadata.
 - `generate_code`: generate code for an entity and optionally validate generated builds.
+
+## Auth And Project Context
+
+Generated projects contain `.codemaster/project-context.json` with the CodeMaster project id, project name, ports, database type, and optional server base URL. It does not contain user tokens.
+
+For production-style MCP usage:
+
+1. Generate an MCP Token in CodeMaster personal center.
+2. Open the generated project directory in the AI client.
+3. Call `resolve_project_context` to confirm the current project.
+4. Call `codemaster_login` with the token. If the context has no `serverBaseUrl`, pass it explicitly.
+5. Future MCP calls can omit `projectId`; tools resolve it from `.codemaster/project-context.json`.
+
+Saved tokens live in `~/.codemaster/mcp-auth.json`, outside the generated project.
 
 ## Build
 

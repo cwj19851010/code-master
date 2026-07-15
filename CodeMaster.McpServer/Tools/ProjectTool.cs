@@ -2,6 +2,7 @@ using System.Text.Json;
 using CodeMaster.Application.Dtos.CodeGen;
 using CodeMaster.Application.Services.CodeGen;
 using CodeMaster.Core.Enums;
+using CodeMaster.McpServer.Services;
 
 namespace CodeMaster.McpServer.Tools;
 
@@ -11,10 +12,12 @@ namespace CodeMaster.McpServer.Tools;
 public class ProjectTool
 {
     private readonly IProjectService _projectService;
+    private readonly ProjectContextResolver _contextResolver;
 
-    public ProjectTool(IProjectService projectService)
+    public ProjectTool(IProjectService projectService, ProjectContextResolver contextResolver)
     {
         _projectService = projectService;
+        _contextResolver = contextResolver;
     }
 
     public static McpTool Definition => new()
@@ -39,7 +42,8 @@ public class ProjectTool
                 logoPath = new { type = "string" },
                 projectType = new { type = "string", description = "Server or WpfClient. Defaults to Server." },
                 frontendPort = new { type = "integer" },
-                backendPort = new { type = "integer" }
+                backendPort = new { type = "integer" },
+                workspacePath = new { type = "string", description = "Optional generated project directory. Used to resolve projectId from .codemaster/project-context.json." }
             }
         })!
     };
@@ -47,6 +51,7 @@ public class ProjectTool
     public async Task<object?> HandleAsync(object? input)
     {
         var args = (ProjectToolInput?)input ?? throw new ArgumentException("Invalid input");
+        args.ProjectId = await McpProjectContextHelper.ResolveProjectIdAsync(_contextResolver, args.ProjectId, args.WorkspacePath);
         var existing = await ResolveExistingAsync(args);
 
         if (existing == null)
@@ -155,4 +160,5 @@ public class ProjectToolInput
     public string? ProjectType { get; set; }
     public int? FrontendPort { get; set; }
     public int? BackendPort { get; set; }
+    public string? WorkspacePath { get; set; }
 }

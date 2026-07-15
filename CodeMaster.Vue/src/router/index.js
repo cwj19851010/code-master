@@ -33,6 +33,12 @@ export const constantRoutes = [
         component: () => import('@/views/dashboard/index.vue'),
         meta: { title: 'dashboard', icon: 'HomeFilled', affix: true }
       },
+      {
+        path: 'profile/mcp-token',
+        name: 'McpToken',
+        component: () => import('@/views/profile/mcpToken/index.vue'),
+        meta: { title: 'MCP Token', hidden: true, noCache: true }
+      },
       // EntityDesigner 路由由菜单数据库动态加载
     ]
   }

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using CodeMaster.Application.Services.CodeGen;
+using CodeMaster.McpServer.Services;
 
 namespace CodeMaster.McpServer.Tools;
 
@@ -9,10 +10,12 @@ namespace CodeMaster.McpServer.Tools;
 public class ProjectStructureTool
 {
     private readonly IProjectService _projectService;
+    private readonly ProjectContextResolver _contextResolver;
 
-    public ProjectStructureTool(IProjectService projectService)
+    public ProjectStructureTool(IProjectService projectService, ProjectContextResolver contextResolver)
     {
         _projectService = projectService;
+        _contextResolver = contextResolver;
     }
 
     public static McpTool Definition => new()
@@ -26,15 +29,17 @@ public class ProjectStructureTool
             properties = new
             {
                 projectId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Target project id." },
-                includeGeneratedFiles = new { type = "boolean", description = "Include generated Vue/API file presence. Defaults to true." }
+                includeGeneratedFiles = new { type = "boolean", description = "Include generated Vue/API file presence. Defaults to true." },
+                workspacePath = new { type = "string", description = "Optional generated project directory. Used to resolve projectId from .codemaster/project-context.json." }
             },
-            required = new[] { "projectId" }
+            required = Array.Empty<string>()
         })!
     };
 
     public async Task<object?> HandleAsync(object? input)
     {
         var args = (ProjectStructureInput?)input ?? throw new ArgumentException("Invalid input");
+        args.ProjectId = await McpProjectContextHelper.ResolveProjectIdAsync(_contextResolver, args.ProjectId, args.WorkspacePath);
         if (args.ProjectId <= 0)
             return new { success = false, message = "projectId is required." };
 
@@ -199,4 +204,5 @@ public class ProjectStructureInput
 {
     public long ProjectId { get; set; }
     public bool? IncludeGeneratedFiles { get; set; }
+    public string? WorkspacePath { get; set; }
 }

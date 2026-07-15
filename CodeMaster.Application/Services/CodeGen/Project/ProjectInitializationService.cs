@@ -93,6 +93,7 @@ public partial class ProjectInitializationService
             // 4. 执行核心初始化逻辑
             SendProgress(projectId, "initialize", "初始化项目配置...", 30);
             await InitializeProjectCoreAsync(projectPath, projectName, databaseType, connectionString, frontendPort, backendPort, projectId, displayName);
+            await WriteProjectContextAsync(projectPath, projectName, projectId, displayName, databaseType, frontendPort, backendPort);
 
             SendProgress(projectId, "completed", "初始化完成", 100);
             return true;
@@ -138,6 +139,7 @@ public partial class ProjectInitializationService
 
             // 3. 执行核心初始化逻辑
             await InitializeProjectCoreAsync(projectPath, projectName, databaseType, connectionString, frontendPort, backendPort);
+            await WriteProjectContextAsync(projectPath, projectName, null, null, databaseType, frontendPort, backendPort);
 
             return true;
         }
@@ -1114,6 +1116,20 @@ export default service
         public bool FrontendStarted { get; set; }
     }
 
+    public class ProjectContext
+    {
+        public int SchemaVersion { get; set; } = 1;
+        public string CreatedBy { get; set; } = "CodeMaster";
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? ServerBaseUrl { get; set; }
+        public string? ProjectId { get; set; }
+        public string ProjectName { get; set; } = string.Empty;
+        public string? DisplayName { get; set; }
+        public string? DatabaseType { get; set; }
+        public int FrontendPort { get; set; }
+        public int BackendPort { get; set; }
+    }
+
     /// <summary>
     /// 获取初始化状态
     /// </summary>
@@ -1151,6 +1167,42 @@ export default service
             WriteIndented = true
         });
         await File.WriteAllTextAsync(stateFile, json, new UTF8Encoding(false));
+    }
+
+    public async Task WriteProjectContextAsync(
+        string projectPath,
+        string projectName,
+        string? projectId,
+        string? displayName,
+        string? databaseType,
+        int frontendPort,
+        int backendPort,
+        string? serverBaseUrl = null)
+    {
+        if (string.IsNullOrWhiteSpace(projectPath))
+            return;
+
+        var contextDir = Path.Combine(projectPath, ".codemaster");
+        Directory.CreateDirectory(contextDir);
+
+        var context = new ProjectContext
+        {
+            ServerBaseUrl = string.IsNullOrWhiteSpace(serverBaseUrl) ? null : serverBaseUrl.Trim().TrimEnd('/'),
+            ProjectId = projectId,
+            ProjectName = projectName,
+            DisplayName = displayName,
+            DatabaseType = databaseType,
+            FrontendPort = frontendPort,
+            BackendPort = backendPort
+        };
+
+        var json = JsonSerializer.Serialize(context, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+
+        await File.WriteAllTextAsync(Path.Combine(contextDir, "project-context.json"), json, new UTF8Encoding(false));
     }
 
     #endregion

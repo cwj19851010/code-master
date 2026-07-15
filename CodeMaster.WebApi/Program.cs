@@ -63,6 +63,7 @@ builder.Services.AddScoped<CodeMaster.Application.Services.Auth.IJwtService, Cod
 builder.Services.AddScoped<CodeMaster.Application.Services.Auth.IAuthService, CodeMaster.Application.Services.Auth.AuthService>();
 builder.Services.AddScoped<CodeMaster.Application.Services.Auth.IEmailSender, CodeMaster.Application.Services.Auth.EmailSender>();
 builder.Services.AddScoped<CodeMaster.Application.Services.Auth.IPublicAccountService, CodeMaster.Application.Services.Auth.PublicAccountService>();
+builder.Services.AddScoped<CodeMaster.Application.Services.Auth.IMcpTokenService, CodeMaster.Application.Services.Auth.McpTokenService>();
 builder.Services.AddScoped<CodeMaster.Application.Services.Community.ICommunityService, CodeMaster.Application.Services.Community.CommunityService>();
 builder.Services.AddScoped<CodeMaster.Application.Services.Monitor.IOnlineUserService, CodeMaster.Application.Services.Monitor.OnlineUserService>();
 
@@ -362,6 +363,9 @@ app.UseStaticFiles(new StaticFileOptions
 
 // HTTP请求日志中间件
 app.UseRequestLogging();
+
+// MCP tokens are validated before JWT authentication so API tools can reuse the normal user/tenant pipeline.
+app.UseMiddleware<CodeMaster.WebApi.Middleware.McpTokenAuthenticationMiddleware>();
 
 // Authentication must run before tenant resolution so JWT TenantId is available.
 app.UseAuthentication();

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using CodeMaster.Application.Dtos.CodeGen;
 using CodeMaster.Application.Services.CodeGen;
+using CodeMaster.McpServer.Services;
 
 namespace CodeMaster.McpServer.Tools;
 
@@ -12,15 +13,18 @@ public class EntityTool
     private readonly IProjectModuleService _moduleService;
     private readonly IModuleEntityService _entityService;
     private readonly IEntityFieldService _fieldService;
+    private readonly ProjectContextResolver _contextResolver;
 
     public EntityTool(
         IProjectModuleService moduleService,
         IModuleEntityService entityService,
-        IEntityFieldService fieldService)
+        IEntityFieldService fieldService,
+        ProjectContextResolver contextResolver)
     {
         _moduleService = moduleService;
         _entityService = entityService;
         _fieldService = fieldService;
+        _contextResolver = contextResolver;
     }
 
     public static McpTool Definition => new()
@@ -54,6 +58,7 @@ public class EntityTool
                 menuIcon = new { type = "string" },
                 orderNum = new { type = "integer" },
                 remark = new { type = "string" },
+                workspacePath = new { type = "string", description = "Optional generated project directory. Used to resolve projectId from .codemaster/project-context.json." },
                 fields = new
                 {
                     type = "array",
@@ -124,13 +129,14 @@ public class EntityTool
                     }
                 }
             },
-            required = new[] { "projectId" }
+            required = Array.Empty<string>()
         })!
     };
 
     public async Task<object?> HandleAsync(object? input)
     {
         var args = (EntityToolInput?)input ?? throw new ArgumentException("Invalid input");
+        args.ProjectId = await McpProjectContextHelper.ResolveProjectIdAsync(_contextResolver, args.ProjectId, args.WorkspacePath);
         if (args.ProjectId <= 0)
             return new { success = false, message = "projectId is required." };
 
@@ -569,6 +575,7 @@ public class EntityToolInput
     public string? MenuIcon { get; set; }
     public int? OrderNum { get; set; }
     public string? Remark { get; set; }
+    public string? WorkspacePath { get; set; }
     public List<FieldInput>? Fields { get; set; }
     public List<RelationInput>? Relations { get; set; }
 }

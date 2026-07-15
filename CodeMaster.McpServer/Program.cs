@@ -7,6 +7,7 @@ using CodeMaster.Infrastructure.DynamicApi;
 using CodeMaster.Infrastructure.MultiTenancy;
 using CodeMaster.Infrastructure.Persistence.SqlSugar;
 using CodeMaster.McpServer;
+using CodeMaster.McpServer.Services;
 using CodeMaster.McpServer.Tools;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -77,6 +78,9 @@ services.AddScoped<CodeMaster.Core.Services.IExcelService, CodeMaster.Infrastruc
 services.AddCaching(config);
 
 // Tools
+services.AddSingleton<McpAuthStore>();
+services.AddSingleton<ProjectContextResolver>();
+services.AddScoped<AuthTool>();
 services.AddScoped<EntityTool>();
 services.AddScoped<ProjectTool>();
 services.AddScoped<ModuleTool>();
@@ -90,6 +94,62 @@ var sp = services.BuildServiceProvider();
 
 // ─── MCP Protocol ───
 var protocol = new McpProtocol("codemaster-mcp", "1.0.0", protocolOutput);
+
+protocol.RegisterTool(new McpTool
+{
+    Name = AuthTool.LoginDefinition.Name,
+    Description = AuthTool.LoginDefinition.Description,
+    InputSchema = AuthTool.LoginDefinition.InputSchema,
+    InputType = AuthTool.LoginDefinition.InputType,
+    Handler = async (args) =>
+    {
+        using var scope = sp.CreateScope();
+        var tool = scope.ServiceProvider.GetRequiredService<AuthTool>();
+        return await tool.LoginAsync(args);
+    }
+});
+
+protocol.RegisterTool(new McpTool
+{
+    Name = AuthTool.LogoutDefinition.Name,
+    Description = AuthTool.LogoutDefinition.Description,
+    InputSchema = AuthTool.LogoutDefinition.InputSchema,
+    InputType = AuthTool.LogoutDefinition.InputType,
+    Handler = async (args) =>
+    {
+        using var scope = sp.CreateScope();
+        var tool = scope.ServiceProvider.GetRequiredService<AuthTool>();
+        return await tool.LogoutAsync(args);
+    }
+});
+
+protocol.RegisterTool(new McpTool
+{
+    Name = AuthTool.WhoAmIDefinition.Name,
+    Description = AuthTool.WhoAmIDefinition.Description,
+    InputSchema = AuthTool.WhoAmIDefinition.InputSchema,
+    InputType = AuthTool.WhoAmIDefinition.InputType,
+    Handler = async (args) =>
+    {
+        using var scope = sp.CreateScope();
+        var tool = scope.ServiceProvider.GetRequiredService<AuthTool>();
+        return await tool.WhoAmIAsync(args);
+    }
+});
+
+protocol.RegisterTool(new McpTool
+{
+    Name = AuthTool.ResolveContextDefinition.Name,
+    Description = AuthTool.ResolveContextDefinition.Description,
+    InputSchema = AuthTool.ResolveContextDefinition.InputSchema,
+    InputType = AuthTool.ResolveContextDefinition.InputType,
+    Handler = async (args) =>
+    {
+        using var scope = sp.CreateScope();
+        var tool = scope.ServiceProvider.GetRequiredService<AuthTool>();
+        return await tool.ResolveProjectContextAsync(args);
+    }
+});
 
 protocol.RegisterTool(new McpTool
 {
@@ -212,7 +272,7 @@ Console.CancelKeyPress += (_, e) =>
 };
 
 Console.Error.WriteLine($"[CodeMaster.McpServer] Starting with {dbProvider} database...");
-Console.Error.WriteLine("[CodeMaster.McpServer] Tools: query_project, analyze_requirements, save_project, save_module, create_or_update_entity, run_project_operation, generate_code, get_project_structure");
+Console.Error.WriteLine("[CodeMaster.McpServer] Tools: codemaster_login, codemaster_logout, codemaster_whoami, resolve_project_context, query_project, analyze_requirements, save_project, save_module, create_or_update_entity, run_project_operation, generate_code, get_project_structure");
 Console.Error.WriteLine("[CodeMaster.McpServer] Operations include initialize, initialize_step, start/stop frontend/backend/all, status, migrate_database, and build.");
 Console.Error.WriteLine("[CodeMaster.McpServer] Ready.");
 

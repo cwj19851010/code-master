@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using CodeMaster.Application.Services.CodeGen;
 using CodeMaster.Domain.Entities.CodeGen;
+using CodeMaster.McpServer.Services;
 using SqlSugar;
 
 namespace CodeMaster.McpServer.Tools;
@@ -14,11 +15,13 @@ public class CodeGenTool
 {
     private readonly IModuleEntityService _entityService;
     private readonly ISqlSugarClient _db;
+    private readonly ProjectContextResolver _contextResolver;
 
-    public CodeGenTool(IModuleEntityService entityService, ISqlSugarClient db)
+    public CodeGenTool(IModuleEntityService entityService, ISqlSugarClient db, ProjectContextResolver contextResolver)
     {
         _entityService = entityService;
         _db = db;
+        _contextResolver = contextResolver;
     }
 
     public static McpTool Definition => new()
@@ -38,7 +41,8 @@ public class CodeGenTool
                 mode = new { type = "string", description = "full or incremental. Defaults to full." },
                 validateBuild = new { type = "boolean", description = "Run dotnet build on the generated solution after generation. Defaults to true." },
                 validateFrontendBuild = new { type = "boolean", description = "Run npm run build in the generated Vue project after generation. Defaults to false because it is slower." },
-                buildTimeoutSeconds = new { type = "integer", description = "Timeout for each validation command. Defaults to 300 seconds." }
+                buildTimeoutSeconds = new { type = "integer", description = "Timeout for each validation command. Defaults to 300 seconds." },
+                workspacePath = new { type = "string", description = "Optional generated project directory. Used to resolve projectId from .codemaster/project-context.json." }
             }
         })!
     };
@@ -46,6 +50,7 @@ public class CodeGenTool
     public async Task<object?> HandleAsync(object? input)
     {
         var args = (CodeGenInput?)input ?? throw new ArgumentException("Invalid input");
+        args.ProjectId = await McpProjectContextHelper.ResolveProjectIdAsync(_contextResolver, args.ProjectId, args.WorkspacePath);
         var target = await ResolveTargetsAsync(args);
         if (target.Error != null)
             return new { success = false, message = target.Error };
@@ -308,4 +313,5 @@ public class CodeGenInput
     public bool ValidateBuild { get; set; } = true;
     public bool ValidateFrontendBuild { get; set; }
     public int BuildTimeoutSeconds { get; set; } = 300;
+    public string? WorkspacePath { get; set; }
 }

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using CodeMaster.Application.Dtos.CodeGen;
 using CodeMaster.Application.Services.CodeGen;
+using CodeMaster.McpServer.Services;
 
 namespace CodeMaster.McpServer.Tools;
 
@@ -10,10 +11,12 @@ namespace CodeMaster.McpServer.Tools;
 public class ProjectOperationTool
 {
     private readonly IProjectService _projectService;
+    private readonly ProjectContextResolver _contextResolver;
 
-    public ProjectOperationTool(IProjectService projectService)
+    public ProjectOperationTool(IProjectService projectService, ProjectContextResolver contextResolver)
     {
         _projectService = projectService;
+        _contextResolver = contextResolver;
     }
 
     public static McpTool Definition => new()
@@ -29,15 +32,17 @@ public class ProjectOperationTool
                 operation = new { type = "string", description = "initialize, initialize_step, start_frontend, start_backend, start_all, stop_frontend, stop_backend, stop_all, status, migrate_database, or build." },
                 projectId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Target project id." },
                 targetPath = new { type = "string", description = "Optional initialization target path." },
-                step = new { type = "integer", description = "Step number 1-11 when operation=initialize_step." }
+                step = new { type = "integer", description = "Step number 1-11 when operation=initialize_step." },
+                workspacePath = new { type = "string", description = "Optional generated project directory. Used to resolve projectId from .codemaster/project-context.json." }
             },
-            required = new[] { "operation", "projectId" }
+            required = new[] { "operation" }
         })!
     };
 
     public async Task<object?> HandleAsync(object? input)
     {
         var args = (ProjectOperationInput?)input ?? throw new ArgumentException("Invalid input");
+        args.ProjectId = await McpProjectContextHelper.ResolveProjectIdAsync(_contextResolver, args.ProjectId, args.WorkspacePath);
         if (args.ProjectId <= 0)
             return new { success = false, message = "projectId is required." };
 
@@ -128,4 +133,5 @@ public class ProjectOperationInput
     public long ProjectId { get; set; }
     public string? TargetPath { get; set; }
     public int Step { get; set; }
+    public string? WorkspacePath { get; set; }
 }

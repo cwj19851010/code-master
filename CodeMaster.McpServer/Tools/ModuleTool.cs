@@ -1,6 +1,7 @@
 using System.Text.Json;
 using CodeMaster.Application.Dtos.CodeGen;
 using CodeMaster.Application.Services.CodeGen;
+using CodeMaster.McpServer.Services;
 
 namespace CodeMaster.McpServer.Tools;
 
@@ -10,10 +11,12 @@ namespace CodeMaster.McpServer.Tools;
 public class ModuleTool
 {
     private readonly IProjectModuleService _moduleService;
+    private readonly ProjectContextResolver _contextResolver;
 
-    public ModuleTool(IProjectModuleService moduleService)
+    public ModuleTool(IProjectModuleService moduleService, ProjectContextResolver contextResolver)
     {
         _moduleService = moduleService;
+        _contextResolver = contextResolver;
     }
 
     public static McpTool Definition => new()
@@ -33,15 +36,17 @@ public class ModuleTool
                 icon = new { type = "string", description = "Element Plus icon name." },
                 orderNum = new { type = "integer" },
                 routePath = new { type = "string" },
-                remark = new { type = "string" }
+                remark = new { type = "string" },
+                workspacePath = new { type = "string", description = "Optional generated project directory. Used to resolve projectId from .codemaster/project-context.json." }
             },
-            required = new[] { "projectId", "moduleName" }
+            required = new[] { "moduleName" }
         })!
     };
 
     public async Task<object?> HandleAsync(object? input)
     {
         var args = (ModuleToolInput?)input ?? throw new ArgumentException("Invalid input");
+        args.ProjectId = await McpProjectContextHelper.ResolveProjectIdAsync(_contextResolver, args.ProjectId, args.WorkspacePath);
         if (args.ProjectId <= 0)
             return new { success = false, message = "projectId is required." };
 
@@ -106,4 +111,5 @@ public class ModuleToolInput
     public int? OrderNum { get; set; }
     public string? RoutePath { get; set; }
     public string? Remark { get; set; }
+    public string? WorkspacePath { get; set; }
 }
