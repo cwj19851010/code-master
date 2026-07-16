@@ -45,7 +45,7 @@ public class SysMenu : TreeEntityBase
     /// <summary>
     /// 是否缓存（0不缓存 1缓存）
     /// </summary>
-    public int IsCache { get; set; } = 0;
+    public bool IsCache { get; set; } = true;
 
     /// <summary>
     /// 菜单类型（M目录 C菜单 F按钮）
@@ -55,7 +55,7 @@ public class SysMenu : TreeEntityBase
     /// <summary>
     /// 显示状态（0显示 1隐藏）
     /// </summary>
-    public int Visible { get; set; } = 0;
+    public bool Visible { get; set; } = true;
 
     /// <summary>
     /// 菜单状态（0正常 1停用）

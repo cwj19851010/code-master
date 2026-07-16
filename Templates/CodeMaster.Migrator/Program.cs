@@ -257,8 +257,7 @@ static async Task SeedDataAsync(CodeMasterDbContext dbContext)
         // 代码生成模块
         new ProjectModule(),
         new ProjectModuleModule(),
-        new ModuleEntityModule(),
-        new EntityFieldModule()
+        new ModuleEntityModule()
     };
 
     // 6. 创建顶级目录菜单

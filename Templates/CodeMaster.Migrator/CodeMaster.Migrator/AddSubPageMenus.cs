@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using CodeMaster.Domain.Entities.System;
 using CodeMaster.Migrator.Persistence.EfCore;
 
@@ -33,9 +33,9 @@ public static class AddSubPageMenus
             Perms = "system:dept:create",
             Icon = "",
             OrderNum = 1,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "部门新增页面"
         });
@@ -51,9 +51,9 @@ public static class AddSubPageMenus
             Perms = "system:dept:update",
             Icon = "",
             OrderNum = 2,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "部门编辑页面"
         });
@@ -69,9 +69,9 @@ public static class AddSubPageMenus
             Perms = "system:dept:query",
             Icon = "",
             OrderNum = 3,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "部门详情页面"
         });
@@ -88,9 +88,9 @@ public static class AddSubPageMenus
             Perms = "system:dict:create",
             Icon = "",
             OrderNum = 1,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "字典类型新增页面"
         });
@@ -106,9 +106,9 @@ public static class AddSubPageMenus
             Perms = "system:dict:update",
             Icon = "",
             OrderNum = 2,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "字典类型编辑页面"
         });
@@ -124,9 +124,9 @@ public static class AddSubPageMenus
             Perms = "system:dict:query",
             Icon = "",
             OrderNum = 3,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "字典类型详情页面"
         });
@@ -143,9 +143,9 @@ public static class AddSubPageMenus
             Perms = "system:dict:create",
             Icon = "",
             OrderNum = 4,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "字典数据新增页面"
         });
@@ -161,9 +161,9 @@ public static class AddSubPageMenus
             Perms = "system:dict:update",
             Icon = "",
             OrderNum = 5,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "字典数据编辑页面"
         });
@@ -179,9 +179,9 @@ public static class AddSubPageMenus
             Perms = "system:dict:query",
             Icon = "",
             OrderNum = 6,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "字典数据详情页面"
         });
@@ -198,9 +198,9 @@ public static class AddSubPageMenus
             Perms = "system:lang:create",
             Icon = "",
             OrderNum = 1,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "语言新增页面"
         });
@@ -216,9 +216,9 @@ public static class AddSubPageMenus
             Perms = "system:lang:update",
             Icon = "",
             OrderNum = 2,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "语言编辑页面"
         });
@@ -234,9 +234,9 @@ public static class AddSubPageMenus
             Perms = "system:lang:query",
             Icon = "",
             OrderNum = 3,
-            Visible = 0,
+            Visible = false,
             Status = 0,
-            IsCache = 0,
+            IsCache = false,
             MenuScope = 2,
             Remark = "语言详情页面"
         });

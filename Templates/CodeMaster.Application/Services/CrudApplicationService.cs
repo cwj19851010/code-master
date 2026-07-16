@@ -13,12 +13,19 @@ public abstract class CrudApplicationService<TEntity, TGetOutputDto, TGetListOut
     : ReadOnlyApplicationService<TEntity, TGetOutputDto, TGetListOutputDto, TGetListInput>,
       ICrudApplicationService<TEntity, TGetOutputDto, TGetListOutputDto, TGetListInput, TCreateInput, TUpdateInput>
     where TEntity : class, IEntity<long>, new()
+    where TGetOutputDto : class
+    where TGetListOutputDto : class
     where TGetListInput : PagedQueryDto
+    where TCreateInput : class, new()
+    where TUpdateInput : class
 {
     protected new readonly IRepository<TEntity> Repository;
 
-    protected CrudApplicationService(IRepository<TEntity> repository)
-        : base(repository)
+    protected CrudApplicationService(
+        IRepository<TEntity> repository,
+        IExcelService? excelService = null,
+        Core.Services.ICacheService? cacheService = null)
+        : base(repository, excelService, cacheService)
     {
         Repository = repository;
     }
@@ -29,7 +36,12 @@ public abstract class CrudApplicationService<TEntity, TGetOutputDto, TGetListOut
     public virtual async Task<long> CreateAsync(TCreateInput input)
     {
         var entity = input.Adapt<TEntity>();
-        return await Repository.InsertAsync(entity);
+        var id = await Repository.InsertAsync(entity);
+
+        // 清除列表缓存
+        await InvalidateListCacheAsync();
+
+        return id;
     }
 
     /// <summary>
@@ -44,7 +56,12 @@ public abstract class CrudApplicationService<TEntity, TGetOutputDto, TGetListOut
         }
 
         input.Adapt(entity);
-        return await Repository.UpdateAsync(entity);
+        var result = await Repository.UpdateAsync(entity);
+
+        // 清除相关缓存
+        await InvalidateCacheAsync(id);
+
+        return result;
     }
 
     /// <summary>
@@ -52,7 +69,12 @@ public abstract class CrudApplicationService<TEntity, TGetOutputDto, TGetListOut
     /// </summary>
     public virtual async Task<int> DeleteAsync(long id)
     {
-        return await Repository.DeleteAsync(id);
+        var result = await Repository.DeleteAsync(id);
+
+        // 清除相关缓存
+        await InvalidateCacheAsync(id);
+
+        return result;
     }
 
     /// <summary>
@@ -65,6 +87,32 @@ public abstract class CrudApplicationService<TEntity, TGetOutputDto, TGetListOut
         {
             count += await Repository.DeleteAsync(id);
         }
+
+        // 清除所有相关缓存
+        await InvalidateAllCacheAsync();
+
+        return count;
+    }
+
+    /// <summary>
+    /// 从 Excel 导入数据
+    /// </summary>
+    public virtual async Task<int> ImportAsync(byte[] fileBytes)
+    {
+        // 使用 ExcelService 导入数据
+        var data = await ExcelService.ImportAsync<TCreateInput>(fileBytes);
+
+        // 批量创建
+        int count = 0;
+        foreach (var item in data)
+        {
+            await CreateAsync(item);
+            count++;
+        }
+
+        // 清除所有相关缓存
+        await InvalidateAllCacheAsync();
+
         return count;
     }
 }

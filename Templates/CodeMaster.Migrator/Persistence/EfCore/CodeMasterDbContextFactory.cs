@@ -18,7 +18,7 @@ public class CodeMasterDbContextFactory : IDesignTimeDbContextFactory<CodeMaster
 
         var optionsBuilder = new DbContextOptionsBuilder<CodeMasterDbContext>();
         var connectionString = configuration.GetConnectionString("DefaultConnection")
-            ?? "Server=localhost;Database=CodeMasterDb;User Id=sa;Password=YourPassword123;TrustServerCertificate=true;MultipleActiveResultSets=true";
+            ?? "Server=127.0.0.1;Port=3306;Database=CodeMasterDB;User ID=root;Password=your_mysql_password;Character Set=utf8mb4;SslMode=None;AllowPublicKeyRetrieval=True;";
 
 #if DB_MYSQL
         optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));

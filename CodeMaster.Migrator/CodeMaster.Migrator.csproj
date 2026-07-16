@@ -8,7 +8,7 @@
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\GeneratedFiles</CompilerGeneratedFilesOutputPath>
     <!-- 默认数据库提供程序，可以通过 -p:DbProvider=MySql 等参数覆盖 -->
-    <DbProvider Condition="'$(DbProvider)'==''">PostgreSQL</DbProvider>
+    <DbProvider Condition="'$(DbProvider)'==''">MySql</DbProvider>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DbProvider)'=='' OR '$(DbProvider)'=='SqlServer'">

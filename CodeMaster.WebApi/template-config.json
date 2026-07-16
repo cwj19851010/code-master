@@ -26,6 +26,12 @@
       }
     ]
   },
+  "exclude": {
+    "migrations": [
+      "**/Migrations/*.cs",
+      "**/Migrations/**/*.cs"
+    ]
+  },
   "include": {
     "core": [
       "CodeMaster.Core/CodeMaster.Core.csproj",

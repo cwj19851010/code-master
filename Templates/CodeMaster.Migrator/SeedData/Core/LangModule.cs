@@ -22,7 +22,7 @@ public class LangModule : ISeedModule
     {
         // 查找系统管理目录
         var systemMenu = await dbContext.Set<SysMenu>()
-            .FirstOrDefaultAsync(m => m.Path == "/system" && m.MenuType == "M");
+            .FirstOrDefaultAsync(m => m.Path == "system" && m.MenuType == "M");
 
         if (systemMenu == null)
         {
@@ -40,9 +40,9 @@ public class LangModule : ISeedModule
             Path = "lang",
             Component = "system/lang/index",
             MenuType = "C",
-            Visible = 0,
+            Visible = true,
             Status = 0,
-            IsCache = 1, // 默认缓存
+            IsCache = true, // 默认缓存
             Icon = "Reading",
             OrderNum = 8,
             Perms = "system:lang:list",
@@ -70,9 +70,9 @@ public class LangModule : ISeedModule
                 Path = page.Path,
                 Component = $"system/lang/{page.Path}",
                 MenuType = "C",
-                Visible = 1, // 隐藏
+                Visible = false, // 隐藏
                 Status = 0,
-                IsCache = 1, // 默认缓存
+                IsCache = page.Path != "edit" && page.Path != "detail",
                 Perms = page.Perms,
                 CreateTime = DateTime.UtcNow
             };
@@ -98,9 +98,9 @@ public class LangModule : ISeedModule
                 Path = page.Path,
                 Component = $"system/lang/{page.Path}",
                 MenuType = "C",
-                Visible = 1, // 隐藏
+                Visible = false, // 隐藏
                 Status = 0,
-                IsCache = 1, // 默认缓存
+                IsCache = page.Path != "text/edit" && page.Path != "text/detail",
                 Perms = page.Perms,
                 CreateTime = DateTime.UtcNow
             };

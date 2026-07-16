@@ -493,15 +493,21 @@ export default service
         var utf8WithoutBom = new UTF8Encoding(false);
 
         // 计算 DbProvider（数据库类型）
-        var dbProvider = databaseType switch
+        var dbProvider = NormalizeDbProvider(databaseType);
+
+        static string NormalizeDbProvider(string? value)
         {
-            "MySQL" => "MySql",
-            "SqlServer" => "SqlServer",
-            "PostgreSQL" => "PostgreSQL",
-            "SQLite" => "Sqlite",
-            "Oracle" => "Oracle",
-            _ => "SqlServer"
-        };
+            var normalized = (value ?? string.Empty).Trim().Replace("_", "").Replace("-", "").ToLowerInvariant();
+            return normalized switch
+            {
+                "mysql" => "MySql",
+                "sqlserver" or "mssql" => "SqlServer",
+                "postgresql" or "postgres" or "pgsql" => "PostgreSQL",
+                "sqlite" or "sqlite3" => "Sqlite",
+                "oracle" => "Oracle",
+                _ => "SqlServer"
+            };
+        }
 
         // 更新WebApi的appsettings.json
         var webApiAppsettingsJsonPath = Path.Combine(projectPath, $"{projectName}.WebApi", "appsettings.json");
@@ -1008,6 +1014,7 @@ export default service
             UseShellExecute = false,
             CreateNoWindow = true
         };
+        DotnetProcessEnvironment.Apply(processInfo);
 
         Console.WriteLine($"[Process] Starting: {fileName} {arguments}");
         Console.WriteLine($"[Process] Working Directory: {workingDirectory}");

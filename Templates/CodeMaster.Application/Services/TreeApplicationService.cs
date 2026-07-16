@@ -2,6 +2,7 @@ using CodeMaster.Core.Dtos;
 using CodeMaster.Core.Entities;
 using CodeMaster.Core.Repositories;
 using CodeMaster.Core.DynamicApi;
+using CodeMaster.Core.Services;
 using Mapster;
 using SqlSugar;
 using Yitter.IdGenerator;
@@ -17,11 +18,13 @@ public abstract class TreeApplicationService<TEntity, TGetOutputDto, TGetListOut
     where TGetOutputDto : EntityDto
     where TGetListOutputDto : EntityDto
     where TGetListInput : PagedQueryDto
+    where TCreateInput : class, new()
+    where TUpdateInput : class
 {
     protected readonly ISqlSugarClient _db;
 
-    protected TreeApplicationService(IRepository<TEntity> repository, ISqlSugarClient db)
-        : base(repository)
+    protected TreeApplicationService(IRepository<TEntity> repository, IExcelService? excelService = null, ISqlSugarClient? db = null, CodeMaster.Core.Services.ICacheService? cacheService = null)
+        : base(repository, excelService, cacheService)
     {
         _db = db;
     }

@@ -16,9 +16,9 @@ public class SysMenuDto : EntityDto
     public string? Component { get; set; }
     public string? Query { get; set; }
     public int IsFrame { get; set; }
-    public int IsCache { get; set; }
+    public bool IsCache { get; set; }
     public string MenuType { get; set; } = string.Empty;
-    public int Visible { get; set; }
+    public bool Visible { get; set; }
     public int Status { get; set; }
     public string? Perms { get; set; }
     public string? Icon { get; set; }
@@ -39,9 +39,9 @@ public class CreateSysMenuDto
     public string? Component { get; set; }
     public string? Query { get; set; }
     public int IsFrame { get; set; } = 1;
-    public int IsCache { get; set; } = 0;
+    public bool IsCache { get; set; } = true;
     public string MenuType { get; set; } = "M";
-    public int Visible { get; set; } = 0;
+    public bool Visible { get; set; } = true;
     public int Status { get; set; } = 0;
     public string? Perms { get; set; }
     public string? Icon { get; set; }
@@ -62,9 +62,9 @@ public class UpdateSysMenuDto
     public string? Component { get; set; }
     public string? Query { get; set; }
     public int IsFrame { get; set; }
-    public int IsCache { get; set; }
+    public bool IsCache { get; set; }
     public string MenuType { get; set; } = string.Empty;
-    public int Visible { get; set; }
+    public bool Visible { get; set; }
     public int Status { get; set; }
     public string? Perms { get; set; }
     public string? Icon { get; set; }

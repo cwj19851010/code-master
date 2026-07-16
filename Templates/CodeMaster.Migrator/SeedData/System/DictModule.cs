@@ -8,7 +8,7 @@ namespace CodeMaster.Migrator.SeedData.System;
 /// </summary>
 public class DictModule : ISeedModule
 {
-    public string ModuleName => "字典管理";
+    public string ModuleName => "字典";
 
     public async Task<bool> HasMenuAsync(CodeMasterDbContext dbContext)
     {
@@ -20,7 +20,7 @@ public class DictModule : ISeedModule
     {
         // 查找系统管理目录
         var systemMenu = await dbContext.Set<Domain.Entities.System.SysMenu>()
-            .FirstOrDefaultAsync(m => m.Path == "/system" && m.MenuType == "M");
+            .FirstOrDefaultAsync(m => m.Path == "system" && m.MenuType == "M");
 
         if (systemMenu == null)
         {
@@ -35,12 +35,13 @@ public class DictModule : ISeedModule
         {
             Id = Yitter.IdGenerator.YitIdHelper.NextId(),
             ParentId = systemMenu.Id,
-            MenuName = "字典管理",
+            MenuName = "字典",
             TitleKey = "dict",
             Path = "dict",
             Component = "system/dict/index",
             MenuType = "C",
-            Visible = 0,
+            Visible = true,
+            IsCache = true,
             Status = 0,
             Icon = "Collection",
             OrderNum = 7,
@@ -68,7 +69,8 @@ public class DictModule : ISeedModule
                 Path = page.Path,
                 Component = $"system/dict/{page.Path}",
                 MenuType = "C",
-                Visible = 1, // 隐藏
+                Visible = false, // 隐藏
+                IsCache = page.Path != "type/edit" && page.Path != "type/detail",
                 Status = 0,
                 Perms = page.Perms,
                 CreateTime = DateTime.UtcNow
@@ -95,7 +97,8 @@ public class DictModule : ISeedModule
                 Path = page.Path,
                 Component = $"system/dict/{page.Path}",
                 MenuType = "C",
-                Visible = 1, // 隐藏
+                Visible = false, // 隐藏
+                IsCache = page.Path != "data/edit" && page.Path != "data/detail",
                 Status = 0,
                 Perms = page.Perms,
                 CreateTime = DateTime.UtcNow

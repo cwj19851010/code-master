@@ -24,8 +24,8 @@ public interface ISysDeptService : ITreeApplicationService<SysDept, SysDeptDto, 
 [DynamicApiPermission(requirePermission: true)]
 public class SysDeptService : TreeApplicationService<SysDept, SysDeptDto, SysDeptDto, SysDeptQueryDto, CreateSysDeptDto, UpdateSysDeptDto>, ISysDeptService
 {
-    public SysDeptService(IRepository<SysDept> repository, ISqlSugarClient db)
-        : base(repository, db)
+    public SysDeptService(IRepository<SysDept> repository, IExcelService excelService, ISqlSugarClient db, CodeMaster.Core.Services.ICacheService? cacheService = null)
+        : base(repository, excelService, db, cacheService)
     {
     }
 

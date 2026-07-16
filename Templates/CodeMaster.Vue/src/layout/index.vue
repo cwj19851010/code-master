@@ -55,7 +55,7 @@
 
       <el-main class="main-content">
         <router-view v-slot="{ Component }">
-          <keep-alive :max="20">
+          <keep-alive :include="cachedViews" :max="20">
             <component :is="Component" />
           </keep-alive>
         </router-view>

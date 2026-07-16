@@ -128,6 +128,12 @@ FixDatabase/
 Generated/
 TranslationCleaner/
 
+# EF migrations are generated per selected database provider.
+# Do not commit historical migrations; initialization regenerates them as needed.
+CodeMaster.Migrator/Migrations/
+Templates/CodeMaster.Migrator/Migrations/
+**/Migrations/*Snapshot.cs
+
 # Local database backups and template snapshots
 *.db.bak_*
 Templates/CodeMaster_Template_*.zip

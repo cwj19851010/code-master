@@ -61,13 +61,13 @@ Templates                  生成项目使用的源码模板包
 - SignalR
 - Quartz
 - Tauri + LocalAgent
-- PostgreSQL 当前默认迁移集
+- MySQL 默认示例配置
 
-运行时代码支持 SQLite、PostgreSQL、MySQL、SQL Server、Oracle，但当前提交的 EF 迁移集以 PostgreSQL 为主。如果你要把其他数据库作为生产首选，建议重新生成并验证对应 provider 的迁移集。
+运行时代码支持 SQLite、PostgreSQL、MySQL、SQL Server、Oracle。EF 迁移历史不提交到仓库，初始化或部署时应根据当前选择的数据库 provider 重新生成并验证迁移。
 
 ## 快速开始
 
-当前仓库使用本地 PostgreSQL 示例配置和占位密钥。正式部署前请改成自己的连接串和密钥。
+当前仓库使用本地 MySQL 示例配置和占位密钥。正式部署前请改成自己的连接串和密钥。
 
 1. 还原并构建：
 

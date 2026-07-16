@@ -1468,6 +1468,7 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
             UseShellExecute = false,
             CreateNoWindow = true
         };
+        DotnetProcessEnvironment.Apply(processInfo);
 
         Console.WriteLine($"[Migrate] {fileName} {arguments} (cwd: {workingDirectory})");
 

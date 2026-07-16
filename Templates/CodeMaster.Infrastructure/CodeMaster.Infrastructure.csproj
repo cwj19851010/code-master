@@ -6,14 +6,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EPPlus" Version="4.5.3.3" />
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.9" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <!-- Use the Microsoft.AspNetCore.App framework reference below for ASP.NET Core types -->
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.3" />
     <PackageReference Include="Quartz" Version="3.9.0" />
     <PackageReference Include="Quartz.Serialization.Json" Version="3.9.0" />
-    <PackageReference Include="SqlSugarCore" Version="5.1.4.156" />
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.214" />
     <PackageReference Include="StackExchange.Redis" Version="2.7.27" />
   </ItemGroup>
 

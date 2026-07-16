@@ -48,7 +48,7 @@ export const useTagsViewStore = defineStore('tagsView', {
     },
 
     addVisitedView(view) {
-      if (!view?.path || view.meta?.hidden) return
+      if (!view?.path || view.meta?.hideTab) return
 
       const tagView = toTagView(view)
       const exists = this.visitedViews.some(item => getViewKey(item) === getViewKey(tagView))
@@ -58,7 +58,11 @@ export const useTagsViewStore = defineStore('tagsView', {
     },
 
     addCachedView(view) {
-      if (view?.meta?.noCache || !view?.name) return
+      if (!view?.name) return
+      if (view?.meta?.noCache) {
+        this.delCachedView(view)
+        return
+      }
       if (!this.cachedViews.includes(view.name)) {
         this.cachedViews.push(view.name)
       }

@@ -8,7 +8,7 @@
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
     <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)\GeneratedFiles</CompilerGeneratedFilesOutputPath>
     <!-- 默认数据库提供程序，可以通过 -p:DbProvider=MySql 等参数覆盖 -->
-    <DbProvider Condition="'$(DbProvider)'==''">PostgreSQL</DbProvider>
+    <DbProvider Condition="'$(DbProvider)'==''">MySql</DbProvider>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(DbProvider)'=='' OR '$(DbProvider)'=='SqlServer'">
@@ -32,12 +32,12 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -49,23 +49,23 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(DbProvider)'=='MySql'">
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="10.0.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DbProvider)'=='PostgreSQL'">
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DbProvider)'=='Sqlite'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DbProvider)'=='Oracle'">
-    <PackageReference Include="Oracle.EntityFrameworkCore" Version="10.0.0" />
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="9.23.26000" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DbProvider)'=='' OR '$(DbProvider)'=='SqlServer'">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>

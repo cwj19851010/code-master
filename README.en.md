@@ -53,13 +53,13 @@ Templates                  Source template package used for generated projects
 
 - .NET SDK 10
 - Node.js 20+
-- PostgreSQL for the current committed EF migration set
-- Runtime code supports SQLite, PostgreSQL, MySQL, SQL Server and Oracle, but non-PostgreSQL EF migrations should be regenerated for the selected provider before publishing or deploying.
+- MySQL default example configuration
+- Runtime code supports SQLite, PostgreSQL, MySQL, SQL Server and Oracle. EF migration history is not committed; regenerate and verify migrations for the selected provider before publishing or deploying.
 - Optional: Redis, Tauri prerequisites for desktop client builds
 
 ## Quick Start
 
-The committed configuration uses local PostgreSQL example values and placeholder secrets. Update the connection string before running in your own environment.
+The committed configuration uses local MySQL example values and placeholder secrets. Update the connection string before running in your own environment.
 
 1. Restore and build:
 
@@ -68,10 +68,9 @@ dotnet restore CodeMaster.sln
 dotnet build CodeMaster.sln
 ```
 
-2. Create an empty PostgreSQL database named `CodeMasterDB`, then create the tables and seed data:
+2. Create the MySQL database and seed data:
 
 ```bash
-createdb -h localhost -U postgres CodeMasterDB
 cd CodeMaster.Migrator
 dotnet run
 ```

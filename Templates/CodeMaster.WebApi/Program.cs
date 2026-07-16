@@ -20,6 +20,9 @@ using CodeMaster.WebApi.Extensions;
 using CodeMaster.Application.Services.Monitor;
 using CodeMaster.Domain.Entities.Monitor;
 using Microsoft.AspNetCore.SignalR;
+using CodeMaster.Infrastructure.Caching.Extensions;
+using CodeMaster.Infrastructure.SignalR;
+using CodeMaster.Core.Repositories;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,12 +60,19 @@ builder.Services.AddApplicationServices(applicationAssembly);
 // 手动注册认证相关服务
 builder.Services.AddScoped<CodeMaster.Application.Services.Auth.IJwtService, CodeMaster.Application.Services.Auth.JwtService>();
 builder.Services.AddScoped<CodeMaster.Application.Services.Auth.IAuthService, CodeMaster.Application.Services.Auth.AuthService>();
+builder.Services.AddScoped<CodeMaster.Application.Services.Monitor.IOnlineUserService, CodeMaster.Application.Services.Monitor.OnlineUserService>();
+
+// 注册 Excel 导入导出服务
+builder.Services.AddScoped<CodeMaster.Core.Services.IExcelService, CodeMaster.Infrastructure.Services.ExcelService>();
+
+// 注册缓存服务
+builder.Services.AddCaching(builder.Configuration);
 
 // 注册动态 API 描述提供器
 builder.Services.AddSingleton<Microsoft.AspNetCore.Mvc.ApiExplorer.IApiDescriptionProvider, CodeMaster.WebApi.Swagger.DynamicApiDescriptionProvider>();
 
 // 添加控制器和动态 API
-builder.Services.AddControllers(options =>
+builder.Services.AddControllersWithViews(options =>
     {
         // 添加查询字符串模型绑定器，支持从Query String绑定复杂对象
         options.ModelBinderProviders.Insert(0, new QueryStringModelBinderProvider());
@@ -81,7 +91,6 @@ builder.Services.AddControllers(options =>
         options.JsonSerializerOptions.Converters.Add(new CodeMaster.WebApi.Converters.NullableLongToStringConverter());
         options.JsonSerializerOptions.Converters.Add(new CodeMaster.WebApi.Converters.UtcDateTimeConverter());
         options.JsonSerializerOptions.Converters.Add(new CodeMaster.WebApi.Converters.NullableUtcDateTimeConverter());
-        options.JsonSerializerOptions.Converters.Add(new CodeMaster.WebApi.Converters.NumberToStringConverter());
     })
     .AddDynamicApi(applicationAssembly, options =>
     {
@@ -168,6 +177,7 @@ if (string.IsNullOrWhiteSpace(dbProvider))
 }
 
 dbProvider = dbProvider.Trim();
+Console.WriteLine($"[SqlSugar] 数据库提供程序: {dbProvider}");
 var dbType = dbProvider.ToLowerInvariant() switch
 {
     "sqlite" => DbType.Sqlite,
@@ -177,7 +187,6 @@ var dbType = dbProvider.ToLowerInvariant() switch
     "sqlserver" => DbType.SqlServer,
     _ => throw new InvalidOperationException($"Unsupported DbProvider: {dbProvider}")
 };
-Console.WriteLine($"[SqlSugar] Provider: {dbProvider}");
 Console.WriteLine($"[SqlSugar] DbType: {dbType}");
 Console.WriteLine($"[SqlSugar] ConnectionString: {MaskConnectionString(connectionString)}");
 builder.Services.AddScoped<ISqlSugarClient>(sp =>
@@ -276,11 +285,11 @@ builder.Services.AddCors(options =>
     });
 });
 
-// 配置 SignalR
-builder.Services.AddSignalR();
+// 配置 SignalR + 在线用户管理器
+builder.Services.AddSignalRNotification();
 
-// 注册在线用户服务（Singleton，全局单例）
-builder.Services.AddSingleton<IOnlineUserService, OnlineUserService>();
+// 注册通知服务
+builder.Services.AddScoped<CodeMaster.Core.Services.Monitor.INotificationService, CodeMaster.Infrastructure.SignalR.NotificationService>();
 
 // 注册任务调度服务
 builder.Services.AddHttpClient(); // HttpJob 需要
@@ -291,27 +300,6 @@ builder.Services.AddScoped<CodeMaster.Infrastructure.TaskScheduling.Jobs.SqlJob>
 builder.Services.AddScoped<CodeMaster.Infrastructure.TaskScheduling.Jobs.AssemblyJob>();
 
 var app = builder.Build();
-
-// 配置在线用户服务的消息发送器
-using (var scope = app.Services.CreateScope())
-{
-    var onlineUserService = scope.ServiceProvider.GetRequiredService<CodeMaster.Application.Services.Monitor.IOnlineUserService>() as CodeMaster.Application.Services.Monitor.OnlineUserService;
-    var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<CodeMaster.WebApi.Hubs.OnlineUserHub>>();
-
-    if (onlineUserService != null)
-    {
-        onlineUserService.SetForceOfflineMessageSender(async (connectionId) =>
-        {
-            Console.WriteLine($"[ForceOffline] 发送强制下线消息到连接: {connectionId}");
-            await hubContext.Clients.Client(connectionId).SendAsync("ForceOffline");
-        });
-        Console.WriteLine("[OnlineUserService] 消息发送器配置成功");
-    }
-    else
-    {
-        Console.WriteLine("[OnlineUserService] 警告: 无法获取 OnlineUserService 实例");
-    }
-}
 
 // 启动任务调度器
 var schedulerServer = app.Services.GetRequiredService<CodeMaster.Infrastructure.TaskScheduling.ITaskSchedulerServer>();
@@ -376,10 +364,13 @@ app.UseMiddleware<TenantMiddleware>();
 app.UseDataPermission();
 app.UseAuthorization();
 app.MapControllers();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // 映射 SignalR Hub
-app.MapHub<CodeMaster.WebApi.Hubs.OnlineUserHub>("/hubs/online-user");
-app.MapHub<CodeMaster.WebApi.Hubs.ProjectInitializationHub>("/hubs/project-initialization");
+app.MapHub<CodeMaster.Infrastructure.SignalR.NotificationHub>("/hubs/notification");
+
 
 // 启动信息
 Console.WriteLine("===========================================");

@@ -50,15 +50,18 @@ export const useTagsViewStore = defineStore('tagsView', {
 
     // 添加缓存视图
     addCachedView(view) {
+      if (!view?.name) return
+
       // 如果路由配置了不缓存，则不添加
-      if (view.meta?.noCache) return
+      if (view.meta?.noCache) {
+        this.delCachedView(view)
+        return
+      }
 
       // 如果已经缓存，则不重复添加
       if (this.cachedViews.includes(view.name)) return
 
-      if (view.name) {
-        this.cachedViews.push(view.name)
-      }
+      this.cachedViews.push(view.name)
     },
 
     // 删除视图

@@ -594,6 +594,7 @@ public class LocalCodegenExecutionService
             UseShellExecute = false,
             CreateNoWindow = true
         };
+        DotnetProcessEnvironment.Apply(startInfo);
         foreach (var arg in args)
             startInfo.ArgumentList.Add(arg);
 

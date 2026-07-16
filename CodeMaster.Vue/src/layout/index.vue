@@ -52,7 +52,7 @@
 
       <el-main class="main-content">
         <router-view v-slot="{ Component }">
-          <keep-alive :max="20">
+          <keep-alive :include="cachedViews" :max="20">
             <component :is="Component" />
           </keep-alive>
         </router-view>
@@ -75,6 +75,7 @@ import { signalRService } from '@/utils/signalr'
 import { useUserStore } from '@/stores/user'
 import { usePermissionStore } from '@/stores/permission'
 import { useSettingsStore } from '@/stores/settings'
+import { useTagsViewStore } from '@/stores/tagsView'
 import { useI18n } from 'vue-i18n'
 import defaultAvatarImg from '@/assets/images/default-avatar.svg'
 
@@ -83,6 +84,7 @@ const router = useRouter()
 const userStore = useUserStore()
 const permissionStore = usePermissionStore()
 const settingsStore = useSettingsStore()
+const tagsViewStore = useTagsViewStore()
 const { t } = useI18n()
 
 const isCollapse = ref(false)
@@ -98,6 +100,8 @@ const menuRoutes = computed(() => {
 const activeMenu = computed(() => {
   return route.path
 })
+
+const cachedViews = computed(() => tagsViewStore.cachedViews)
 
 const toggleSidebar = () => {
   isCollapse.value = !isCollapse.value

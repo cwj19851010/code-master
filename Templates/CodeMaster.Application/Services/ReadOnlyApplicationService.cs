@@ -13,14 +13,33 @@ namespace CodeMaster.Application.Services;
 public abstract class ReadOnlyApplicationService<TEntity, TGetOutputDto, TGetListOutputDto, TGetListInput>
     : IReadOnlyApplicationService<TEntity, TGetOutputDto, TGetListOutputDto, TGetListInput>
     where TEntity : class, IEntity<long>, new()
+    where TGetOutputDto : class
+    where TGetListOutputDto : class
     where TGetListInput : PagedQueryDto
 {
     protected readonly IReadOnlyRepository<TEntity> Repository;
+    protected readonly IExcelService? ExcelService;
+    protected readonly Core.Services.ICacheService? CacheService;
 
-    protected ReadOnlyApplicationService(IReadOnlyRepository<TEntity> repository)
+    protected ReadOnlyApplicationService(
+        IReadOnlyRepository<TEntity> repository,
+        IExcelService? excelService = null,
+        Core.Services.ICacheService? cacheService = null)
     {
         Repository = repository;
+        ExcelService = excelService;
+        CacheService = cacheService;
     }
+
+    /// <summary>
+    /// 获取缓存键前缀（子类可重写自定义缓存键）
+    /// </summary>
+    protected virtual string CacheKeyPrefix => typeof(TEntity).Name.ToLower();
+
+    /// <summary>
+    /// 是否启用缓存（子类可重写控制是否使用缓存）
+    /// </summary>
+    protected virtual bool EnableCache => CacheService != null;
 
     /// <summary>
     /// 根据ID获取实体
@@ -97,5 +116,48 @@ public abstract class ReadOnlyApplicationService<TEntity, TGetOutputDto, TGetLis
     {
         // 子类可以重写此方法实现自定义排序
         return queryable;
+    }
+
+    /// <summary>
+    /// 导出数据到 Excel
+    /// </summary>
+    public virtual async Task<byte[]> ExportAsync(TGetListInput input)
+    {
+        // 获取所有数据（不分页）
+        var data = await GetListAsync(input);
+
+        // 使用 ExcelService 导出
+        return await ExcelService.ExportAsync(data);
+    }
+
+    /// <summary>
+    /// 清除单个实体缓存
+    /// </summary>
+    protected virtual async Task InvalidateCacheAsync(long id)
+    {
+        if (!EnableCache) return;
+
+        await CacheService!.RemoveAsync($"{CacheKeyPrefix}:{id}");
+        await InvalidateListCacheAsync();
+    }
+
+    /// <summary>
+    /// 清除列表缓存
+    /// </summary>
+    protected virtual async Task InvalidateListCacheAsync()
+    {
+        if (!EnableCache) return;
+
+        await CacheService!.RemoveByPatternAsync($"{CacheKeyPrefix}:list:*");
+    }
+
+    /// <summary>
+    /// 清除所有相关缓存
+    /// </summary>
+    protected virtual async Task InvalidateAllCacheAsync()
+    {
+        if (!EnableCache) return;
+
+        await CacheService!.RemoveByPatternAsync($"{CacheKeyPrefix}:*");
     }
 }

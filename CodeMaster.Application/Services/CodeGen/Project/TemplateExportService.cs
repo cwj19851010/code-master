@@ -159,7 +159,7 @@ public class TemplateExportService
                     var relPath = Path.GetRelativePath(sourceDir, file).Replace('\\', '/');
 
                     // 检查是否在排除列表中
-                    bool shouldExclude = config.Exclude.Migrations.Contains(relPath);
+                    bool shouldExclude = ShouldExcludeTemplateFile(relPath, config);
 
                     if (!shouldExclude)
                     {
@@ -171,7 +171,7 @@ public class TemplateExportService
             {
                 // 精确路径
                 var sourceFile = Path.Combine(sourceDir, relativePath);
-                if (File.Exists(sourceFile))
+                if (File.Exists(sourceFile) && !ShouldExcludeTemplateFile(relativePath, config))
                 {
                     CopyFileWithDirectory(sourceFile, sourceDir, destDir);
                 }
@@ -184,6 +184,37 @@ public class TemplateExportService
     /// <summary>
     /// 展开通配符模式，支持 **/*.cs 和 *.cs
     /// </summary>
+    private static bool ShouldExcludeTemplateFile(string relativePath, TemplateConfig config)
+    {
+        var relPath = relativePath.Replace('\\', '/');
+
+        // Generated projects create a fresh migration during initialization based on the
+        // selected database provider. Historical EF migrations should not be shipped in templates.
+        if (relPath.Contains("/Migrations/", StringComparison.OrdinalIgnoreCase) &&
+            relPath.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return config.Exclude.Migrations.Any(pattern => PathMatchesPattern(relPath, pattern));
+    }
+
+    private static bool PathMatchesPattern(string relativePath, string pattern)
+    {
+        if (string.IsNullOrWhiteSpace(pattern))
+            return false;
+
+        var normalizedPattern = pattern.Replace('\\', '/');
+        if (!normalizedPattern.Contains('*'))
+            return string.Equals(relativePath, normalizedPattern, StringComparison.OrdinalIgnoreCase);
+
+        var regex = "^" + Regex.Escape(normalizedPattern)
+            .Replace(@"\*\*", ".*")
+            .Replace(@"\*", @"[^/]*") + "$";
+
+        return Regex.IsMatch(relativePath, regex, RegexOptions.IgnoreCase);
+    }
+
     private List<string> ExpandWildcard(string baseDir, string pattern)
     {
         var result = new List<string>();
