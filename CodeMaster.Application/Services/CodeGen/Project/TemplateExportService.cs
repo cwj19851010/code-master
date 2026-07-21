@@ -92,6 +92,7 @@ public class TemplateExportService
 
             // 4.5 在 WebApi Program.cs 中删除 CodeGen 相关 using
             await RemoveCodeGenLinesAsync(tempDir);
+            await RemoveFrontendMcpReferencesAsync(tempDir);
             await RemoveTauriBridgeLinesAsync(tempDir);
             await RewriteRequestWithoutClientBridgeAsync(tempDir);
             await RewriteSignalRWithoutClientBridgeAsync(tempDir);
@@ -296,7 +297,7 @@ public class TemplateExportService
     /// <summary>
     /// 在 WebApi Program.cs 中删除 CodeGen 相关行
     /// </summary>
-    private async Task RemoveCodeGenLinesAsync(string tempDir)
+    internal async Task RemoveCodeGenLinesAsync(string tempDir)
     {
         var programPath = Path.Combine(tempDir, "CodeMaster.WebApi", "Program.cs");
         if (File.Exists(programPath))
@@ -311,13 +312,78 @@ public class TemplateExportService
                 "EmailSender",
                 "IPublicAccountService",
                 "PublicAccountService",
-                "Application.Services.Community"
+                "Application.Services.Community",
+                "McpToken"
             };
             var utf8WithoutBom = new UTF8Encoding(false);
             var lines = await File.ReadAllLinesAsync(programPath, utf8WithoutBom);
             var result = lines.Where(line => !codeGenTypes.Any(t => line.Contains(t))).ToList();
             await File.WriteAllLinesAsync(programPath, result, utf8WithoutBom);
         }
+    }
+
+    internal async Task RemoveFrontendMcpReferencesAsync(string tempDir)
+    {
+        var utf8WithoutBom = new UTF8Encoding(false);
+        var routerPath = Path.Combine(tempDir, "CodeMaster.Vue", "src", "router", "index.js");
+        if (File.Exists(routerPath))
+        {
+            var lines = (await File.ReadAllLinesAsync(routerPath, utf8WithoutBom)).ToList();
+            while (true)
+            {
+                var markerIndex = lines.FindIndex(ContainsFrontendMcpReference);
+                if (markerIndex < 0)
+                    break;
+
+                var startIndex = markerIndex;
+                while (startIndex >= 0 && lines[startIndex].Trim() != "{")
+                    startIndex--;
+
+                if (startIndex < 0)
+                    throw new InvalidOperationException("Unable to locate the MCP route object start in CodeMaster.Vue/src/router/index.js");
+
+                var depth = 0;
+                var endIndex = -1;
+                for (var i = startIndex; i < lines.Count; i++)
+                {
+                    depth += lines[i].Count(ch => ch == '{');
+                    depth -= lines[i].Count(ch => ch == '}');
+                    if (depth == 0)
+                    {
+                        endIndex = i;
+                        break;
+                    }
+                }
+
+                if (endIndex < startIndex)
+                    throw new InvalidOperationException("Unable to locate the MCP route object end in CodeMaster.Vue/src/router/index.js");
+
+                lines.RemoveRange(startIndex, endIndex - startIndex + 1);
+            }
+
+            await File.WriteAllLinesAsync(routerPath, lines, utf8WithoutBom);
+        }
+
+        var layoutPath = Path.Combine(tempDir, "CodeMaster.Vue", "src", "layout", "index.vue");
+        if (File.Exists(layoutPath))
+        {
+            var lines = await File.ReadAllLinesAsync(layoutPath, utf8WithoutBom);
+            var result = lines
+                .Where(line => !ContainsFrontendMcpReference(line))
+                .Select(line => line.Replace(
+                    "<el-dropdown-item divided @click=\"handleLogout\">",
+                    "<el-dropdown-item @click=\"handleLogout\">",
+                    StringComparison.Ordinal))
+                .ToList();
+
+            await File.WriteAllLinesAsync(layoutPath, result, utf8WithoutBom);
+        }
+    }
+
+    private static bool ContainsFrontendMcpReference(string value)
+    {
+        return value.Contains("mcp-token", StringComparison.OrdinalIgnoreCase) ||
+               value.Contains("mcpToken", StringComparison.OrdinalIgnoreCase);
     }
 
     /// <summary>

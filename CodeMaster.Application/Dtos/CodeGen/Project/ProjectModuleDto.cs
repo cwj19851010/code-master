@@ -54,6 +54,22 @@ public class ProjectModuleDto : EntityDto
 }
 
 /// <summary>
+/// 项目模块查询DTO
+/// </summary>
+public class ProjectModuleQueryDto : PagedQueryDto
+{
+    /// <summary>
+    /// 项目ID
+    /// </summary>
+    public long? ProjectId { get; set; }
+
+    /// <summary>
+    /// 模块名称
+    /// </summary>
+    public string? ModuleName { get; set; }
+}
+
+/// <summary>
 /// 创建项目模块DTO
 /// </summary>
 public class CreateProjectModuleDto

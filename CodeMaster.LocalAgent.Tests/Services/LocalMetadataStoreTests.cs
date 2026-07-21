@@ -46,12 +46,20 @@ public class LocalMetadataStoreTests
                 var field = await context.Db.Queryable<EntityField>().FirstAsync(f => f.Id == 4001);
                 Assert.True(field.IsMultiple);
                 Assert.Equal(string.Empty, field.RelatedEntityName);
+                Assert.Equal("[{\"sourceField\":\"Name\",\"targetField\":\"CustomerName\"}]", field.ResultMappings);
                 Assert.Equal("LocalAgent", field.CreateBy);
+
+                var entityRelation = await context.Db.Queryable<EntityRelation>().FirstAsync(r => r.Id == 5002);
+                Assert.Equal(3001, entityRelation.SourceEntityId);
+                Assert.Equal(3002, entityRelation.TargetEntityId);
+                Assert.Equal("Detail", entityRelation.RelationName);
+                Assert.Equal(EntityRelationOwnership.Owned, entityRelation.Ownership);
 
                 var columnTypes = ReadSqliteColumnTypes(context, "sys_entity_field");
                 Assert.Equal("integer", columnTypes["is_multiple"]);
                 Assert.Equal("integer", columnTypes["show_in_list"]);
                 Assert.StartsWith("text", columnTypes["name"]);
+                Assert.StartsWith("text", columnTypes["result_mappings"]);
             }
 
             Assert.False(File.Exists(dbPath));
@@ -109,6 +117,19 @@ public class LocalMetadataStoreTests
                     GenerateFrontend = true,
                     CreateBy = null,
                     CreateTime = default
+                },
+                new ModuleEntity
+                {
+                    Id = 3002,
+                    ProjectId = 1001,
+                    ModuleId = 2001,
+                    Name = "OrderDetail",
+                    Description = "Order detail",
+                    TableName = null,
+                    GenerateFrontend = true,
+                    IsChildTable = true,
+                    CreateBy = null,
+                    CreateTime = default
                 }
             },
             Fields =
@@ -127,6 +148,7 @@ public class LocalMetadataStoreTests
                     RelatedEntityName = null,
                     RelatedEntityIdField = null,
                     RelatedEntityDisplayFields = null,
+                    ResultMappings = "[{\"sourceField\":\"Name\",\"targetField\":\"CustomerName\"}]",
                     ShowInList = true,
                     ShowInDetail = true,
                     ShowInAddForm = true,
@@ -146,6 +168,23 @@ public class LocalMetadataStoreTests
                     ChildEntityId = 3002,
                     ChildEntityName = "OrderItem",
                     ChildForeignKey = "OrderId",
+                    CreateBy = null,
+                    CreateTime = default
+                }
+            },
+            EntityRelations =
+            {
+                new EntityRelation
+                {
+                    Id = 5002,
+                    SourceEntityId = 3001,
+                    TargetEntityId = 3002,
+                    RelationName = "Detail",
+                    SourceField = "Id",
+                    TargetField = "OrderId",
+                    Cardinality = EntityRelationCardinality.OneToOne,
+                    Ownership = EntityRelationOwnership.Owned,
+                    DeleteBehavior = EntityRelationDeleteBehavior.Delete,
                     CreateBy = null,
                     CreateTime = default
                 }

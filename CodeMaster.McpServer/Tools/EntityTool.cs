@@ -1,6 +1,6 @@
 using System.Text.Json;
 using CodeMaster.Application.Dtos.CodeGen;
-using CodeMaster.Application.Services.CodeGen;
+using CodeMaster.Domain.Entities.CodeGen;
 using CodeMaster.McpServer.Services;
 
 namespace CodeMaster.McpServer.Tools;
@@ -10,27 +10,21 @@ namespace CodeMaster.McpServer.Tools;
 /// </summary>
 public class EntityTool
 {
-    private readonly IProjectModuleService _moduleService;
-    private readonly IModuleEntityService _entityService;
-    private readonly IEntityFieldService _fieldService;
+    private readonly CodeMasterApiClient _apiClient;
     private readonly ProjectContextResolver _contextResolver;
 
     public EntityTool(
-        IProjectModuleService moduleService,
-        IModuleEntityService entityService,
-        IEntityFieldService fieldService,
+        CodeMasterApiClient apiClient,
         ProjectContextResolver contextResolver)
     {
-        _moduleService = moduleService;
-        _entityService = entityService;
-        _fieldService = fieldService;
+        _apiClient = apiClient;
         _contextResolver = contextResolver;
     }
 
     public static McpTool Definition => new()
     {
         Name = "create_or_update_entity",
-        Description = "Create or update CodeMaster entity metadata through shared services. Supports field control configuration updates. Does not delete fields or relations unless future tools explicitly support deletion.",
+        Description = "Create or update CodeMaster entity metadata through the authenticated WebApi. Supports field controls, select-table result mappings, legacy one-to-many relations, and owned one-to-one relations. Does not delete fields or relations unless future tools explicitly support deletion.",
         InputType = typeof(EntityToolInput),
         InputSchema = JsonSerializer.SerializeToNode(new
         {
@@ -46,14 +40,16 @@ public class EntityTool
                 entityId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Optional existing entity id." },
                 entityName = new { type = "string", description = "Entity name in PascalCase, for example Order or OrderItem." },
                 description = new { type = "string", description = "Human-readable entity title." },
-                tableName = new { type = "string", description = "Optional table name. Leave empty for generated snake_case." },
+                tableName = new { type = "string", description = "Optional custom physical table name. Leave empty for CodeMaster's default plural snake_case name without a prefix. Never invent a prefix unless the user explicitly requests one." },
+                hasPrimaryKey = new { type = "boolean", description = "Generate the standard long Id primary key and enable keyed services/migration. Defaults to true for new entities." },
                 isTree = new { type = "boolean", description = "Generate a tree entity." },
+                isReadOnly = new { type = "boolean", description = "Disable create/update/delete. With a primary key, GetById remains available; without a primary key, only list/query/export are generated." },
                 isMultiTenant = new { type = "boolean", description = "Enable tenant fields and filters." },
                 hasDataPermission = new { type = "boolean", description = "Enable department data permission." },
                 hasAudit = new { type = "boolean", description = "Enable audit fields. Defaults to true for new entities." },
                 hasSoftDelete = new { type = "boolean", description = "Enable soft delete. Defaults to true for new entities." },
                 generateFrontend = new { type = "boolean", description = "Generate Vue pages. Defaults to true for new entities." },
-                isChildTable = new { type = "boolean", description = "Mark this entity as a child table." },
+                isChildTable = new { type = "boolean", description = "Mark this entity as a child table and suppress standalone Vue pages. Its API can still be generated for aggregate pages." },
                 frontendRoute = new { type = "string" },
                 menuIcon = new { type = "string" },
                 orderNum = new { type = "integer" },
@@ -62,7 +58,7 @@ public class EntityTool
                 fields = new
                 {
                     type = "array",
-                    description = "Business fields. Do not include Id, audit, soft-delete, or tenant fields. Existing fields are matched by id first, then name.",
+                    description = "Business fields. Do not include Id, tree, audit, soft-delete, tenant, or data-permission system fields. Existing fields are matched by id first, then name.",
                     items = new
                     {
                         type = "object",
@@ -87,11 +83,26 @@ public class EntityTool
                             enumValues = new { type = "string", description = "Comma-separated options, written to selectOptions." },
                             selectDataSource = new { type = "string", description = "Select data source, for example dict or static." },
                             selectOptions = new { type = "string", description = "Raw select options/dictionary config." },
-                            formControlType = new { type = "string", description = "input, textarea, number, select, select-table, date, datetime, switch, file, image, or table-column." },
-                            relatedEntityName = new { type = "string", description = "Related entity name for select-table." },
-                            relatedEntityIdField = new { type = "string", description = "Related entity id field for select-table. Defaults to Id." },
+                            formControlType = new { type = "string", description = "input, textarea, number, select, select-table, date, datetime, switch, checkbox, checkbox-group, radio-group, file, image, editor, cascader, or table-column." },
+                            relatedEntityName = new { type = "string", description = "Related entity name for select-table or cascader." },
+                            relatedEntityIdField = new { type = "string", description = "Related entity value field for select-table or cascader. Defaults to Id." },
                             relatedDisplayFields = new { type = "array", items = new { type = "string" }, description = "Related display field names, for example [\"Name\", \"Type\"]." },
                             relatedEntityDisplayFields = new { type = "string", description = "Raw JSON array for related display fields." },
+                            resultMappings = new
+                            {
+                                type = "array",
+                                description = "For select-table, copy fields from the selected related row into local entity fields.",
+                                items = new
+                                {
+                                    type = "object",
+                                    properties = new
+                                    {
+                                        sourceField = new { type = "string", description = "Field on the selected related entity." },
+                                        targetField = new { type = "string", description = "Local entity field that receives the selected value." }
+                                    },
+                                    required = new[] { "sourceField", "targetField" }
+                                }
+                            },
                             isMultiple = new { type = "boolean", description = "Allow multiple values for select or select-table." },
                             showInList = new { type = "boolean", description = "Show in list page." },
                             showInAddForm = new { type = "boolean", description = "Show in add form." },
@@ -100,12 +111,12 @@ public class EntityTool
                             showInDetail = new { type = "boolean", description = "Show in detail page." },
                             listWidth = new { type = "integer", description = "List column width in pixels." },
                             orderNum = new { type = "integer", description = "Field sort order." },
-                            fieldCategory = new { type = "string", description = "Normal, Formula, Aggregate, etc." },
-                            formula = new { type = "string" },
-                            aggregateType = new { type = "string" },
-                            aggregateChildEntityId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } } },
-                            aggregateChildFieldName = new { type = "string" },
-                            aggregateSeparator = new { type = "string" },
+                            fieldCategory = new { type = "string", @enum = new[] { "Normal", "Computed", "Aggregate" }, description = "Normal business field, Computed formula field, or Aggregate child-statistics field." },
+                            formula = new { type = "string", description = "Computed formula using [FieldName] references and arithmetic operators, for example [Price]*[Quantity]." },
+                            aggregateType = new { type = "string", @enum = new[] { "Sum", "Avg", "Concat" }, description = "Aggregate calculation applied to a one-to-many child field." },
+                            aggregateChildEntityId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Existing child entity id from an owned one-to-many relation." },
+                            aggregateChildFieldName = new { type = "string", description = "Child source field. Sum/Avg require numeric data; Concat accepts text." },
+                            aggregateSeparator = new { type = "string", description = "Optional separator used by Concat." },
                             remark = new { type = "string" }
                         }
                     }
@@ -127,6 +138,27 @@ public class EntityTool
                             orderNum = new { type = "integer", description = "Relation sort order." }
                         }
                     }
+                },
+                ownedOneRelations = new
+                {
+                    type = "array",
+                    description = "Owned one-to-one composition relations. The target entity is saved as part of the source aggregate. Existing relations are matched by id or target entity plus field mapping.",
+                    items = new
+                    {
+                        type = "object",
+                        properties = new
+                        {
+                            id = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Existing relation id for updates." },
+                            targetEntityId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } } },
+                            targetEntityName = new { type = "string", description = "Owned target entity name. It may be in another module of the same project." },
+                            relationName = new { type = "string", description = "Generated navigation/property name. Defaults to targetEntityName." },
+                            sourceField = new { type = "string", description = "Source entity key field. Defaults to Id." },
+                            targetField = new { type = "string", description = "Target foreign-key field. Defaults to {sourceEntityName}Id." },
+                            isRequired = new { type = "boolean", description = "Require the owned object in create/update DTOs." },
+                            deleteBehavior = new { type = "string", @enum = new[] { "delete", "keep", "restrict" }, description = "Behavior when an optional owned object is cleared. Defaults to delete." },
+                            orderNum = new { type = "integer", description = "Relation display/generation order." }
+                        }
+                    }
                 }
             },
             required = Array.Empty<string>()
@@ -144,28 +176,37 @@ public class EntityTool
         if (module == null)
             return new { success = false, message = "moduleId or moduleName is required." };
 
-        var entities = await _entityService.GetByModuleIdAsync(module.Id);
+        var entities = await _apiClient.GetAsync<List<ModuleEntityDto>>(
+            $"/api/codegen/moduleentity/getbymoduleid/{module.Id}",
+            args.WorkspacePath);
+        var projectEntities = await _apiClient.GetAsync<List<ModuleEntityDto>>(
+            $"/api/codegen/moduleentity/getlist?projectId={args.ProjectId}",
+            args.WorkspacePath);
         var entity = await ResolveEntityAsync(args, entities);
 
         return entity == null
-            ? await CreateEntityAsync(args, module.Id, entities)
-            : await UpdateEntityAsync(args, entity.Id, module.Id, entities);
+            ? await CreateEntityAsync(args, module.Id, entities, projectEntities)
+            : await UpdateEntityAsync(args, entity.Id, module.Id, entities, projectEntities);
     }
 
     private async Task<ProjectModuleDto?> ResolveOrCreateModuleAsync(EntityToolInput args)
     {
         if (args.ModuleId > 0)
-            return await _moduleService.GetByIdAsync(args.ModuleId);
+            return await _apiClient.GetAsync<ProjectModuleDto>(
+                $"/api/codegen/projectmodule/getbyid/{args.ModuleId}",
+                args.WorkspacePath);
 
         if (string.IsNullOrWhiteSpace(args.ModuleName))
             return null;
 
-        var modules = await _moduleService.GetByProjectIdAsync(args.ProjectId);
+        var modules = await _apiClient.GetAsync<List<ProjectModuleDto>>(
+            $"/api/codegen/projectmodule/getbyprojectid/{args.ProjectId}",
+            args.WorkspacePath);
         var module = modules.FirstOrDefault(m => string.Equals(m.ModuleName, args.ModuleName, StringComparison.OrdinalIgnoreCase));
         if (module != null)
             return module;
 
-        var moduleId = await _moduleService.CreateAsync(new CreateProjectModuleDto
+        var moduleId = await _apiClient.PostAsync<long>("/api/codegen/projectmodule/create", new CreateProjectModuleDto
         {
             ProjectId = args.ProjectId,
             ModuleName = args.ModuleName,
@@ -173,15 +214,19 @@ public class EntityTool
             Icon = args.ModuleIcon ?? "Document",
             OrderNum = args.ModuleOrderNum ?? 1,
             Remark = args.Description
-        });
+        }, args.WorkspacePath);
 
-        return (await _moduleService.GetByProjectIdAsync(args.ProjectId)).First(m => m.Id == moduleId);
+        return (await _apiClient.GetAsync<List<ProjectModuleDto>>(
+            $"/api/codegen/projectmodule/getbyprojectid/{args.ProjectId}",
+            args.WorkspacePath)).First(m => m.Id == moduleId);
     }
 
     private async Task<ModuleEntityDto?> ResolveEntityAsync(EntityToolInput args, IReadOnlyCollection<ModuleEntityDto> moduleEntities)
     {
         if (args.EntityId > 0)
-            return await _entityService.GetByIdAsync(args.EntityId);
+            return await _apiClient.GetAsync<ModuleEntityDto>(
+                $"/api/codegen/moduleentity/getbyid/{args.EntityId}",
+                args.WorkspacePath);
 
         if (string.IsNullOrWhiteSpace(args.EntityName))
             return null;
@@ -189,7 +234,11 @@ public class EntityTool
         return moduleEntities.FirstOrDefault(e => string.Equals(e.Name, args.EntityName, StringComparison.OrdinalIgnoreCase));
     }
 
-    private async Task<object> CreateEntityAsync(EntityToolInput args, long moduleId, IReadOnlyCollection<ModuleEntityDto> moduleEntities)
+    private async Task<object> CreateEntityAsync(
+        EntityToolInput args,
+        long moduleId,
+        IReadOnlyCollection<ModuleEntityDto> moduleEntities,
+        IReadOnlyCollection<ModuleEntityDto> projectEntities)
     {
         if (string.IsNullOrWhiteSpace(args.EntityName))
             return new { success = false, message = "entityName is required when creating an entity." };
@@ -198,8 +247,11 @@ public class EntityTool
         var relationResult = BuildCreateRelations(args.EntityName, args.Relations, moduleEntities);
         if (relationResult.Error != null)
             return new { success = false, message = relationResult.Error };
+        var ownedOneResult = BuildCreateOwnedOneRelations(args.EntityName, args.OwnedOneRelations, projectEntities);
+        if (ownedOneResult.Error != null)
+            return new { success = false, message = ownedOneResult.Error };
 
-        var entityId = await _entityService.CreateAsync(new CreateModuleEntityDto
+        var entityId = await _apiClient.PostAsync<long>("/api/codegen/moduleentity/create", new CreateModuleEntityDto
         {
             ProjectId = args.ProjectId,
             ModuleId = moduleId,
@@ -207,6 +259,7 @@ public class EntityTool
             TableName = args.TableName,
             Description = args.Description ?? args.EntityName,
             IsTree = args.IsTree ?? false,
+            HasPrimaryKey = args.HasPrimaryKey ?? true,
             IsReadOnly = args.IsReadOnly ?? false,
             HasTenant = args.IsMultiTenant ?? false,
             HasDataPermission = args.HasDataPermission ?? false,
@@ -219,8 +272,9 @@ public class EntityTool
             OrderNum = args.OrderNum ?? 0,
             Remark = args.Remark,
             Fields = fields,
-            OneToManyRelations = relationResult.Relations
-        });
+            OneToManyRelations = relationResult.Relations,
+            EntityRelations = ownedOneResult.Relations
+        }, args.WorkspacePath);
 
         return new
         {
@@ -231,17 +285,27 @@ public class EntityTool
             entityId = entityId.ToString(),
             entityName = args.EntityName,
             fieldsCreated = fields.Select(f => f.Name).ToList(),
-            relationsCreated = relationResult.Relations.Select(r => new { childEntityId = r.ChildEntityId.ToString(), r.ChildEntityName, r.ChildForeignKey }).ToList()
+            relationsCreated = relationResult.Relations.Select(r => new { childEntityId = r.ChildEntityId.ToString(), r.ChildEntityName, r.ChildForeignKey }).ToList(),
+            ownedOneRelationsCreated = ownedOneResult.Relations.Select(r => new { targetEntityId = r.TargetEntityId.ToString(), r.RelationName, r.SourceField, r.TargetField }).ToList()
         };
     }
 
-    private async Task<object> UpdateEntityAsync(EntityToolInput args, long entityId, long moduleId, IReadOnlyCollection<ModuleEntityDto> moduleEntities)
+    private async Task<object> UpdateEntityAsync(
+        EntityToolInput args,
+        long entityId,
+        long moduleId,
+        IReadOnlyCollection<ModuleEntityDto> moduleEntities,
+        IReadOnlyCollection<ModuleEntityDto> projectEntities)
     {
-        var entity = await _entityService.GetByIdAsync(entityId);
+        var entity = await _apiClient.GetAsync<ModuleEntityDto>(
+            $"/api/codegen/moduleentity/getbyid/{entityId}",
+            args.WorkspacePath);
         if (entity == null)
             return new { success = false, message = $"Entity not found: {entityId}", entityId = entityId.ToString() };
 
-        var existingFields = await _fieldService.GetByEntityIdAsync(entityId);
+        var existingFields = await _apiClient.GetAsync<List<EntityFieldDto>>(
+            $"/api/codegen/entityfield/getbyentityid/{entityId}",
+            args.WorkspacePath);
         var newFields = new List<CreateEntityFieldDto>();
         var updatedFields = new List<UpdateEntityFieldWithIdDto>();
         var fieldsSkipped = new List<string>();
@@ -268,17 +332,22 @@ public class EntityTool
         var relationResult = BuildRelationsForUpdate(entity, args.Relations, moduleEntities);
         if (relationResult.Error != null)
             return new { success = false, message = relationResult.Error, entityId = entityId.ToString() };
+        var ownedOneResult = BuildOwnedOneRelationsForUpdate(entity, args.OwnedOneRelations, projectEntities);
+        if (ownedOneResult.Error != null)
+            return new { success = false, message = ownedOneResult.Error, entityId = entityId.ToString() };
 
-        await _entityService.UpdateAsync(entityId, new UpdateModuleEntityDto
+        await _apiClient.PutAsync<int>($"/api/codegen/moduleentity/update/{entityId}", new UpdateModuleEntityDto
         {
             Name = args.EntityName ?? entity.Name,
             Description = args.Description ?? entity.Description,
-            HasPrimaryKey = entity.HasPrimaryKey,
+            HasPrimaryKey = args.HasPrimaryKey ?? entity.HasPrimaryKey,
             TableName = args.TableName ?? entity.TableName,
             IsTree = args.IsTree ?? entity.IsTree,
             IsReadOnly = args.IsReadOnly ?? entity.IsReadOnly,
             HasTenant = args.IsMultiTenant ?? entity.HasTenant,
             HasDataPermission = args.HasDataPermission ?? entity.HasDataPermission,
+            HasAudit = args.HasAudit ?? entity.HasAudit,
+            HasSoftDelete = args.HasSoftDelete ?? entity.HasSoftDelete,
             GenerateFrontend = args.GenerateFrontend ?? entity.GenerateFrontend,
             IsChildTable = args.IsChildTable ?? entity.IsChildTable,
             FrontendRoute = args.FrontendRoute ?? entity.FrontendRoute,
@@ -290,8 +359,11 @@ public class EntityTool
             DeletedFieldIds = new(),
             NewRelations = relationResult.NewRelations,
             UpdatedRelations = relationResult.UpdatedRelations,
-            DeletedRelationIds = new()
-        });
+            DeletedRelationIds = new(),
+            NewEntityRelations = ownedOneResult.NewRelations,
+            UpdatedEntityRelations = ownedOneResult.UpdatedRelations,
+            DeletedEntityRelationIds = new()
+        }, args.WorkspacePath);
 
         return new
         {
@@ -305,7 +377,9 @@ public class EntityTool
             fieldsUpdated = updatedFields.Select(f => new { id = f.Id.ToString(), f.Name }).ToList(),
             fieldsSkipped,
             relationsCreated = relationResult.NewRelations.Select(r => new { childEntityId = r.ChildEntityId.ToString(), r.ChildEntityName, r.ChildForeignKey }).ToList(),
-            relationsUpdated = relationResult.UpdatedRelations.Select(r => new { id = r.Id.ToString(), childEntityId = r.ChildEntityId.ToString(), r.ChildEntityName, r.ChildForeignKey }).ToList()
+            relationsUpdated = relationResult.UpdatedRelations.Select(r => new { id = r.Id.ToString(), childEntityId = r.ChildEntityId.ToString(), r.ChildEntityName, r.ChildForeignKey }).ToList(),
+            ownedOneRelationsCreated = ownedOneResult.NewRelations.Select(r => new { targetEntityId = r.TargetEntityId.ToString(), r.RelationName, r.SourceField, r.TargetField }).ToList(),
+            ownedOneRelationsUpdated = ownedOneResult.UpdatedRelations.Select(r => new { id = r.Id.ToString(), targetEntityId = r.TargetEntityId.ToString(), r.RelationName, r.SourceField, r.TargetField }).ToList()
         };
     }
 
@@ -355,6 +429,7 @@ public class EntityTool
             RelatedEntityName = field.RelatedEntityName,
             RelatedEntityIdField = string.IsNullOrWhiteSpace(field.RelatedEntityName) ? null : field.RelatedEntityIdField ?? "Id",
             RelatedEntityDisplayFields = BuildRelatedDisplayFields(field),
+            ResultMappings = BuildResultMappings(field),
             OrderNum = field.OrderNum ?? 0,
             ListWidth = field.ListWidth,
             FieldCategory = field.FieldCategory ?? "Normal",
@@ -404,6 +479,7 @@ public class EntityTool
             RelatedEntityName = field.RelatedEntityName ?? existing.RelatedEntityName,
             RelatedEntityIdField = field.RelatedEntityIdField ?? existing.RelatedEntityIdField,
             RelatedEntityDisplayFields = BuildRelatedDisplayFields(field) ?? existing.RelatedEntityDisplayFields,
+            ResultMappings = field.ResultMappings == null ? existing.ResultMappings : BuildResultMappings(field),
             FieldCategory = field.FieldCategory ?? existing.FieldCategory,
             Formula = field.Formula ?? existing.Formula,
             AggregateType = field.AggregateType ?? existing.AggregateType,
@@ -509,6 +585,128 @@ public class EntityTool
         return (child, null);
     }
 
+    private static (List<CreateEntityRelationDto> Relations, string? Error) BuildCreateOwnedOneRelations(
+        string sourceEntityName,
+        List<OwnedOneRelationInput>? relations,
+        IReadOnlyCollection<ModuleEntityDto> projectEntities)
+    {
+        var result = new List<CreateEntityRelationDto>();
+        if (relations == null || relations.Count == 0)
+            return (result, null);
+
+        for (var index = 0; index < relations.Count; index++)
+        {
+            var resolved = ResolveOwnedOneTarget(relations[index], projectEntities);
+            if (resolved.Error != null)
+                return (new List<CreateEntityRelationDto>(), resolved.Error);
+
+            result.Add(BuildCreateOwnedOneRelation(sourceEntityName, relations[index], resolved.TargetEntity!, index));
+        }
+
+        return (result, null);
+    }
+
+    private static (List<CreateEntityRelationDto> NewRelations, List<UpdateEntityRelationWithIdDto> UpdatedRelations, string? Error) BuildOwnedOneRelationsForUpdate(
+        ModuleEntityDto entity,
+        List<OwnedOneRelationInput>? relations,
+        IReadOnlyCollection<ModuleEntityDto> projectEntities)
+    {
+        var newRelations = new List<CreateEntityRelationDto>();
+        var updatedRelations = new List<UpdateEntityRelationWithIdDto>();
+        if (relations == null || relations.Count == 0)
+            return (newRelations, updatedRelations, null);
+
+        var existingRelations = entity.EntityRelations ?? new();
+        for (var index = 0; index < relations.Count; index++)
+        {
+            var input = relations[index];
+            var resolved = ResolveOwnedOneTarget(input, projectEntities);
+            if (resolved.Error != null)
+                return (newRelations, updatedRelations, resolved.Error);
+
+            var target = resolved.TargetEntity!;
+            var sourceField = input.SourceField ?? "Id";
+            var targetField = input.TargetField ?? $"{entity.Name}Id";
+            var existing = input.Id > 0
+                ? existingRelations.FirstOrDefault(item => item.Id == input.Id)
+                : existingRelations.FirstOrDefault(item =>
+                    item.TargetEntityId == target.Id &&
+                    string.Equals(item.SourceField, sourceField, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(item.TargetField, targetField, StringComparison.OrdinalIgnoreCase));
+
+            if (existing == null)
+            {
+                newRelations.Add(BuildCreateOwnedOneRelation(entity.Name, input, target, index));
+                continue;
+            }
+
+            updatedRelations.Add(new UpdateEntityRelationWithIdDto
+            {
+                Id = existing.Id,
+                TargetEntityId = target.Id,
+                RelationName = input.RelationName ?? existing.RelationName,
+                SourceField = sourceField,
+                TargetField = targetField,
+                Cardinality = EntityRelationCardinality.OneToOne,
+                Ownership = EntityRelationOwnership.Owned,
+                IsRequired = input.IsRequired ?? existing.IsRequired,
+                DeleteBehavior = ParseDeleteBehavior(input.DeleteBehavior, existing.DeleteBehavior),
+                OrderNum = input.OrderNum ?? existing.OrderNum
+            });
+        }
+
+        return (newRelations, updatedRelations, null);
+    }
+
+    private static CreateEntityRelationDto BuildCreateOwnedOneRelation(
+        string sourceEntityName,
+        OwnedOneRelationInput input,
+        ModuleEntityDto target,
+        int index)
+    {
+        return new CreateEntityRelationDto
+        {
+            TargetEntityId = target.Id,
+            RelationName = input.RelationName ?? target.Name,
+            SourceField = input.SourceField ?? "Id",
+            TargetField = input.TargetField ?? $"{sourceEntityName}Id",
+            Cardinality = EntityRelationCardinality.OneToOne,
+            Ownership = EntityRelationOwnership.Owned,
+            IsRequired = input.IsRequired ?? false,
+            DeleteBehavior = ParseDeleteBehavior(input.DeleteBehavior, EntityRelationDeleteBehavior.Delete),
+            OrderNum = input.OrderNum ?? index + 1
+        };
+    }
+
+    private static (ModuleEntityDto? TargetEntity, string? Error) ResolveOwnedOneTarget(
+        OwnedOneRelationInput relation,
+        IReadOnlyCollection<ModuleEntityDto> projectEntities)
+    {
+        var target = relation.TargetEntityId > 0
+            ? projectEntities.FirstOrDefault(entity => entity.Id == relation.TargetEntityId)
+            : projectEntities.FirstOrDefault(entity => string.Equals(entity.Name, relation.TargetEntityName, StringComparison.OrdinalIgnoreCase));
+
+        return target == null
+            ? (null, $"Owned target entity '{relation.TargetEntityName}' was not found in the project. Create the target entity first, then add the owned one-to-one relation.")
+            : (target, null);
+    }
+
+    private static EntityRelationDeleteBehavior ParseDeleteBehavior(
+        string? value,
+        EntityRelationDeleteBehavior fallback)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return fallback;
+
+        return value.Trim().ToLowerInvariant() switch
+        {
+            "delete" => EntityRelationDeleteBehavior.Delete,
+            "keep" => EntityRelationDeleteBehavior.Keep,
+            "restrict" => EntityRelationDeleteBehavior.Restrict,
+            _ => throw new ArgumentException($"Unsupported owned relation deleteBehavior: {value}")
+        };
+    }
+
     private static string? BuildRelatedDisplayFields(FieldInput field)
     {
         if (field.RelatedDisplayFields is { Count: > 0 })
@@ -518,6 +716,9 @@ public class EntityTool
             ? null
             : field.RelatedEntityDisplayFields;
     }
+
+    private static string? BuildResultMappings(FieldInput field) =>
+        field.ResultMappings == null ? null : JsonSerializer.Serialize(field.ResultMappings);
 
     private static (string DataType, int? MaxLength, int? Precision, int? Scale) NormalizeDataType(string? type, int? maxLength, int? precision, int? scale)
     {
@@ -563,6 +764,7 @@ public class EntityToolInput
     public string? EntityName { get; set; }
     public string? Description { get; set; }
     public string? TableName { get; set; }
+    public bool? HasPrimaryKey { get; set; }
     public bool? IsTree { get; set; }
     public bool? IsReadOnly { get; set; }
     public bool? IsMultiTenant { get; set; }
@@ -578,6 +780,7 @@ public class EntityToolInput
     public string? WorkspacePath { get; set; }
     public List<FieldInput>? Fields { get; set; }
     public List<RelationInput>? Relations { get; set; }
+    public List<OwnedOneRelationInput>? OwnedOneRelations { get; set; }
 }
 
 public class FieldInput
@@ -606,6 +809,7 @@ public class FieldInput
     public string? RelatedEntityIdField { get; set; }
     public List<string>? RelatedDisplayFields { get; set; }
     public string? RelatedEntityDisplayFields { get; set; }
+    public List<ResultMappingInput>? ResultMappings { get; set; }
     public bool? IsMultiple { get; set; }
     public bool? ShowInList { get; set; }
     public bool? ShowInAddForm { get; set; }
@@ -631,4 +835,23 @@ public class RelationInput
     public string? ForeignKey { get; set; }
     public string? MasterField { get; set; }
     public int? OrderNum { get; set; }
+}
+
+public class OwnedOneRelationInput
+{
+    public long Id { get; set; }
+    public long TargetEntityId { get; set; }
+    public string? TargetEntityName { get; set; }
+    public string? RelationName { get; set; }
+    public string? SourceField { get; set; }
+    public string? TargetField { get; set; }
+    public bool? IsRequired { get; set; }
+    public string? DeleteBehavior { get; set; }
+    public int? OrderNum { get; set; }
+}
+
+public class ResultMappingInput
+{
+    public string? SourceField { get; set; }
+    public string? TargetField { get; set; }
 }

@@ -23,8 +23,8 @@ internal static class GeneratedTemplateCleanup
             @"(?ms)^[ \t]*import\s*\{(?:[^\r\n]|\r?\n(?![ \t]*import\b))*?\}\s*from\s*['""]@/utils/codegenExecution['""][ \t]*(?:\r?\n)?",
             string.Empty);
 
-        result = Regex.Replace(result, @"(?m)^import\s*\{\s*ref\s*,\s*reactive\s*,\s*onMounted\s*\}\s*from\s*['""]vue['""][ \t]*$", "import { ref, reactive } from 'vue'");
-        result = Regex.Replace(result, @"(?m)^import\s*\{\s*useRoute\s*,\s*useRouter\s*\}\s*from\s*['""]vue-router['""][ \t]*$", "import { useRouter } from 'vue-router'");
+        result = Regex.Replace(result, @"(?m)^import\s*\{\s*ref\s*,\s*reactive\s*,\s*onMounted\s*\}\s*from\s*['""]vue['""][ \t]*\r?$", "import { ref, reactive } from 'vue'");
+        result = Regex.Replace(result, @"(?m)^import\s*\{\s*useRoute\s*,\s*useRouter\s*\}\s*from\s*['""]vue-router['""][ \t]*\r?$", "import { useRouter } from 'vue-router'");
         result = Regex.Replace(result, @"(?m)^[ \t]*import\s*\{\s*getToken\s*\}\s*from\s*['""]@/utils/auth['""][ \t]*(?:\r?\n)?", string.Empty);
 
         result = Regex.Replace(result, @"(?m)^\s*const\s+clientConfig\s*=.*\r?\n", string.Empty);

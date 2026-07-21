@@ -1556,7 +1556,7 @@ export default service
         var startInfo = new ProcessStartInfo
         {
             FileName = "cmd.exe",
-            Arguments = "/k dotnet run",  // /k 保持窗口打开
+            Arguments = $"/k set \"ConnectionStrings__DefaultConnection=\" && set \"DbProvider=\" && dotnet run --no-launch-profile -- --urls http://localhost:{port} --environment Development",  // /k 保持窗口打开
             WorkingDirectory = webApiPath,
             UseShellExecute = true,  // 显示窗口
             CreateNoWindow = false

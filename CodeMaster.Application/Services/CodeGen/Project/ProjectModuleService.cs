@@ -15,7 +15,7 @@ namespace CodeMaster.Application.Services.CodeGen;
 /// <summary>
 /// 项目模块服务
 /// </summary>
-public class ProjectModuleService : CrudApplicationService<ProjectModule, ProjectModuleDto, ProjectModuleDto, PagedQueryDto, CreateProjectModuleDto, UpdateProjectModuleDto>, IProjectModuleService
+public class ProjectModuleService : CrudApplicationService<ProjectModule, ProjectModuleDto, ProjectModuleDto, ProjectModuleQueryDto, CreateProjectModuleDto, UpdateProjectModuleDto>, IProjectModuleService
 {
     private readonly IRepository<Project> _projectRepository;
     private readonly ISqlSugarClient _sqlSugarClient;
@@ -42,6 +42,33 @@ public class ProjectModuleService : CrudApplicationService<ProjectModule, Projec
             .ToListAsync();
 
         return modules.Adapt<List<ProjectModuleDto>>();
+    }
+
+    /// <summary>
+    /// 创建过滤查询
+    /// </summary>
+    protected override Task<ISugarQueryable<ProjectModule>> CreateFilteredQueryAsync(ProjectModuleQueryDto input)
+    {
+        var query = (ISugarQueryable<ProjectModule>)Repository.GetQueryable();
+
+        if (input.ProjectId.HasValue)
+        {
+            query = query.Where(module => module.ProjectId == input.ProjectId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(input.ModuleName))
+        {
+            query = query.Where(module => module.ModuleName.Contains(input.ModuleName));
+        }
+
+        return Task.FromResult(query);
+    }
+
+    protected override ISugarQueryable<ProjectModule> ApplySorting(
+        ISugarQueryable<ProjectModule> queryable,
+        ProjectModuleQueryDto input)
+    {
+        return queryable.OrderBy(module => module.OrderNum);
     }
 
     /// <summary>

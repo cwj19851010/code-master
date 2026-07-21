@@ -37,6 +37,7 @@ public class LocalMetadataStore
             typeof(ModuleEntity),
             typeof(EntityField),
             typeof(OneToManyRelation),
+            typeof(EntityRelation),
             typeof(SysPageTemplate),
             typeof(SysFieldControlTemplate),
             typeof(SysChildTemplate));
@@ -52,6 +53,7 @@ public class LocalMetadataStore
         NormalizeAuditFields(bundle.Entities);
         NormalizeAuditFields(bundle.Fields);
         NormalizeAuditFields(bundle.Relations);
+        NormalizeAuditFields(bundle.EntityRelations);
         NormalizeAuditFields(bundle.PageTemplates);
         NormalizeAuditFields(bundle.FieldControlTemplates);
         NormalizeAuditFields(bundle.ChildTemplates);
@@ -65,6 +67,8 @@ public class LocalMetadataStore
             await db.Insertable(bundle.Fields).ExecuteCommandAsync();
         if (bundle.Relations.Count > 0)
             await db.Insertable(bundle.Relations).ExecuteCommandAsync();
+        if (bundle.EntityRelations.Count > 0)
+            await db.Insertable(bundle.EntityRelations).ExecuteCommandAsync();
         if (bundle.PageTemplates.Count > 0)
             await db.Insertable(bundle.PageTemplates).ExecuteCommandAsync();
         if (bundle.FieldControlTemplates.Count > 0)

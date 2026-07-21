@@ -1,5 +1,5 @@
 using System.Text.Json;
-using CodeMaster.Application.Services.CodeGen;
+using CodeMaster.Application.Dtos.CodeGen;
 using CodeMaster.McpServer.Services;
 
 namespace CodeMaster.McpServer.Tools;
@@ -9,12 +9,12 @@ namespace CodeMaster.McpServer.Tools;
 /// </summary>
 public class ProjectStructureTool
 {
-    private readonly IProjectService _projectService;
+    private readonly CodeMasterApiClient _apiClient;
     private readonly ProjectContextResolver _contextResolver;
 
-    public ProjectStructureTool(IProjectService projectService, ProjectContextResolver contextResolver)
+    public ProjectStructureTool(CodeMasterApiClient apiClient, ProjectContextResolver contextResolver)
     {
-        _projectService = projectService;
+        _apiClient = apiClient;
         _contextResolver = contextResolver;
     }
 
@@ -43,7 +43,9 @@ public class ProjectStructureTool
         if (args.ProjectId <= 0)
             return new { success = false, message = "projectId is required." };
 
-        var bundle = await _projectService.GetGenerationBundleAsync(args.ProjectId);
+        var bundle = await _apiClient.GetAsync<GenerationBundleDto>(
+            $"/api/codegen/project/{args.ProjectId}/generation-bundle",
+            args.WorkspacePath);
         var projectPath = GetFullProjectPath(bundle.Project.ProjectName, bundle.Project.ProjectPath);
         var includeFiles = args.IncludeGeneratedFiles ?? true;
 
@@ -67,8 +69,14 @@ public class ProjectStructureTool
                                 id = f.Id.ToString(),
                                 f.Name,
                                 f.Description,
+                                f.IsSystemField,
                                 f.DataType,
                                 f.IsNullable,
+                                f.MaxLength,
+                                f.Precision,
+                                f.Scale,
+                                f.DefaultValue,
+                                f.IsPrimaryKey,
                                 f.IsRequired,
                                 f.FormControlType,
                                 f.SelectDataSource,
@@ -77,13 +85,20 @@ public class ProjectStructureTool
                                 f.RelatedEntityName,
                                 f.RelatedEntityIdField,
                                 f.RelatedEntityDisplayFields,
+                                f.ResultMappings,
                                 f.ShowInList,
                                 f.ShowInSearch,
                                 f.ShowInAddForm,
                                 f.ShowInEditForm,
                                 f.ShowInDetail,
                                 f.ListWidth,
-                                f.OrderNum
+                                f.OrderNum,
+                                f.FieldCategory,
+                                f.Formula,
+                                f.AggregateType,
+                                aggregateChildEntityId = f.AggregateChildEntityId?.ToString(),
+                                f.AggregateChildFieldName,
+                                f.AggregateSeparator
                             })
                             .ToList();
 
@@ -102,6 +117,25 @@ public class ProjectStructureTool
                             })
                             .ToList();
 
+                        var ownedOneRelations = bundle.EntityRelations
+                            .Where(r => r.SourceEntityId == entity.Id)
+                            .OrderBy(r => r.OrderNum)
+                            .Select(r => new
+                            {
+                                id = r.Id.ToString(),
+                                sourceEntityId = r.SourceEntityId.ToString(),
+                                targetEntityId = r.TargetEntityId.ToString(),
+                                r.RelationName,
+                                r.SourceField,
+                                r.TargetField,
+                                cardinality = r.Cardinality.ToString(),
+                                ownership = r.Ownership.ToString(),
+                                r.IsRequired,
+                                deleteBehavior = r.DeleteBehavior.ToString(),
+                                r.OrderNum
+                            })
+                            .ToList();
+
                         return new
                         {
                             id = entity.Id.ToString(),
@@ -110,15 +144,20 @@ public class ProjectStructureTool
                             entity.Name,
                             entity.Description,
                             entity.TableName,
+                            entity.HasPrimaryKey,
                             entity.IsTree,
+                            entity.IsReadOnly,
                             entity.HasTenant,
                             entity.HasDataPermission,
+                            entity.HasAudit,
+                            entity.HasSoftDelete,
                             entity.GenerateFrontend,
                             entity.IsChildTable,
                             entity.IsGenerated,
                             entity.LastGeneratedTime,
                             fields,
                             relations,
+                            ownedOneRelations,
                             generatedFiles = includeFiles ? GetGeneratedFiles(projectPath, bundle.Project.ProjectName, module.ModuleName, entity.Name) : null
                         };
                     })

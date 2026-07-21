@@ -226,6 +226,12 @@ public class EntityField : EntityBaseWithTenant
     [SugarColumn(ColumnName = "related_entity_display_fields", Length = 2000, IsNullable = true)]
     public string? RelatedEntityDisplayFields { get; set; }
 
+    /// <summary>
+    /// 选择结果映射（JSON 数组，如 [{"sourceField":"Name","targetField":"ProductName"}]）。
+    /// </summary>
+    [SugarColumn(ColumnName = "result_mappings", Length = 4000, IsNullable = true)]
+    public string? ResultMappings { get; set; }
+
     #endregion
 
     #region 计算/统计字段配置

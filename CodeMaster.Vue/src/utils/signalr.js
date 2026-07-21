@@ -4,6 +4,7 @@ import i18n from '@/i18n'
 import {
   DEFAULT_CODEMASTER_SERVER_BASE_URL,
   getCodeMasterClientConfig,
+  isCodeMasterClient,
   normalizeCodeMasterServerBaseUrl
 } from '@/utils/codegenExecution'
 
@@ -26,6 +27,10 @@ function getAccessToken() {
 }
 
 function getSignalRBaseUrl() {
+  if (!isCodeMasterClient()) {
+    return window.location.origin
+  }
+
   const config = {
     ...getCodeMasterClientConfig(),
     ...(window.__CODEMASTER_CLIENT__ || {})

@@ -205,10 +205,15 @@ public class HomeController : Controller
             - Authorization: menus, page permissions, operation permissions, tenant visibility, and backend permission policies use the same permission model.
             - Database lifecycle: SqlSugar is the runtime ORM; the standalone EF Core Migrator creates migrations, applies schema updates, and initializes seed data.
             - Frontend: Vue 3, Element Plus, Vite.
-            - Code generation: full and incremental generation cover domain entities, DTOs, services, API clients, query lists, add/edit pages, detail pages, menus, translations, field ordering, and child-table relations.
+            - Clean template export: CodeMaster can export a complete generated-project template from the current framework source while excluding platform metadata, temporary output, and historical migrations.
+            - Code generation: full and incremental generation cover domain entities, DTOs, services, API clients, query lists, add/edit pages, detail pages, menus, translations, field ordering, child tables, and structured entity relations.
             - Generated projects: output projects are independent .NET and Vue applications and do not require CodeMaster metadata services at runtime.
-            - AI integration: CodeMaster MCP exposes controlled project, module, entity, field, initialization, service-start, and code-generation operations to AI agents.
+            - Visual design: the page designer supports Element Plus components, drag and drop, grouping, responsive grid layout, visual properties, and control-level ScriptSection bindings. Stable genId values and replayable design overlays preserve approved UI changes across generation.
+            - External AI integration: CodeMaster MCP exposes controlled project, module, entity, field, relation, initialization, service-start, migration, generation, and build operations to Codex, Claude Code, and other MCP clients.
+            - Built-in Agent: conversations bind to an explicit project. The Agent reads the project blueprint, proposes approval-based metadata or UI changes, executes them through the shared Web/Tauri path, and performs real build validation after generation.
+            - AI providers: the built-in Agent supports OpenAI-compatible and Anthropic Claude server providers. Local execution is designed for the Tauri LocalAgent path and remains under active development.
             - Local capability: the Tauri client can load a remote Vue application while a trusted .NET LocalAgent sidecar handles local templates, paths, processes, and frontend/backend startup.
+            - Deployment: CodeMaster supports private deployment. Platform services, frontend, database, templates, AI provider configuration, and generated projects can remain in infrastructure controlled by the user.
             - Enterprise foundation: multi-tenancy, users, roles, departments, posts, dictionaries, localization, data permissions, logs, scheduled tasks, online users, and SignalR notifications.
             - Coming next: UniApp, mini-program, and mobile page generation are planned for a future version and are not currently available.
             """, "text/plain", Encoding.UTF8);

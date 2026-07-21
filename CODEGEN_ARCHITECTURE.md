@@ -98,6 +98,62 @@ RelatedEntityName, RelatedEntityNameLower, RelatedEntityIdField,
 RelatedDisplayFields, DictDataUrl, FormPrefix, EntityTable, EntityField
 ```
 
+---
+
+## Entity capability and read-only service matrix (2026-07-21)
+
+Generated entity types are composed from interfaces instead of selecting a monolithic base class:
+
+- Every entity starts from `IBaseEntity`.
+- `HasPrimaryKey` adds the physical `long Id` system field and `IEntity` (`IEntity<long>`), and makes the type eligible for Migrator source-generator scanning.
+- `IsTree`, `HasTenant`, `HasDataPermission`, `HasAudit`, and `HasSoftDelete` add `ITree`, `ITenant`, `IDept`, `IAuditEntity`, and `ISoftDelete`, together with synchronized physical system-field metadata.
+- Audit fields are `CreateUserId`, `CreateBy`, `CreateTime`, `UpdateUserId`, `UpdateBy`, and `UpdateTime`.
+
+| Entity configuration | Generated application service | `GetById` | EF migration scan |
+|---|---|---:|---:|
+| Writable + primary key | `CrudApplicationService` / `TreeApplicationService` | Yes | Yes |
+| Read-only + primary key | `ReadOnlyApplicationService` / `ReadOnlyTreeApplicationService` | Yes | Yes |
+| Read-only + no primary key | `QueryApplicationService` | No | No |
+
+Writable and tree entities must have a primary key. The Web UI, Agent rules, MCP schema, backend validation, templates, and source generator use the same rule.
+
+## Choice, computed, and aggregate fields
+
+- Choice controls: `select`, `radio-group`, and `checkbox-group` support dictionary data or static JSON/comma-separated options. `checkbox-group` and other multiple selections use a string/text storage field containing comma-separated values.
+- Related controls: `select-table` and `cascader` require a related entity, value field, and at least one display field. `cascader` requires a tree entity.
+- Computed fields: `FieldCategory=Computed`, numeric target type, and an arithmetic formula using `[FieldName]` references.
+- Aggregate fields: `FieldCategory=Aggregate`, `AggregateType=Sum|Avg|Concat`, and a child field from an existing one-to-many relation. `Sum`/`Avg` are numeric; `Concat` is text.
+- Computed and aggregate values are generated for writable add/edit forms. Read-only query/view entities should expose server/query-produced values as normal fields.
+
+### 4.3 Relation Engine V2
+
+`sys_one_to_many_relation` remains the source of truth for legacy one-to-many metadata. New owned one-to-one metadata is stored in `sys_entity_relation` and both stores are compiled into `EntityRelationGraph` before generation.
+
+- The graph validates project boundaries, field compatibility, unique dependent foreign keys, and owned cycles.
+- Legacy one-to-many generation continues through the existing child card/dialog branch.
+- Owned one-to-one fields reuse the same field-control templates with model paths such as `form.detail`, `scope.row.detail`, and `detail.detail`.
+- Generated owned-one properties are ORM-ignored aggregate members. Detail responses load them explicitly, while list responses batch-load each relation with one set-based query instead of relying on SqlSugar `OneToOne` navigation or issuing one query per row.
+- Generated owned sections use stable IDs: `gen_owned_{relationId}` and `gen_owned_{relationId}_field_{fieldId}`.
+- Incremental generation resolves the affected aggregate root and regenerates owned descendants before the root.
+- Generated DTOs are typed and generated services explicitly load, create, update, and optionally remove owned rows in a transaction.
+- The built-in Agent translates `Owned + OneToMany` proposals into `sys_one_to_many_relation` using `Parent.PrimaryKey -> Child.ForeignKey`; it does not write one-to-many metadata into `sys_entity_relation`.
+- Agent relation validation uses the same field direction and type rules as persistence: owned one-to-one uses the source primary key, while reference many-to-one uses the source foreign key and target primary key.
+- Agent-created entities automatically receive the standard `long Id` system-field metadata when `HasPrimaryKey=true` and no explicit primary-key field is supplied.
+- Existing entities that rely on the framework-provided `Id` (without an `sys_entity_field` row) are treated as having an implicit `long` primary key during relation validation and generation.
+
+`select-table` fields may store `result_mappings` as a JSON array:
+
+```json
+[
+  { "sourceField": "Id", "targetField": "ProductId" },
+  { "sourceField": "Name", "targetField": "ProductNameSnapshot" }
+]
+```
+
+Mappings are relative to the current form path. A selector under `form.detail` writes only to `form.detail.*`; it never recursively updates the selected reference entity.
+
+Web generation and LocalAgent generation consume the same metadata contract. `GenerationBundleDto.Version = 2` includes `EntityRelations`, and LocalAgent restores those rows into its temporary SQLite snapshot before calling the shared generators.
+
 ## 五、组件树 (tree.json)
 
 ### 5.1 节点结构
@@ -483,3 +539,24 @@ git -C D:/MyHomeWorks/CodeMaster reset --soft <commit-hash>
 # 完全回退（丢弃所有改动）
 git -C D:/MyHomeWorks/CodeMaster reset --hard <commit-hash>
 ```
+
+---
+
+## Agent UI Design Overlay
+
+Agent-driven page customization is stored separately from generated template output.
+
+```text
+template metadata
+  -> generate fresh tree.json
+  -> preserve or assign node id
+  -> replay {entity}.{pageType}.design.json by stable genId
+  -> serialize tree.json and Vue template
+```
+
+- `genId` is the semantic anchor owned by CodeMaster generation. Field, relation, action, and page-area operations must target it whenever one exists.
+- `id` is the stable identity of an individual designer node. Existing values are never renumbered during designer load; missing values receive deterministic IDs.
+- `{entity}.{pageType}.design.json` stores replayable operations such as `SetTag`, `SetProp`, `SetGrid`, `Move`, and `Group`.
+- Full and incremental generation both replay the design document after producing the latest component tree. This keeps visual changes while still allowing metadata-driven fields and relations to update.
+- A visual-only tag change is limited to semantically compatible controls or containers. Changes that require options, data sources, result mappings, uploads, or other scripts must first update entity-field metadata and regenerate.
+- Web and Tauri/LocalAgent execution call the same `ProjectUiDesignService`; there is no client-only page transformation implementation.

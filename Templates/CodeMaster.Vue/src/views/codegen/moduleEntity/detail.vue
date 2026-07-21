@@ -56,7 +56,8 @@
         <el-table-column label="选项" width="250">
           <template #default="{ row }">
             <el-tag v-if="row.isPrimaryKey" size="small" type="danger" style="margin-right: 5px">主键</el-tag>
-            <el-tag v-if="row.isRequired" size="small" type="warning" style="margin-right: 5px">必填</el-tag>
+            <el-tag v-if="row.isRequired" size="small" type="warning" style="margin-right: 5px">表单必填</el-tag>
+            <el-tag v-if="row.isNullable" size="small" type="success" style="margin-right: 5px">数据库可空</el-tag>
             <el-tag v-if="row.isUnique" size="small" type="info" style="margin-right: 5px">唯一</el-tag>
             <el-tag v-if="row.isIndexed" size="small" style="margin-right: 5px">索引</el-tag>
             <el-tag v-if="row.isSearchable" size="small" type="success" style="margin-right: 5px">可搜索</el-tag>

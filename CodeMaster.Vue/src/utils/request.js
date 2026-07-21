@@ -13,6 +13,10 @@ import {
 const t = (key, params) => i18n.global.t(key, params)
 
 function getServerBaseUrl() {
+  if (!isCodeMasterClient()) {
+    return ''
+  }
+
   const config = {
     ...getCodeMasterClientConfig(),
     ...(window.__CODEMASTER_CLIENT__ || {})

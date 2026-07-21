@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using CodeMaster.Domain.Entities.Ai;
 using CodeMaster.Domain.Entities.System;
 
 namespace CodeMaster.Migrator.Persistence.EfCore;
@@ -19,6 +20,28 @@ public partial class CodeMasterDbContext : DbContext
 
         // 调用 Source Generator 生成的配置方法
         OnModelCreatingPartial(modelBuilder);
+
+        modelBuilder.Entity<AiMessage>()
+            .Property(x => x.RequestId)
+            .HasMaxLength(64);
+        modelBuilder.Entity<AiMessage>()
+            .Property(x => x.Role)
+            .HasMaxLength(20);
+        modelBuilder.Entity<AiMessage>()
+            .HasIndex(x => new { x.ConversationId, x.RequestId, x.Role })
+            .IsUnique();
+        modelBuilder.Entity<AiToolExecution>()
+            .Property(x => x.RequestId)
+            .HasMaxLength(64);
+        modelBuilder.Entity<AiToolExecution>()
+            .Property(x => x.InputHash)
+            .HasMaxLength(64);
+        modelBuilder.Entity<AiToolExecution>()
+            .Property(x => x.ToolName)
+            .HasMaxLength(100);
+        modelBuilder.Entity<AiToolExecution>()
+            .HasIndex(x => new { x.ConversationId, x.RequestId, x.ToolName, x.InputHash })
+            .IsUnique();
 
         // 全局配置snake_case列名（已由 Source Generator 处理，这里保留作为后备）
         foreach (var entity in modelBuilder.Model.GetEntityTypes())

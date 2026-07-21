@@ -168,6 +168,7 @@ public static class MarkerReplacer
                 "formControlType" => ctx.FormControlType,
                 "selectDataSource" => ctx.SelectDataSource,
                 "selectOptions" => ctx.SelectOptions ?? string.Empty,
+                "selectOptionsLiteral" => ctx.SelectOptionsLiteral,
                 "relatedEntityName" => ctx.RelatedEntityName,
                 "relatedEntityNameLower" => ctx.RelatedEntityNameLower,
                 "relatedModuleNameLower" => ctx.RelatedModuleNameLower,
@@ -190,6 +191,8 @@ public static class MarkerReplacer
                 "defaultValue" => ctx.DefaultValue,
                 "placeholder" => ctx.Placeholder,
                 "formPrefix" => ctx.FormPrefix,
+                "rowPrefix" => ctx.RowPrefix,
+                "detailPrefix" => ctx.DetailPrefix,
                 "entityTable" => ctx.EntityTable,
                 "entityField" => ctx.EntityField,
                 _ => match.Value

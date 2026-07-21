@@ -117,7 +117,8 @@
         <el-table-column label="选项" width="200">
           <template #default="{ row }">
             <el-tag v-if="row.isPrimaryKey" size="small" type="danger">主键</el-tag>
-            <el-tag v-if="row.isRequired" size="small" type="warning">必填</el-tag>
+            <el-tag v-if="row.isRequired" size="small" type="warning">表单必填</el-tag>
+            <el-tag v-if="row.isNullable" size="small" type="success">数据库可空</el-tag>
             <el-tag v-if="row.isUnique" size="small" type="info">唯一</el-tag>
             <el-tag v-if="row.isIndexed" size="small">索引</el-tag>
             <el-tag v-if="row.isSystemField" size="small" type="info">系统</el-tag>
@@ -209,7 +210,8 @@
           <el-col :span="24">
             <el-form-item label="选项">
               <el-checkbox v-model="fieldForm.isPrimaryKey">主键</el-checkbox>
-              <el-checkbox v-model="fieldForm.isRequired">必填</el-checkbox>
+              <el-checkbox v-model="fieldForm.isRequired">表单/接口必填</el-checkbox>
+              <el-checkbox v-model="fieldForm.isNullable">数据库可空</el-checkbox>
               <el-checkbox v-model="fieldForm.isUnique">唯一</el-checkbox>
               <el-checkbox v-model="fieldForm.isIndexed">索引</el-checkbox>
               <el-checkbox v-model="fieldForm.isSearchable">可搜索</el-checkbox>
@@ -255,29 +257,41 @@
                 <el-option label="switch" value="switch" />
                 <el-option label="radio-group" value="radio-group" />
                 <el-option label="checkbox" value="checkbox" />
+                <el-option label="checkbox-group" value="checkbox-group" />
                 <el-option label="date" value="date" />
                 <el-option label="datetime" value="datetime" />
                 <el-option label="图片上传" value="image" />
                 <el-option label="富文本" value="editor" />
                 <el-option label="附件上传" value="file" />
+                <el-option label="关联表选择（保存后在编辑页配置）" value="select-table" disabled />
+                <el-option label="级联选择（保存后在编辑页配置）" value="cascader" disabled />
               </el-select>
+              <div class="form-tip">关联表和级联控件需要选择目标实体，请先保存实体，再到编辑页配置。</div>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+        </el-row>
+        <el-row :gutter="20" v-if="['select', 'checkbox-group', 'radio-group'].includes(fieldForm.formControlType)">
+          <el-col :span="8">
             <el-form-item label="数据来源">
-              <el-select v-model="fieldForm.selectDataSource" placeholder="无" clearable style="width: 100%">
-                <el-option label="无" :value="null" />
+              <el-select v-model="fieldForm.selectDataSource" style="width: 100%">
+                <el-option label="枚举/静态选项" value="enum" />
                 <el-option label="字典" value="dict" />
               </el-select>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row :gutter="20" v-if="fieldForm.selectDataSource === 'dict'">
-          <el-col :span="12">
-            <el-form-item label="字典类型">
-              <el-select v-model="fieldForm.selectOptions" placeholder="选择字典类型" style="width: 100%">
+          <el-col :span="16">
+            <el-form-item label="选项数据">
+              <el-select v-if="fieldForm.selectDataSource === 'dict'" v-model="fieldForm.selectOptions" placeholder="选择字典类型" style="width: 100%">
                 <el-option v-for="item in dictTypeList" :key="item.dictType" :label="`${item.dictName} (${item.dictType})`" :value="item.dictType" />
               </el-select>
+              <el-input v-else v-model="fieldForm.selectOptions" placeholder='JSON 如 [{"value":1,"label":"启用"}]' />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" v-if="['select', 'checkbox-group'].includes(fieldForm.formControlType)">
+          <el-col :span="8">
+            <el-form-item label="允许多选">
+              <el-switch v-model="fieldForm.isMultiple" :disabled="fieldForm.formControlType === 'checkbox-group'" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -289,8 +303,9 @@
               <el-select v-model="fieldForm.fieldCategory" style="width: 100%">
                 <el-option label="普通字段" value="Normal" />
                 <el-option label="计算字段" value="Computed" />
-                <el-option label="统计字段" value="Aggregate" />
+                <el-option label="统计字段（保存后在编辑页配置）" value="Aggregate" disabled />
               </el-select>
+              <div class="form-tip">统计字段依赖已保存的一对多子表关系，请先保存实体，再到编辑页配置。</div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -399,7 +414,8 @@ const systemFieldDefs = {
     { name: 'Id', description: '主键', dataType: 'long', isPrimaryKey: true, isRequired: true, isSystemField: true, showInList: false, showInAddForm: false, showInEditForm: false, showInDetail: false, showInSearch: false }
   ],
   isTree: [
-    { name: 'ParentId', description: '父级ID', dataType: 'long?', isNullable: true, isSystemField: true, showInList: false, showInAddForm: true, showInEditForm: true, showInDetail: false, showInSearch: false }
+    { name: 'ParentId', description: '父级ID', dataType: 'long?', isNullable: true, isSystemField: true, showInList: false, showInAddForm: true, showInEditForm: true, showInDetail: false, showInSearch: false },
+    { name: 'Ancestors', description: '祖级列表', dataType: 'string?', isNullable: true, isSystemField: true, showInList: false, showInAddForm: false, showInEditForm: false, showInDetail: false, showInSearch: false }
   ],
   hasTenant: [
     { name: 'TenantId', description: '租户ID', dataType: 'long', isRequired: true, isSystemField: true, showInList: false, showInAddForm: false, showInEditForm: false, showInDetail: false, showInSearch: false }
@@ -462,7 +478,7 @@ function getDefaultFieldForm() {
     isUnique: false, isIndexed: false, isSearchable: false, isSortable: false,
     showInList: true, showInDetail: true, showInAddForm: true, showInEditForm: true, showInSearch: false,
     selectDataSource: null, selectOptions: null,
-    relatedEntityName: null, relatedEntityIdField: null, relatedEntityDisplayFields: null,
+    relatedEntityName: null, relatedEntityIdField: null, relatedEntityDisplayFields: null, resultMappings: null,
     listWidth: null, orderNum: 0,
     fieldCategory: 'Normal', formula: null, aggregateType: null,
     aggregateChildEntityId: null, aggregateChildFieldName: null, aggregateSeparator: null
@@ -523,8 +539,56 @@ watch(() => form.hasDataPermission, (val, old) => { if (old === undefined) retur
 watch(() => form.hasAudit, (val, old) => { if (old === undefined) return; val ? addSystemFields('hasAudit') : removeSystemFields('hasAudit') })
 watch(() => form.hasSoftDelete, (val, old) => { if (old === undefined) return; val ? addSystemFields('hasSoftDelete') : removeSystemFields('hasSoftDelete') })
 
+// 能力组合约束：无主键只能作为只读查询模型；树形实体必须有主键。
+watch(() => form.hasPrimaryKey, (val) => {
+  if (!val) {
+    form.isTree = false
+    form.isReadOnly = true
+  }
+})
+watch(() => form.isTree, (val) => { if (val) form.hasPrimaryKey = true })
+watch(() => form.isReadOnly, (val) => { if (!val && !form.hasPrimaryKey) form.hasPrimaryKey = true })
+
 // 数据源切到字典时加载字典类型
 watch(() => fieldForm.selectDataSource, (val) => { if (val === 'dict') loadDictTypes() })
+watch(() => fieldForm.formControlType, (val) => {
+  if (val === 'checkbox-group') fieldForm.isMultiple = true
+  else if (val === 'radio-group') fieldForm.isMultiple = false
+})
+
+watch(() => fieldForm.fieldCategory, (val) => {
+  if (val === 'Computed') {
+    fieldForm.aggregateType = null
+    fieldForm.aggregateChildEntityId = null
+    fieldForm.aggregateChildFieldName = null
+    fieldForm.aggregateSeparator = null
+  } else if (val === 'Aggregate') {
+    fieldForm.formula = null
+    fieldForm.aggregateType ||= 'Sum'
+  } else {
+    fieldForm.formula = null
+    fieldForm.aggregateType = null
+    fieldForm.aggregateChildEntityId = null
+    fieldForm.aggregateChildFieldName = null
+    fieldForm.aggregateSeparator = null
+  }
+})
+
+function validateCalculatedFieldForm() {
+  const dataType = String(fieldForm.dataType || '').replace(/\?$/, '').toLowerCase()
+  const numericTypes = ['byte', 'short', 'int', 'long', 'float', 'double', 'decimal']
+  if (fieldForm.fieldCategory === 'Computed') {
+    if (!numericTypes.includes(dataType)) {
+      ElMessage.warning('计算字段必须使用数值类型')
+      return false
+    }
+    if (!fieldForm.formula || !/\[[A-Za-z_]\w*\]/.test(fieldForm.formula)) {
+      ElMessage.warning('计算公式必须使用 [字段名] 引用至少一个字段')
+      return false
+    }
+  }
+  return true
+}
 
 // ===== 生命周期 =====
 onMounted(() => {
@@ -621,6 +685,7 @@ async function handleAggChildEntityChange(entityId) {
 async function handleFieldSubmit() {
   try {
     await fieldFormRef.value.validate()
+    if (!validateCalculatedFieldForm()) return
 
     const data = { ...fieldForm }
     // 确保 _deleted 标记不被覆盖

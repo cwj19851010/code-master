@@ -25,10 +25,14 @@
           {{ detail.orderNum }}
         </el-descriptions-item>
         <el-descriptions-item label="选项">
+          <el-tag v-if="detail.hasPrimaryKey" size="small" type="success" style="margin-right: 5px">主键</el-tag>
           <el-tag v-if="detail.isTree" size="small" type="success" style="margin-right: 5px">树形</el-tag>
           <el-tag v-if="detail.isReadOnly" size="small" type="warning" style="margin-right: 5px">只读</el-tag>
           <el-tag v-if="detail.hasDataPermission" size="small" type="info" style="margin-right: 5px">数据权限</el-tag>
-          <el-tag v-if="detail.hasTenant" size="small" type="primary">多租户</el-tag>
+          <el-tag v-if="detail.hasTenant" size="small" type="primary" style="margin-right: 5px">多租户</el-tag>
+          <el-tag v-if="detail.hasAudit" size="small" type="success" style="margin-right: 5px">审计</el-tag>
+          <el-tag v-if="detail.hasSoftDelete" size="small" type="success" style="margin-right: 5px">软删除</el-tag>
+          <el-tag v-if="detail.isChildTable" size="small" type="info">子表</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">
           {{ detail.createTime }}
@@ -56,7 +60,8 @@
         <el-table-column label="选项" width="250">
           <template #default="{ row }">
             <el-tag v-if="row.isPrimaryKey" size="small" type="danger" style="margin-right: 5px">主键</el-tag>
-            <el-tag v-if="row.isRequired" size="small" type="warning" style="margin-right: 5px">必填</el-tag>
+            <el-tag v-if="row.isRequired" size="small" type="warning" style="margin-right: 5px">表单必填</el-tag>
+            <el-tag v-if="row.isNullable" size="small" type="success" style="margin-right: 5px">数据库可空</el-tag>
             <el-tag v-if="row.isUnique" size="small" type="info" style="margin-right: 5px">唯一</el-tag>
             <el-tag v-if="row.isIndexed" size="small" style="margin-right: 5px">索引</el-tag>
             <el-tag v-if="row.isSearchable" size="small" type="success" style="margin-right: 5px">可搜索</el-tag>
@@ -67,6 +72,36 @@
       </el-table>
 
       <el-empty v-if="!detail.fields || detail.fields.length === 0" description="暂无字段" />
+    </el-card>
+
+    <el-card shadow="never" style="margin-top: 20px">
+      <template #header>
+        <div class="card-header">
+          <span>一对一组成关系</span>
+        </div>
+      </template>
+      <el-table :data="detail.entityRelations || []" border style="width: 100%">
+        <el-table-column prop="relationName" label="属性名称" min-width="140" />
+        <el-table-column label="组成实体" min-width="180">
+          <template #default="{ row }">
+            {{ row.targetEntityName }}
+            <span v-if="row.targetEntityDescription" class="muted-text">（{{ row.targetEntityDescription }}）</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="字段对应" min-width="220">
+          <template #default="{ row }">{{ row.sourceField }} → {{ row.targetField }}</template>
+        </el-table-column>
+        <el-table-column label="必填" width="90" align="center">
+          <template #default="{ row }">
+            <el-tag :type="row.isRequired ? 'success' : 'info'" size="small">{{ row.isRequired ? '是' : '否' }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="空值处理" width="110">
+          <template #default="{ row }">{{ getDeleteBehaviorLabel(row.deleteBehavior) }}</template>
+        </el-table-column>
+        <el-table-column prop="orderNum" label="排序" width="80" />
+      </el-table>
+      <el-empty v-if="!detail.entityRelations || detail.entityRelations.length === 0" description="暂无一对一组成关系" />
     </el-card>
   </div>
 </template>
@@ -87,14 +122,19 @@ const detail = ref({
   name: '',
   description: '',
   tableName: '',
+  hasPrimaryKey: true,
   isTree: false,
   isReadOnly: false,
   hasDataPermission: false,
   hasTenant: false,
+  hasAudit: false,
+  hasSoftDelete: false,
+  isChildTable: false,
   orderNum: 0,
   createTime: '',
   updateTime: '',
-  fields: []
+  fields: [],
+  entityRelations: []
 })
 
 onMounted(() => {
@@ -117,6 +157,10 @@ async function loadData() {
 function handleBack() {
   router.back()
 }
+
+function getDeleteBehaviorLabel(value) {
+  return Number(value) === 2 ? '保留' : Number(value) === 3 ? '阻止' : '删除'
+}
 </script>
 
 <style scoped lang="scss">
@@ -124,5 +168,8 @@ function handleBack() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.muted-text {
+  color: var(--el-text-color-secondary);
 }
 </style>

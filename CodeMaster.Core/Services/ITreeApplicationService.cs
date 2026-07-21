@@ -8,9 +8,9 @@ namespace CodeMaster.Core.Services;
 /// </summary>
 public interface ITreeApplicationService<TEntity, TGetOutputDto, TGetListOutputDto, TGetListInput, TCreateInput, TUpdateInput>
     : ICrudApplicationService<TEntity, TGetOutputDto, TGetListOutputDto, TGetListInput, TCreateInput, TUpdateInput>
-    where TEntity : class, IEntity<long>, new()
-    where TGetOutputDto : EntityDto
-    where TGetListOutputDto : EntityDto
+    where TEntity : class, IEntity<long>, ITree, new()
+    where TGetOutputDto : class
+    where TGetListOutputDto : class
     where TGetListInput : PagedQueryDto
 {
     /// <summary>

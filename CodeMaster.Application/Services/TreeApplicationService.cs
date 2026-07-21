@@ -14,9 +14,9 @@ namespace CodeMaster.Application.Services;
 /// </summary>
 public abstract class TreeApplicationService<TEntity, TGetOutputDto, TGetListOutputDto, TGetListInput, TCreateInput, TUpdateInput>
     : CrudApplicationService<TEntity, TGetOutputDto, TGetListOutputDto, TGetListInput, TCreateInput, TUpdateInput>
-    where TEntity : TreeEntityBase, new()
-    where TGetOutputDto : EntityDto
-    where TGetListOutputDto : EntityDto
+    where TEntity : class, IEntity<long>, ITree, new()
+    where TGetOutputDto : class
+    where TGetListOutputDto : class
     where TGetListInput : PagedQueryDto
     where TCreateInput : class, new()
     where TUpdateInput : class

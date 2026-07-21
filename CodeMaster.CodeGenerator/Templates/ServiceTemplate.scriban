@@ -12,11 +12,64 @@ namespace {{ entity.project_name }}.Application.Services.{{ entity.module_name }
 /// {{ entity.description }}服务实现
 /// </summary>
 {{~ if entity.is_read_only ~}}
-public class {{ entity.name }}Service : ReadOnlyApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}QueryDto>, I{{ entity.name }}Service
+{{~ if entity.is_tree ~}}
+public class {{ entity.name }}Service : ReadOnlyTreeApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto>, I{{ entity.name }}Service
+{{~ else if entity.has_primary_key ~}}
+public class {{ entity.name }}Service : ReadOnlyApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto>, I{{ entity.name }}Service
+{{~ else ~}}
+public class {{ entity.name }}Service : QueryApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}QueryDto>, I{{ entity.name }}Service
+{{~ end ~}}
 {
-    public {{ entity.name }}Service(IRepository<{{ entity.name }}> repository, IExcelService? excelService = null, {{ entity.project_name }}.Core.Services.ICacheService? cacheService = null) : base(repository, excelService, cacheService)
+{{~ if entity.is_tree ~}}
+    public {{ entity.name }}Service(IReadOnlyRepository<{{ entity.name }}> repository, ISqlSugarClient db, IExcelService? excelService = null, {{ entity.project_name }}.Core.Services.ICacheService? cacheService = null) : base(repository, db, excelService, cacheService)
+{{~ else ~}}
+    public {{ entity.name }}Service(IReadOnlyRepository<{{ entity.name }}> repository, IExcelService? excelService = null, {{ entity.project_name }}.Core.Services.ICacheService? cacheService = null) : base(repository, excelService, cacheService)
+{{~ end ~}}
     {
     }
+
+    protected override async Task<ISugarQueryable<{{ entity.name }}>> CreateFilteredQueryAsync({{ entity.name }}QueryDto input)
+    {
+        var query = Repository.GetQueryable();
+{{~ for field in entity.fields ~}}
+{{~ if field.show_in_search ~}}
+{{~ if field.form_control_type == "date" ~}}
+        query = query.WhereIF(input.{{ field.name }}Start.HasValue, e => e.{{ field.name }} >= input.{{ field.name }}Start.Value);
+        query = query.WhereIF(input.{{ field.name }}End.HasValue, e => e.{{ field.name }} < input.{{ field.name }}End.Value.AddDays(1));
+{{~ else if field.form_control_type == "datetime" ~}}
+        query = query.WhereIF(input.{{ field.name }}Start.HasValue, e => e.{{ field.name }} >= input.{{ field.name }}Start.Value);
+        query = query.WhereIF(input.{{ field.name }}End.HasValue, e => e.{{ field.name }} < input.{{ field.name }}End.Value.AddDays(1));
+{{~ else if field.is_multiple && field.data_type == "string" ~}}
+        if (!string.IsNullOrEmpty(input.{{ field.name }}))
+        {
+            var {{ field.name_lower }}Values = input.{{ field.name }}.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if ({{ field.name_lower }}Values.Length > 0)
+            {
+                var {{ field.name_lower }}Expression = Expressionable.Create<{{ entity.name }}>();
+                foreach (var value in {{ field.name_lower }}Values)
+                {
+                    var current = value;
+                    {{ field.name_lower }}Expression.Or(e => e.{{ field.name }} != null && ("," + e.{{ field.name }} + ",").Contains("," + current + ","));
+                }
+                query = query.Where({{ field.name_lower }}Expression.ToExpression());
+            }
+        }
+{{~ else if field.data_type == "string" ~}}
+        query = query.WhereIF(!string.IsNullOrEmpty(input.{{ field.name }}), e => e.{{ field.name }}!.Contains(input.{{ field.name }}!));
+{{~ else ~}}
+        query = query.WhereIF(input.{{ field.name }}.HasValue, e => e.{{ field.name }} == input.{{ field.name }});
+{{~ end ~}}
+{{~ end ~}}
+{{~ end ~}}
+        return await Task.FromResult(query);
+    }
+{{~ if entity.has_primary_key ~}}
+
+    protected override ISugarQueryable<{{ entity.name }}> ApplySorting(ISugarQueryable<{{ entity.name }}> queryable, {{ entity.name }}QueryDto input)
+    {
+        return queryable.OrderBy(e => e.Id);
+    }
+{{~ end ~}}
 {{~ else if entity.is_tree ~}}
 public class {{ entity.name }}Service : TreeApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto, Create{{ entity.name }}Dto, Update{{ entity.name }}Dto>, I{{ entity.name }}Service
 {
@@ -62,7 +115,7 @@ public class {{ entity.name }}Service : TreeApplicationService<{{ entity.name }}
 {{~ else ~}}
 public class {{ entity.name }}Service : CrudApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto, Create{{ entity.name }}Dto, Update{{ entity.name }}Dto>, I{{ entity.name }}Service
 {
-{{~ if entity.has_one_to_many ~}}
+{{~ if entity.has_aggregate_relations ~}}
     private readonly ISqlSugarClient _db;
     public {{ entity.name }}Service(IRepository<{{ entity.name }}> repository, ISqlSugarClient db, IExcelService? excelService = null, {{ entity.project_name }}.Core.Services.ICacheService? cacheService = null) : base(repository, excelService, cacheService)
     {
@@ -116,7 +169,7 @@ public class {{ entity.name }}Service : CrudApplicationService<{{ entity.name }}
     }
 {{~ end ~}}
 
-{{~ if entity.has_one_to_many ~}}
+{{~ if entity.has_aggregate_relations ~}}
     /// <summary>
     /// 获取详情（含子表数据）
     /// </summary>
@@ -132,18 +185,73 @@ public class {{ entity.name }}Service : CrudApplicationService<{{ entity.name }}
         if (entity == null)
             throw new Exception("数据不存在");
 
+{{~ for relation in entity.owned_one_relations ~}}
+        entity.{{ relation.relation_name }} = await _db.Queryable<{{ entity.project_name }}.Domain.Entities.{{ relation.target_module_name }}.{{ relation.target_entity_name }}>()
+            .Where(item => item.{{ relation.target_field }} == entity.{{ relation.source_field }})
+            .FirstAsync();
+{{~ end ~}}
+
         return entity.Adapt<{{ entity.name }}Dto>();
     }
+
+{{~ if entity.has_owned_one ~}}
+    public override async Task<PagedResultDto<{{ entity.name }}Dto>> GetPagedListAsync({{ entity.name }}QueryDto input)
+    {
+        var result = await base.GetPagedListAsync(input);
+        await LoadOwnedRelationsAsync(result.Items);
+        return result;
+    }
+
+    public override async Task<List<{{ entity.name }}Dto>> GetListAsync({{ entity.name }}QueryDto input)
+    {
+        var result = await base.GetListAsync(input);
+        await LoadOwnedRelationsAsync(result);
+        return result;
+    }
+
+    private async Task LoadOwnedRelationsAsync(List<{{ entity.name }}Dto> items)
+    {
+        if (items.Count == 0)
+            return;
+
+{{~ for relation in entity.owned_one_relations ~}}
+        var {{ relation.relation_name_lower }}SourceValues = items
+            .Select(item => item.{{ relation.source_field }})
+            .Distinct()
+            .ToList();
+        var {{ relation.relation_name_lower }}Rows = await _db.Queryable<{{ entity.project_name }}.Domain.Entities.{{ relation.target_module_name }}.{{ relation.target_entity_name }}>()
+            .Where(item => {{ relation.relation_name_lower }}SourceValues.Contains(item.{{ relation.target_field }}))
+            .ToListAsync();
+        var {{ relation.relation_name_lower }}Map = {{ relation.relation_name_lower }}Rows
+            .GroupBy(item => item.{{ relation.target_field }})
+            .ToDictionary(group => group.Key, group => group.First());
+        foreach (var item in items)
+        {
+            if ({{ relation.relation_name_lower }}Map.TryGetValue(item.{{ relation.source_field }}, out var owned))
+                item.{{ relation.relation_name }} = owned.Adapt<{{ entity.project_name }}.Application.Dtos.{{ relation.target_module_name }}.{{ relation.target_entity_name }}Dto>();
+        }
+{{~ end ~}}
+    }
+
+{{~ end ~}}
 
     /// <summary>
     /// 创建（含子表）
     /// </summary>
     public override async Task<long> CreateAsync(Create{{ entity.name }}Dto input)
     {
+{{~ if entity.has_owned_one ~}}
+        _db.Ado.BeginTran();
+        try
+        {
+{{~ end ~}}
         var entity = new {{ entity.name }}();
         input.Adapt(entity);
 {{~ for relation in entity.one_to_many_relations ~}}
         entity.{{ relation.child_entity_name }}s = null!;
+{{~ end ~}}
+{{~ for relation in entity.owned_one_relations ~}}
+        entity.{{ relation.relation_name }} = null;
 {{~ end ~}}
         var id = await _db.Insertable(entity).ExecuteReturnSnowflakeIdAsync();
 {{~ for relation in entity.one_to_many_relations ~}}
@@ -157,7 +265,32 @@ public class {{ entity.name }}Service : CrudApplicationService<{{ entity.name }}
             }
         }
 {{~ end ~}}
+{{~ for relation in entity.owned_one_relations ~}}
+        if (input.{{ relation.relation_name }} != null)
+        {
+            var owned{{ relation.relation_name }} = input.{{ relation.relation_name }}.Adapt<{{ entity.project_name }}.Domain.Entities.{{ relation.target_module_name }}.{{ relation.target_entity_name }}>();
+            owned{{ relation.relation_name }}.{{ relation.target_field }} = {{ relation.create_source_expression }};
+            await _db.Insertable(owned{{ relation.relation_name }}).ExecuteReturnSnowflakeIdAsync();
+        }
+{{~ if relation.is_required ~}}
+        else
+        {
+            throw new InvalidOperationException("{{ relation.target_entity_description }}不能为空");
+        }
+{{~ end ~}}
+{{~ end ~}}
+{{~ if entity.has_owned_one ~}}
+            _db.Ado.CommitTran();
+            return id;
+        }
+        catch
+        {
+            _db.Ado.RollbackTran();
+            throw;
+        }
+{{~ else ~}}
         return id;
+{{~ end ~}}
     }
 
     /// <summary>
@@ -165,10 +298,18 @@ public class {{ entity.name }}Service : CrudApplicationService<{{ entity.name }}
     /// </summary>
     public override async Task<int> UpdateAsync(long id, Update{{ entity.name }}Dto input)
     {
+{{~ if entity.has_owned_one ~}}
+        _db.Ado.BeginTran();
+        try
+        {
+{{~ end ~}}
         var entity = new {{ entity.name }}();
         input.Adapt(entity);
 {{~ for relation in entity.one_to_many_relations ~}}
         entity.{{ relation.child_entity_name }}s = null!;
+{{~ end ~}}
+{{~ for relation in entity.owned_one_relations ~}}
+        entity.{{ relation.relation_name }} = null;
 {{~ end ~}}
         entity.Id = id;
         await _db.Updateable(entity).ExecuteCommandAsync();
@@ -177,7 +318,21 @@ public class {{ entity.name }}Service : CrudApplicationService<{{ entity.name }}
         if (input.{{ relation.child_entity_name }}s != null)
             await Save{{ relation.child_entity_name }}sAsync(id, input.{{ relation.child_entity_name }}s);
 {{~ end ~}}
+{{~ for relation in entity.owned_one_relations ~}}
+        await Save{{ relation.relation_name }}Async(entity.{{ relation.source_field }}, input.{{ relation.relation_name }});
+{{~ end ~}}
+{{~ if entity.has_owned_one ~}}
+            _db.Ado.CommitTran();
+            return 1;
+        }
+        catch
+        {
+            _db.Ado.RollbackTran();
+            throw;
+        }
+{{~ else ~}}
         return 1;
+{{~ end ~}}
     }
 
 {{~ for relation in entity.one_to_many_relations ~}}
@@ -201,6 +356,47 @@ public class {{ entity.name }}Service : CrudApplicationService<{{ entity.name }}
             }
         }
     }
+{{~ end ~}}
+{{~ for relation in entity.owned_one_relations ~}}
+    private async Task Save{{ relation.relation_name }}Async(
+        {{ relation.source_data_type }} sourceValue,
+        {{ entity.project_name }}.Application.Dtos.{{ relation.target_module_name }}.Update{{ relation.target_entity_name }}Dto? input)
+    {
+        if (input == null)
+        {
+{{~ if relation.is_required ~}}
+            throw new InvalidOperationException("{{ relation.target_entity_description }}不能为空");
+{{~ else if relation.delete_when_null ~}}
+{{~ if relation.target_has_soft_delete ~}}
+            await _db.Updateable<{{ entity.project_name }}.Domain.Entities.{{ relation.target_module_name }}.{{ relation.target_entity_name }}>()
+                .SetColumns(item => item.IsDeleted == true)
+                .SetColumns(item => item.DeleteTime == DateTime.UtcNow)
+                .Where(item => item.{{ relation.target_field }} == sourceValue)
+                .ExecuteCommandAsync();
+{{~ else ~}}
+            await _db.Deleteable<{{ entity.project_name }}.Domain.Entities.{{ relation.target_module_name }}.{{ relation.target_entity_name }}>()
+                .Where(item => item.{{ relation.target_field }} == sourceValue)
+                .ExecuteCommandAsync();
+{{~ end ~}}
+{{~ end ~}}
+            return;
+        }
+
+        var existing = await _db.Queryable<{{ entity.project_name }}.Domain.Entities.{{ relation.target_module_name }}.{{ relation.target_entity_name }}>()
+            .Where(item => item.{{ relation.target_field }} == sourceValue)
+            .FirstAsync();
+        var owned = input.Adapt<{{ entity.project_name }}.Domain.Entities.{{ relation.target_module_name }}.{{ relation.target_entity_name }}>();
+        owned.{{ relation.target_field }} = sourceValue;
+        if (existing == null)
+        {
+            await _db.Insertable(owned).ExecuteReturnSnowflakeIdAsync();
+            return;
+        }
+
+        owned.Id = existing.Id;
+        await _db.Updateable(owned).ExecuteCommandAsync();
+    }
+
 {{~ end ~}}
 {{~ end ~}}
 }

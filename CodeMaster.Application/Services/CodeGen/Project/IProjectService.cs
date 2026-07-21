@@ -160,6 +160,11 @@ public interface IProjectService : IApplicationService
     Task<ProjectActionResultDto> BuildAsync(ProjectActionDto input);
 
     /// <summary>
+    /// Apply a controlled, project-aware redesign to the generated login or dashboard page.
+    /// </summary>
+    Task<ProjectUiEnhancementResultDto> EnhanceUiPageAsync(ProjectUiEnhancementDto input);
+
+    /// <summary>
     /// 获取目标项目的字典类型列表
     /// </summary>
     Task<List<DictTypeOptionDto>> GetDictTypesAsync(long projectId);

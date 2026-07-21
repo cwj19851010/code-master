@@ -68,15 +68,6 @@
       </div>
 
       <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" class="login-form">
-        <el-form-item prop="serverBaseUrl">
-          <el-input
-            v-model="loginForm.serverBaseUrl"
-            placeholder="服务器地址"
-            size="large"
-            clearable
-          />
-        </el-form-item>
-
         <el-form-item prop="username">
           <el-input
             ref="username"
@@ -158,40 +149,20 @@ const { t } = useI18n()
 const clientConfig = getCodeMasterClientConfig()
 const isClientLogin = isCodeMasterClient()
 const defaultServerBaseUrl = normalizeCodeMasterServerBaseUrl(
-  clientConfig.serverBaseUrl ||
-  window.__CODEMASTER_CLIENT__?.serverBaseUrl ||
-  DEFAULT_CODEMASTER_SERVER_BASE_URL
+  isClientLogin
+    ? clientConfig.serverBaseUrl ||
+      window.__CODEMASTER_CLIENT__?.serverBaseUrl ||
+      DEFAULT_CODEMASTER_SERVER_BASE_URL ||
+      (/^https?:$/i.test(window.location.protocol) ? window.location.origin : '')
+    : window.location.origin
 )
 
 const loginForm = reactive({
-  serverBaseUrl: defaultServerBaseUrl,
   username: 'admin',
   password: 'admin123'
 })
 
 const loginRules = {
-  serverBaseUrl: [
-    {
-      trigger: 'blur',
-      validator: (_, value, callback) => {
-        if (!isClientLogin && !value) {
-          callback()
-          return
-        }
-
-        try {
-          const normalized = normalizeCodeMasterServerBaseUrl(value)
-          if (isClientLogin && !normalized) {
-            callback(new Error('请输入服务器地址'))
-            return
-          }
-          callback()
-        } catch {
-          callback(new Error('服务器地址格式不正确'))
-        }
-      }
-    }
-  ],
   username: [{ required: true, trigger: 'blur', message: t2('please_input', 'username') }],
   password: [{ required: true, trigger: 'blur', message: t2('please_input', 'password') }]
 }
@@ -204,7 +175,7 @@ const showPwd = () => {
 }
 
 function getPublicUrl(path) {
-  return new URL(path, defaultServerBaseUrl).toString()
+  return new URL(path, defaultServerBaseUrl || window.location.origin).toString()
 }
 
 function openRegister() {
@@ -240,12 +211,12 @@ const handleLogin = () => {
     if (valid) {
       loading.value = true
       try {
-        const serverBaseUrl = normalizeCodeMasterServerBaseUrl(loginForm.serverBaseUrl)
-
-        saveCodeMasterClientConfig({
-          ...getCodeMasterClientConfig(),
-          serverBaseUrl
-        })
+        if (isClientLogin && defaultServerBaseUrl) {
+          saveCodeMasterClientConfig({
+            ...getCodeMasterClientConfig(),
+            serverBaseUrl: defaultServerBaseUrl
+          })
+        }
 
         await userStore.login({
           userName: loginForm.username,
@@ -264,10 +235,12 @@ const handleLogin = () => {
 }
 
 onMounted(() => {
-  saveCodeMasterClientConfig({
-    ...getCodeMasterClientConfig(),
-    serverBaseUrl: defaultServerBaseUrl
-  })
+  if (isClientLogin && defaultServerBaseUrl) {
+    saveCodeMasterClientConfig({
+      ...getCodeMasterClientConfig(),
+      serverBaseUrl: defaultServerBaseUrl
+    })
+  }
   completeExternalLogin()
 })
 </script>

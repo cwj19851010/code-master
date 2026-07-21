@@ -441,7 +441,7 @@ import { ref, reactive, computed, onMounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Close, Delete } from '@element-plus/icons-vue'
-import { getPageContent, savePageContent, deleteChildRelation, getPageScript, savePageScript, getFieldScripts, saveFieldScripts } from '@/api/codegen/moduleEntity'
+import { getPageContent, savePageContent, deleteChildRelation, deleteEntityRelation, getPageScript, savePageScript, getFieldScripts, saveFieldScripts } from '@/api/codegen/moduleEntity'
 import { getFieldPropertyPanel } from '@/api/system/component'
 import DesignCanvas from './DesignCanvas.vue'
 
@@ -543,14 +543,21 @@ function createDesignerNode(tag) {
   node.events = node.events || []
   node.instructions = node.instructions || []
   node.genId = node.genId || ''
+  node.id = node.id || createStableNodeId(node.genId || tag)
   return node
 }
 
+function createStableNodeId(seed = 'node') {
+  const suffix = globalThis.crypto?.randomUUID
+    ? globalThis.crypto.randomUUID().replaceAll('-', '')
+    : `${Date.now()}${Math.random().toString(16).slice(2)}`
+  return `design_${String(seed).replace(/[^a-zA-Z0-9_-]/g, '_')}_${suffix}`
+}
+
 function refreshIds() {
-  let idCounter = 1
   function assignIds(nodes) {
     for (const n of (nodes || [])) {
-      n.id = 'n' + (idCounter++)
+      n.id = n.id || createStableNodeId(n.genId || n.entityField || n.tag)
       if (n.children) assignIds(n.children)
       for (const s of (n.useSlots || [])) {
         if (s.components) assignIds(s.components)
@@ -1516,6 +1523,13 @@ async function handleDelete() {
         ElMessage.success(`已删除子表关系: ${childName}`)
       } catch(e) { console.warn('删除子表关系失败:', e) }
     }
+    if (genId && /^gen_owned_\d+$/.test(genId)) {
+      const relationId = genId.replace('gen_owned_', '')
+      try {
+        await deleteEntityRelation(entityId.value, relationId)
+        ElMessage.success('已删除一对一组成关系')
+      } catch(e) { console.warn('删除一对一组成关系失败:', e) }
+    }
     const parent = findParentNode(tree.value, selectedId.value)
     if (!parent) { tree.value = tree.value.filter(n => n.id !== selectedId.value) }
     else {
@@ -1704,6 +1718,8 @@ onMounted(async () => {
 <style scoped>
 .designer-root {
   color: var(--app-text, #1f2937);
+  position: relative;
+  isolation: isolate;
 }
 .toolbar { display:flex; align-items:center; gap:12px; padding:8px 16px; background:var(--app-surface-soft, #f5f7fa); border-bottom:1px solid var(--app-border, #e4e7ed); }
 .main-area { display:flex; height:calc(100vh - 42px); background:var(--app-bg, #fff); overflow:hidden; }
@@ -1771,13 +1787,13 @@ onMounted(async () => {
 .panel-header { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; font-weight:600; }
 .panel-actions { display:flex; align-items:center; gap:6px; flex-shrink:0; }
 .prop-row { display:flex; align-items:center; gap:3px; margin-bottom:4px; }
-.drag-overlay { position:absolute; top:0; left:0; pointer-events:none; z-index:9999; }
-.drag-handle { position:absolute; height:22px; line-height:22px; padding:0 8px; background:#409eff; font-size:12px; color:#fff; font-weight:600; border-radius:4px; cursor:grab; white-space:nowrap; pointer-events:auto; z-index:9999; box-shadow:0 2px 8px rgba(0,0,0,.3); overflow:hidden; }
+.drag-overlay { position:absolute; top:0; left:0; pointer-events:none; z-index:10; }
+.drag-handle { position:absolute; height:22px; line-height:22px; padding:0 8px; background:#409eff; font-size:12px; color:#fff; font-weight:600; border-radius:4px; cursor:grab; white-space:nowrap; pointer-events:auto; z-index:1; box-shadow:0 2px 8px rgba(0,0,0,.3); overflow:hidden; }
 .drag-handle.selected { background:#f56c6c; }
 .drag-handle.drag-over { background:#67c23a; transform:scale(1.1); }
 .drop-indicator {
   display: flex; gap: 2px;
-  z-index: 10001; pointer-events: auto;
+  z-index: 2; pointer-events: auto;
   background: var(--app-surface, #fff); border-radius: 6px;
   padding: 2px; box-shadow: 0 2px 12px rgba(0,0,0,.3);
 }

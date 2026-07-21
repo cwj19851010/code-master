@@ -58,6 +58,16 @@ public class ModuleEntityDto : EntityDto
     public bool HasDataPermission { get; set; }
 
     /// <summary>
+    /// 是否启用审计字段
+    /// </summary>
+    public bool HasAudit { get; set; }
+
+    /// <summary>
+    /// 是否启用软删除字段
+    /// </summary>
+    public bool HasSoftDelete { get; set; }
+
+    /// <summary>
     /// 是否生成前端页面
     /// </summary>
     public bool GenerateFrontend { get; set; }
@@ -106,6 +116,8 @@ public class ModuleEntityDto : EntityDto
     /// 一对多关系列表
     /// </summary>
     public List<OneToManyRelationDto> OneToManyRelations { get; set; } = new();
+
+    public List<EntityRelationDto> EntityRelations { get; set; } = new();
 }
 
 public class ReferenceEntityDto
@@ -233,6 +245,8 @@ public class CreateModuleEntityDto
     /// 一对多关系列表
     /// </summary>
     public List<CreateOneToManyRelationDto> OneToManyRelations { get; set; } = new();
+
+    public List<CreateEntityRelationDto> EntityRelations { get; set; } = new();
 }
 
 /// <summary>
@@ -253,7 +267,7 @@ public class UpdateModuleEntityDto
     /// <summary>
     /// 是否有主键
     /// </summary>
-    public bool HasPrimaryKey { get; set; }
+    public bool? HasPrimaryKey { get; set; }
 
     /// <summary>
     /// 表名（snake_case）
@@ -263,32 +277,42 @@ public class UpdateModuleEntityDto
     /// <summary>
     /// 是否树形结构
     /// </summary>
-    public bool IsTree { get; set; }
+    public bool? IsTree { get; set; }
 
     /// <summary>
     /// 是否只读
     /// </summary>
-    public bool IsReadOnly { get; set; }
+    public bool? IsReadOnly { get; set; }
 
     /// <summary>
     /// 是否启用多租户
     /// </summary>
-    public bool HasTenant { get; set; }
+    public bool? HasTenant { get; set; }
 
     /// <summary>
     /// 是否启用数据权限
     /// </summary>
-    public bool HasDataPermission { get; set; }
+    public bool? HasDataPermission { get; set; }
+
+    /// <summary>
+    /// 是否启用审计字段；未传时保留当前值
+    /// </summary>
+    public bool? HasAudit { get; set; }
+
+    /// <summary>
+    /// 是否启用软删除字段；未传时保留当前值
+    /// </summary>
+    public bool? HasSoftDelete { get; set; }
 
     /// <summary>
     /// 是否生成前端页面
     /// </summary>
-    public bool GenerateFrontend { get; set; }
+    public bool? GenerateFrontend { get; set; }
 
     /// <summary>
     /// 是否为子表
     /// </summary>
-    public bool IsChildTable { get; set; }
+    public bool? IsChildTable { get; set; }
 
     /// <summary>
     /// 前端路由路径
@@ -339,6 +363,12 @@ public class UpdateModuleEntityDto
     /// 删除的一对多关系ID列表
     /// </summary>
     public List<long> DeletedRelationIds { get; set; } = new();
+
+    public List<CreateEntityRelationDto> NewEntityRelations { get; set; } = new();
+
+    public List<UpdateEntityRelationWithIdDto> UpdatedEntityRelations { get; set; } = new();
+
+    public List<long> DeletedEntityRelationIds { get; set; } = new();
 }
 
 /// <summary>

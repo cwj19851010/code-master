@@ -11,46 +11,24 @@ namespace {{ entity.project_name }}.Domain.Entities.{{ entity.module_name }};
 /// <summary>
 /// {{ entity.description }}（自动生成部分，请勿手动修改）
 /// </summary>
-public partial class {{ entity.name }} : {{ entity.base_class_name }}, IBaseEntity{{ entity.interface_list }}
+[SugarTable("{{ entity.table_name }}")]
+public partial class {{ entity.name }} : {{ entity.base_class_name }}{{ entity.interface_list }}
 {
-{{~ if entity.has_tenant ~}}
-    [SugarColumn(ColumnName = "tenant_id")]
-    public long TenantId { get; set; }
-{{~ end ~}}
-{{~ if entity.is_tree ~}}
-    [SugarColumn(ColumnName = "parent_id")]
-    public long ParentId { get; set; }
-
-    [SugarColumn(ColumnName = "ancestors")]
-    public string? Ancestors { get; set; }
-{{~ end ~}}
-{{~ if entity.has_data_permission ~}}
-    [SugarColumn(ColumnName = "dept_id")]
-    public long DeptId { get; set; }
-
-    [SugarColumn(ColumnName = "dept_ancestors")]
-    public string? DeptAncestors { get; set; }
-{{~ end ~}}
 {{~ for field in entity.fields ~}}
-{{~ if !field.is_interface_field ~}}
     /// <summary>
     /// {{ field.description }}
     /// </summary>
-{{~ if field.is_primary_key ~}}
-    [SugarColumn(IsPrimaryKey = true)]
-{{~ end ~}}
-{{~ if field.column_name ~}}
-    [SugarColumn(ColumnName = "{{ field.column_name }}")]
+{{~ if field.sugar_column_args ~}}
+    [SugarColumn({{ field.sugar_column_args }})]
 {{~ end ~}}
 {{~ if field.is_required && !field.is_nullable ~}}
-    public {{ field.data_type }} {{ field.name }} { get; set; } = default!;
+    public {{ field.data_type }} {{ field.name }} { get; set; }{{ if field.default_value }} = {{ field.default_value }};{{ else }} = default!;{{ end }}
 {{~ else if field.is_nullable ~}}
     public {{ field.data_type }}? {{ field.name }} { get; set; }
 {{~ else ~}}
-    public {{ field.data_type }} {{ field.name }} { get; set; }
+    public {{ field.data_type }} {{ field.name }} { get; set; }{{ if field.default_value }} = {{ field.default_value }};{{ end }}
 {{~ end ~}}
 
-{{~ end ~}}
 {{~ end ~}}
 {{~ for relation in entity.one_to_many_relations ~}}
     /// <summary>
@@ -58,6 +36,14 @@ public partial class {{ entity.name }} : {{ entity.base_class_name }}, IBaseEnti
     /// </summary>
     [Navigate(NavigateType.OneToMany, nameof({{ relation.child_entity_name }}.{{ relation.child_foreign_key }}), nameof({{ relation.master_field }}))]
     public List<{{ relation.child_entity_name }}>? {{ relation.child_entity_name }}s { get; set; }
+
+{{~ end ~}}
+{{~ for relation in entity.owned_one_relations ~}}
+    /// <summary>
+    /// {{ relation.target_entity_description }}（一对一组成导航属性）
+    /// </summary>
+    [SugarColumn(IsIgnore = true)]
+    public {{ entity.project_name }}.Domain.Entities.{{ relation.target_module_name }}.{{ relation.target_entity_name }}? {{ relation.relation_name }} { get; set; }
 
 {{~ end ~}}
 }

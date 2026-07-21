@@ -30,7 +30,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="可空" prop="isNullable" width="80">
+      <el-table-column label="数据库可空" prop="isNullable" width="100">
         <template #default="{ row }">
           <el-tag :type="row.isNullable ? 'success' : 'danger'">
             {{ row.isNullable ? '是' : '否' }}
@@ -108,7 +108,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="可空">
+            <el-form-item label="数据库可空">
               <el-switch v-model="form.isNullable" />
             </el-form-item>
           </el-col>
@@ -128,7 +128,7 @@
 
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="必填">
+            <el-form-item label="表单/接口必填">
               <el-switch v-model="form.isRequired" />
             </el-form-item>
           </el-col>
@@ -192,6 +192,13 @@
                 <el-option label="开关 (switch)" value="switch" />
                 <el-option label="单选框 (radio)" value="radio" />
                 <el-option label="复选框 (checkbox)" value="checkbox" />
+                <el-option label="单选按钮组 (radio-group)" value="radio-group" />
+                <el-option label="复选框组 (checkbox-group)" value="checkbox-group" />
+                <el-option label="附件上传 (file)" value="file" />
+                <el-option label="图片上传 (image)" value="image" />
+                <el-option label="富文本 (editor)" value="editor" />
+                <el-option label="关联表选择 (select-table)" value="select-table" />
+                <el-option label="级联选择 (cascader)" value="cascader" />
               </el-select>
             </el-form-item>
           </el-col>

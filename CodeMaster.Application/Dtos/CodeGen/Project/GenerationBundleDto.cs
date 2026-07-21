@@ -7,7 +7,7 @@ namespace CodeMaster.Application.Dtos.CodeGen;
 /// </summary>
 public class GenerationBundleDto
 {
-    public int Version { get; set; } = 1;
+    public int Version { get; set; } = 2;
 
     public DateTime GeneratedAt { get; set; } = DateTime.UtcNow;
 
@@ -20,6 +20,8 @@ public class GenerationBundleDto
     public List<EntityField> Fields { get; set; } = new();
 
     public List<OneToManyRelation> Relations { get; set; } = new();
+
+    public List<EntityRelation> EntityRelations { get; set; } = new();
 
     public List<SysPageTemplate> PageTemplates { get; set; } = new();
 

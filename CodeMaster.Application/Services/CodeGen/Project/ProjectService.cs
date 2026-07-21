@@ -11,7 +11,6 @@ using SqlSugar;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Text.RegularExpressions;
 
 namespace CodeMaster.Application.Services.CodeGen;
@@ -47,11 +46,9 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
     /// </summary>
     public async Task<string> ExportTemplateAsync(string outputPath)
     {
-        // 如果未指定输出路径，使用默认路径
         if (string.IsNullOrWhiteSpace(outputPath))
-        {
-            outputPath = null;
-        }
+            outputPath = GetWritableTemplatesDirectory();
+
         return await _templateExportService.ExportCleanTemplateAsync(outputPath);
     }
 
@@ -180,6 +177,7 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
         var entityIds = entities.Select(e => e.Id).ToList();
         var fields = new List<EntityField>();
         var relations = new List<OneToManyRelation>();
+        var entityRelations = new List<EntityRelation>();
 
         if (entityIds.Count > 0)
         {
@@ -192,6 +190,14 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
                 .Where(r => (entityIds.Contains(r.ModuleEntityId) || entityIds.Contains(r.ChildEntityId)) && r.IsDeleted == false)
                 .OrderBy(r => r.OrderNum)
                 .ToListAsync();
+
+            if (_db.DbMaintenance.IsAnyTable("sys_entity_relation"))
+            {
+                entityRelations = await Repository.GetQueryable<EntityRelation>()
+                    .Where(r => (entityIds.Contains(r.SourceEntityId) || entityIds.Contains(r.TargetEntityId)) && !r.IsDeleted)
+                    .OrderBy(r => r.OrderNum)
+                    .ToListAsync();
+            }
         }
 
         var bundle = new GenerationBundleDto
@@ -201,6 +207,7 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
             Entities = entities,
             Fields = fields,
             Relations = relations,
+            EntityRelations = entityRelations,
             PageTemplates = await Repository.GetQueryable<SysPageTemplate>()
                 .Where(t => t.IsDeleted == false)
                 .OrderBy(t => t.PageType)
@@ -237,7 +244,9 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
 
         var completedAt = input.CompletedAt == default
             ? DateTime.UtcNow
-            : input.CompletedAt.ToLocalTime();
+            : input.CompletedAt.Kind == DateTimeKind.Utc
+                ? input.CompletedAt
+                : input.CompletedAt.ToUniversalTime();
 
         switch (action)
         {
@@ -256,6 +265,8 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
 
             case "generateCode":
             case "generateIncrementalCode":
+            case "generateProjectCode":
+            case "generateProjectIncrementalCode":
                 await MarkGeneratedEntitiesAsync(input, completedAt);
                 return true;
 
@@ -311,6 +322,18 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
         var result = input.EntityIds.Where(id => id > 0).ToHashSet();
         if (input.EntityId.HasValue && input.EntityId.Value > 0)
             result.Add(input.EntityId.Value);
+
+        if (result.Count == 0 &&
+            input.ProjectId.HasValue &&
+            input.ProjectId.Value > 0 &&
+            input.Action is "generateProjectCode" or "generateProjectIncrementalCode")
+        {
+            return (await _db.Queryable<ModuleEntity>()
+                    .Where(e => e.ProjectId == input.ProjectId.Value && e.IsDeleted == false)
+                    .Select(e => e.Id)
+                    .ToListAsync())
+                .ToHashSet();
+        }
 
         if (result.Count == 0)
             return result;
@@ -578,105 +601,18 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
     private string GetTemplateZipPath()
     {
         var configuredPath = _configuration["TemplatesPath"] ?? _configuration["CodeGen:TemplatesPath"];
-        var templatesDir = ResolveTemplatesDirectory(configuredPath);
-
-        if (!Directory.Exists(templatesDir))
-            throw new Exception($"Templates directory not found: {templatesDir}");
-
-        var templateFiles = Directory.GetFiles(templatesDir, "CodeMaster_Template_*.zip")
-            .OrderByDescending(f => File.GetLastWriteTime(f))
-            .ToList();
-
-        if (!templateFiles.Any())
-            throw new Exception($"No template file found in {templatesDir}");
-
-        return templateFiles.First();
-    }
-
-    private static string ResolveTemplatesDirectory(string? configuredPath)
-    {
-        if (!string.IsNullOrWhiteSpace(configuredPath))
-        {
-            var fullPath = Path.GetFullPath(Environment.ExpandEnvironmentVariables(configuredPath));
-            return Directory.Exists(fullPath)
-                ? fullPath
-                : throw new Exception($"Configured TemplatesPath directory not found: {fullPath}");
-        }
-
-        foreach (var startPath in new[] { Directory.GetCurrentDirectory(), AppContext.BaseDirectory })
-        {
-            var templatesDir = FindTemplatesDirectoryUpwards(startPath);
-            if (templatesDir != null)
-                return templatesDir;
-        }
-
-        return Path.Combine(Directory.GetCurrentDirectory(), "Templates");
+        return ProjectTemplateLocator.FindLatestValidTemplateZip(configuredPath);
     }
 
     private string GetWritableTemplatesDirectory()
     {
         var configuredPath = _configuration["TemplatesPath"] ?? _configuration["CodeGen:TemplatesPath"];
-        if (!string.IsNullOrWhiteSpace(configuredPath))
-        {
-            return Path.GetFullPath(Environment.ExpandEnvironmentVariables(configuredPath));
-        }
-
-        foreach (var startPath in new[] { Directory.GetCurrentDirectory(), AppContext.BaseDirectory })
-        {
-            var templatesDir = FindTemplatesDirectoryUpwards(startPath);
-            if (templatesDir != null)
-                return templatesDir;
-        }
-
-        return Path.Combine(Directory.GetCurrentDirectory(), "Templates");
+        return ProjectTemplateLocator.ResolveWritableDirectory(configuredPath);
     }
 
     private static void ValidateProjectTemplateZip(string templatePath)
     {
-        try
-        {
-            using var archive = ZipFile.OpenRead(templatePath);
-            var entries = archive.Entries
-                .Select(e => NormalizeZipEntryName(e.FullName))
-                .Where(e => !string.IsNullOrWhiteSpace(e))
-                .ToList();
-
-            if (!entries.Contains("CodeMaster.sln", StringComparer.OrdinalIgnoreCase))
-                throw new Exception("Template ZIP must contain CodeMaster.sln at the root");
-
-            if (!entries.Any(e => e.StartsWith("CodeMaster.WebApi/", StringComparison.OrdinalIgnoreCase)))
-                throw new Exception("Template ZIP must contain CodeMaster.WebApi");
-
-            if (!entries.Any(e => e.StartsWith("CodeMaster.Vue/", StringComparison.OrdinalIgnoreCase)))
-                throw new Exception("Template ZIP must contain CodeMaster.Vue");
-        }
-        catch (InvalidDataException ex)
-        {
-            throw new Exception("Template file is not a valid ZIP archive", ex);
-        }
-    }
-
-    private static string NormalizeZipEntryName(string entryName)
-    {
-        return entryName.Replace('\\', '/').TrimStart('/');
-    }
-
-    private static string? FindTemplatesDirectoryUpwards(string startPath)
-    {
-        var directory = Directory.Exists(startPath)
-            ? new DirectoryInfo(startPath)
-            : new DirectoryInfo(Path.GetDirectoryName(startPath) ?? startPath);
-
-        while (directory != null)
-        {
-            var candidate = Path.Combine(directory.FullName, "Templates");
-            if (Directory.Exists(candidate))
-                return candidate;
-
-            directory = directory.Parent;
-        }
-
-        return null;
+        ProjectTemplateLocator.ValidateTemplateZip(templatePath);
     }
 
     public async Task<InitializeStepResultDto> Step1_ExtractTemplateAsync(InitializeStepDto input)
@@ -800,6 +736,16 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
             await _initializationService.Step4_UpdatePortConfigAsync(
                 project.ProjectName, projectPath, project.FrontendPort ?? 0,
                 project.BackendPort ?? 0, project.Id.ToString());
+
+            await _initializationService.WriteProjectContextAsync(
+                projectPath,
+                project.ProjectName,
+                project.Id.ToString(),
+                project.DisplayName,
+                project.DatabaseType.ToString(),
+                project.FrontendPort ?? 0,
+                project.BackendPort ?? 0,
+                _configuration["Mcp:ServerBaseUrl"]);
 
             return new InitializeStepResultDto
             {
@@ -1294,15 +1240,25 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
             var output = await process.StandardOutput.ReadToEndAsync();
             await process.WaitForExitAsync();
 
-            // 解析 netstat 输出
+            // 只匹配本机监听端口。不能仅搜索 ":端口"，否则远端连接恰好使用该端口时
+            // 也可能被识别并在停止项目时误杀无关进程。
             var lines = output.Split('\n');
             foreach (var line in lines)
             {
-                if (line.Contains($":{port} ") || line.Contains($":{port}\t"))
+                var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length < 4)
+                    continue;
+
+                var protocol = parts[0];
+                var localEndpoint = parts[1];
+                var isTcpListener = protocol.Equals("TCP", StringComparison.OrdinalIgnoreCase) &&
+                                    parts.Length >= 5 &&
+                                    parts[3].Equals("LISTENING", StringComparison.OrdinalIgnoreCase);
+                var isUdpEndpoint = protocol.Equals("UDP", StringComparison.OrdinalIgnoreCase);
+
+                if ((isTcpListener || isUdpEndpoint) && EndpointMatchesPort(localEndpoint, port))
                 {
-                    // 提取进程ID（最后一列）
-                    var parts = line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                    if (parts.Length >= 5 && int.TryParse(parts[^1], out var pid))
+                    if (int.TryParse(parts[^1], out var pid))
                     {
                         if (!processIds.Contains(pid))
                         {
@@ -1320,6 +1276,11 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
         return processIds;
     }
 
+    private static bool EndpointMatchesPort(string endpoint, int port)
+    {
+        return endpoint.EndsWith($":{port}", StringComparison.OrdinalIgnoreCase);
+    }
+
     public async Task<ProjectStatusDto> GetStatusAsync(ProjectActionDto input)
     {
         try
@@ -1328,13 +1289,23 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
             if (project == null)
                 throw new Exception("Project not found");
 
-            // TODO: 实现状态查询逻辑
-            await Task.CompletedTask;
+            var frontendProcessIds = project.FrontendPort is > 0
+                ? await GetProcessIdsByPortAsync(project.FrontendPort.Value)
+                : [];
+            var backendProcessIds = project.BackendPort is > 0
+                ? await GetProcessIdsByPortAsync(project.BackendPort.Value)
+                : [];
 
             return new ProjectStatusDto
             {
-                FrontendRunning = false,
-                BackendRunning = false
+                FrontendRunning = frontendProcessIds.Count > 0,
+                BackendRunning = backendProcessIds.Count > 0,
+                FrontendPid = frontendProcessIds.FirstOrDefault() is var frontendPid && frontendPid > 0
+                    ? frontendPid
+                    : null,
+                BackendPid = backendProcessIds.FirstOrDefault() is var backendPid && backendPid > 0
+                    ? backendPid
+                    : null
             };
         }
         catch (Exception)
@@ -1363,23 +1334,47 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
                 throw new Exception($"Migrator 项目不存在: {migratorPath}");
 
             var migrationName = $"Auto{DateTime.UtcNow:yyyyMMddHHmmss}";
+            var migrationCreated = false;
 
             // 1. 构建 Migrator 项目
-            outputBuilder.AppendLine($"[1/3] 构建 {project.ProjectName}.Migrator...");
+            outputBuilder.AppendLine($"[1/4] 构建 {project.ProjectName}.Migrator...");
             await RunCommandAsync("dotnet", "build", migratorPath, outputBuilder, TimeSpan.FromMinutes(3));
 
-            // 2. 创建迁移
-            outputBuilder.AppendLine($"[2/3] 创建迁移 {migrationName}...");
-            await RunCommandAsync("dotnet", $"ef migrations add {migrationName} --no-build", migratorPath, outputBuilder, TimeSpan.FromMinutes(2));
+            // 2. 先检查模型是否有变化，避免每次点击都生成空迁移。
+            outputBuilder.AppendLine("[2/4] 检查模型变化...");
+            var pendingChangesExitCode = await RunCommandAsync(
+                "dotnet",
+                "ef migrations has-pending-model-changes --no-build",
+                migratorPath,
+                outputBuilder,
+                TimeSpan.FromMinutes(2),
+                throwOnNonZero: false);
+
+            if (pendingChangesExitCode == 1)
+            {
+                outputBuilder.AppendLine($"[3/4] 创建迁移 {migrationName}...");
+                await RunCommandAsync("dotnet", $"ef migrations add {migrationName} --no-build", migratorPath, outputBuilder, TimeSpan.FromMinutes(2));
+                migrationCreated = true;
+            }
+            else if (pendingChangesExitCode == 0)
+            {
+                outputBuilder.AppendLine("[3/4] 模型没有变化，跳过创建迁移。");
+            }
+            else
+            {
+                throw new Exception($"检查模型变化失败，退出码: {pendingChangesExitCode}");
+            }
 
             // 3. 运行 Migrator 应用迁移
-            outputBuilder.AppendLine($"[3/3] 应用数据库迁移...");
+            outputBuilder.AppendLine("[4/4] 应用数据库迁移并同步种子数据...");
             await RunCommandAsync("dotnet", "run", migratorPath, outputBuilder, TimeSpan.FromMinutes(5));
 
             return new ProjectActionResultDto
             {
                 Success = true,
-                Message = $"数据库迁移成功（{migrationName}）",
+                Message = migrationCreated
+                    ? $"数据库迁移成功（{migrationName}）"
+                    : "数据库已是最新，种子数据同步成功",
                 Output = outputBuilder.ToString()
             };
         }
@@ -1454,7 +1449,13 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
         };
     }
 
-    private async Task RunCommandAsync(string fileName, string arguments, string workingDirectory, global::System.Text.StringBuilder outputBuilder, TimeSpan timeout)
+    private async Task<int> RunCommandAsync(
+        string fileName,
+        string arguments,
+        string workingDirectory,
+        global::System.Text.StringBuilder outputBuilder,
+        TimeSpan timeout,
+        bool throwOnNonZero = true)
     {
         using var cts = new CancellationTokenSource(timeout);
 
@@ -1480,16 +1481,18 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
         {
             if (!string.IsNullOrEmpty(e.Data))
             {
-                outputBuilder.AppendLine(e.Data);
-                Console.WriteLine($"[Migrate Output] {e.Data}");
+                var safeOutput = RedactSensitiveOutput(e.Data);
+                outputBuilder.AppendLine(safeOutput);
+                Console.WriteLine($"[Command Output] {safeOutput}");
             }
         };
         process.ErrorDataReceived += (sender, e) =>
         {
             if (!string.IsNullOrEmpty(e.Data))
             {
-                outputBuilder.AppendLine(e.Data);
-                Console.WriteLine($"[Migrate Error] {e.Data}");
+                var safeOutput = RedactSensitiveOutput(e.Data);
+                outputBuilder.AppendLine(safeOutput);
+                Console.WriteLine($"[Command Error] {safeOutput}");
             }
         };
 
@@ -1498,14 +1501,25 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
 
         await process.WaitForExitAsync(cts.Token);
 
-        if (process.ExitCode != 0)
+        if (throwOnNonZero && process.ExitCode != 0)
         {
             throw new Exception($"{fileName} {arguments} 退出码: {process.ExitCode}");
         }
+
+        return process.ExitCode;
+    }
+
+    private static string RedactSensitiveOutput(string output)
+    {
+        return Regex.Replace(
+            output,
+            @"(?i)(password|pwd)\s*=\s*[^;\r\n]*",
+            "$1=***");
     }
 
     public async Task<ProjectActionResultDto> BuildAsync(ProjectActionDto input)
     {
+        var outputBuilder = new global::System.Text.StringBuilder();
         try
         {
             var project = await Repository.GetByIdAsync(input.ProjectId);
@@ -1513,14 +1527,41 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
                 throw new Exception("Project not found");
 
             var projectPath = GetFullProjectPath(project, null);
+            var solutionPath = Path.Combine(projectPath, $"{project.ProjectName}.sln");
+            var frontendPath = Path.Combine(projectPath, $"{project.ProjectName}.Vue");
 
-            // TODO: 实现项目编译逻辑
-            await Task.CompletedTask;
+            if (!File.Exists(solutionPath))
+                throw new FileNotFoundException("解决方案文件不存在", solutionPath);
+
+            outputBuilder.AppendLine("[1/2] 构建后端解决方案...");
+            await RunCommandAsync(
+                "dotnet",
+                $"build \"{solutionPath}\"",
+                projectPath,
+                outputBuilder,
+                TimeSpan.FromMinutes(5));
+
+            if (Directory.Exists(frontendPath) && File.Exists(Path.Combine(frontendPath, "package.json")))
+            {
+                outputBuilder.AppendLine("[2/2] 构建前端项目...");
+                var npmExecutable = OperatingSystem.IsWindows() ? "npm.cmd" : "npm";
+                await RunCommandAsync(
+                    npmExecutable,
+                    "run build",
+                    frontendPath,
+                    outputBuilder,
+                    TimeSpan.FromMinutes(5));
+            }
+            else
+            {
+                outputBuilder.AppendLine("[2/2] 未发现前端 package.json，跳过前端构建。");
+            }
 
             return new ProjectActionResultDto
             {
                 Success = true,
-                Message = "项目编译成功"
+                Message = "项目前后端编译成功",
+                Output = outputBuilder.ToString()
             };
         }
         catch (Exception ex)
@@ -1528,9 +1569,42 @@ public class ProjectService : CrudApplicationService<Project, ProjectDto, Projec
             return new ProjectActionResultDto
             {
                 Success = false,
-                Message = $"项目编译失败: {ex.Message}"
+                Message = $"项目编译失败: {ex.Message}",
+                Output = BuildDiagnosticFormatter.Summarize(outputBuilder.ToString(), ex.Message)
             };
         }
+    }
+
+    public async Task<ProjectUiEnhancementResultDto> EnhanceUiPageAsync(ProjectUiEnhancementDto input)
+    {
+        var project = await Repository.GetByIdAsync(input.ProjectId);
+        if (project == null)
+            throw new KeyNotFoundException("Project not found");
+
+        var modules = await _db.Queryable<ProjectModule>()
+            .Where(item => item.ProjectId == input.ProjectId)
+            .OrderBy(item => item.OrderNum)
+            .ToListAsync();
+        var entities = await _db.Queryable<ModuleEntity>()
+            .Where(item => item.ProjectId == input.ProjectId)
+            .OrderBy(item => item.OrderNum)
+            .ToListAsync();
+        var projectPath = GetFullProjectPath(project, null);
+
+        if (string.Equals(input.TargetKind, "EntityPage", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!input.EntityId.HasValue)
+                throw new ArgumentException("EntityPage design requires EntityId.");
+
+            var entity = entities.FirstOrDefault(item => item.Id == input.EntityId.Value)
+                ?? throw new KeyNotFoundException("Entity not found in project");
+            var module = modules.FirstOrDefault(item => item.Id == entity.ModuleId)
+                ?? throw new KeyNotFoundException("Entity module not found in project");
+
+            return await ProjectUiDesignService.ApplyEntityPageAsync(project, module, entity, input, projectPath);
+        }
+
+        return await ProjectUiPageRenderer.ApplyAsync(project, modules, entities, input, projectPath);
     }
 
     #endregion

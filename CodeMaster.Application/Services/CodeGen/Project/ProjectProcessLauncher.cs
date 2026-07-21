@@ -19,13 +19,28 @@ public static class ProjectProcessLauncher
 
     public static Task<ProjectActionResultDto> StartBackendAsync(string projectName, string projectPath, int? port)
     {
+        var args = new List<string> { "run" };
+        if (port is > 0)
+        {
+            // Do not rely on launchSettings.json here. MCP/UI starts the child process
+            // outside Visual Studio, so an explicit URL prevents it from silently
+            // falling back to ASP.NET Core's default port (usually 5000).
+            args.Add("--no-launch-profile");
+            args.Add("--");
+            args.Add("--urls");
+            args.Add($"http://localhost:{port.Value}");
+            args.Add("--environment");
+            args.Add("Development");
+        }
+
         return StartServiceAsync(
             serviceName: "后端服务",
             workingDirectory: Path.Combine(projectPath, $"{projectName}.WebApi"),
             command: "dotnet",
-            args: new[] { "run" },
+            args: args,
             port: port,
-            readyTimeout: TimeSpan.FromSeconds(90));
+            readyTimeout: TimeSpan.FromSeconds(90),
+            unsetEnvironmentVariables: new[] { "ConnectionStrings__DefaultConnection", "DbProvider" });
     }
 
     public static async Task<ProjectActionResultDto> StartServiceAsync(
@@ -34,7 +49,8 @@ public static class ProjectProcessLauncher
         string command,
         IReadOnlyList<string> args,
         int? port,
-        TimeSpan readyTimeout)
+        TimeSpan readyTimeout,
+        IReadOnlyList<string>? unsetEnvironmentVariables = null)
     {
         if (!Directory.Exists(workingDirectory))
         {
@@ -63,7 +79,7 @@ public static class ProjectProcessLauncher
             await WaitForPortReleaseAsync(port!.Value, TimeSpan.FromSeconds(5));
         }
 
-        var process = StartVisibleTerminal(command, args, workingDirectory);
+        var process = StartVisibleTerminal(command, args, workingDirectory, unsetEnvironmentVariables);
         if (!port.HasValue || port.Value <= 0)
         {
             return BuildResult(serviceName, restartedFromExistingProcess, url, process?.Id, workingDirectory);
@@ -175,14 +191,21 @@ public static class ProjectProcessLauncher
         return OperatingSystem.IsWindows() ? "npm.cmd" : "npm";
     }
 
-    private static Process? StartVisibleTerminal(string command, IReadOnlyList<string> args, string workingDirectory)
+    private static Process? StartVisibleTerminal(
+        string command,
+        IReadOnlyList<string> args,
+        string workingDirectory,
+        IReadOnlyList<string>? unsetEnvironmentVariables)
     {
         if (OperatingSystem.IsWindows())
         {
+            var unsetPrefix = unsetEnvironmentVariables is { Count: > 0 }
+                ? string.Join(" && ", unsetEnvironmentVariables.Select(name => $"set \"{name}=\"")) + " && "
+                : string.Empty;
             return Process.Start(new ProcessStartInfo
             {
                 FileName = "cmd.exe",
-                Arguments = $"/k {BuildCommandLine(command, args)}",
+                Arguments = $"/k {unsetPrefix}{BuildCommandLine(command, args)}",
                 WorkingDirectory = workingDirectory,
                 UseShellExecute = true,
                 CreateNoWindow = false
@@ -198,6 +221,11 @@ public static class ProjectProcessLauncher
         };
         foreach (var arg in args)
             startInfo.ArgumentList.Add(arg);
+        if (unsetEnvironmentVariables != null)
+        {
+            foreach (var name in unsetEnvironmentVariables)
+                startInfo.Environment.Remove(name);
+        }
 
         return Process.Start(startInfo);
     }

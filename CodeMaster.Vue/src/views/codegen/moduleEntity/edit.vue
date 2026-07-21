@@ -131,10 +131,11 @@
             <el-tag v-if="row.showInSearch" size="small" type="info" class="mx-1">搜索</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="标记" width="160">
+        <el-table-column label="标记" width="220">
           <template #default="{ row }">
             <el-tag v-if="row.isPrimaryKey" size="small" type="danger">主键</el-tag>
-            <el-tag v-if="row.isRequired" size="small" type="warning">必填</el-tag>
+            <el-tag v-if="row.isRequired" size="small" type="warning">表单必填</el-tag>
+            <el-tag v-if="row.isNullable" size="small" type="success">数据库可空</el-tag>
             <el-tag v-if="row.isSystemField" size="small" type="info">系统</el-tag>
             <el-tag v-if="row.isMultiple" size="small">多选</el-tag>
           </template>
@@ -152,6 +153,54 @@
           </template>
         </el-table-column>
       </el-table>
+    </el-card>
+
+    <!-- 一对一组成关系 -->
+    <el-card shadow="never" style="margin-top: 20px">
+      <template #header>
+        <div class="card-header">
+          <div>
+            <span>一对一组成关系</span>
+            <span class="section-hint">组成实体随当前实体一起查询和保存，原有一对多关系不受影响</span>
+          </div>
+          <el-button type="primary" size="small" @click="handleAddEntityRelation">新增关系</el-button>
+        </div>
+      </template>
+
+      <el-table :data="displayEntityRelations" border style="width: 100%" size="small">
+        <el-table-column prop="relationName" label="属性名称" min-width="130" />
+        <el-table-column label="组成实体" min-width="180">
+          <template #default="{ row }">
+            {{ row.targetEntityName || getEntityName(row.targetEntityId) }}
+            <span v-if="row.targetEntityDescription" class="muted-text">（{{ row.targetEntityDescription }}）</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="字段对应" min-width="210">
+          <template #default="{ row }">{{ row.sourceField }} → {{ row.targetField }}</template>
+        </el-table-column>
+        <el-table-column label="必填" width="80" align="center">
+          <template #default="{ row }">
+            <el-tag :type="row.isRequired ? 'success' : 'info'" size="small">{{ row.isRequired ? '是' : '否' }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="空值处理" width="110">
+          <template #default="{ row }">{{ getDeleteBehaviorLabel(row.deleteBehavior) }}</template>
+        </el-table-column>
+        <el-table-column prop="orderNum" label="排序" width="80" />
+        <el-table-column label="状态" width="80">
+          <template #default="{ row }">
+            <el-tag v-if="row._status === 'new'" size="small" type="success">新增</el-tag>
+            <el-tag v-else-if="row._status === 'modified'" size="small" type="warning">修改</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="120" fixed="right">
+          <template #default="{ row, $index }">
+            <el-button link type="primary" size="small" @click="handleEditEntityRelation(row, $index)">编辑</el-button>
+            <el-button link type="danger" size="small" @click="handleDeleteEntityRelation(row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-empty v-if="displayEntityRelations.length === 0" description="暂无一对一组成关系" :image-size="60" />
     </el-card>
 
     <!-- 一对多关系 -->
@@ -255,8 +304,8 @@
           <el-col :span="24">
             <el-form-item label="字段选项">
               <el-checkbox v-model="fieldForm.isPrimaryKey">主键</el-checkbox>
-              <el-checkbox v-model="fieldForm.isRequired">必填</el-checkbox>
-              <el-checkbox v-model="fieldForm.isNullable">可空</el-checkbox>
+              <el-checkbox v-model="fieldForm.isRequired">表单/接口必填</el-checkbox>
+              <el-checkbox v-model="fieldForm.isNullable">数据库可空</el-checkbox>
               <el-checkbox v-model="fieldForm.isIgnore">忽略映射</el-checkbox>
             </el-form-item>
           </el-col>
@@ -329,6 +378,39 @@
             <el-col :span="8">
               <el-form-item label="是否多选">
                 <el-switch v-model="fieldForm.isMultiple" :disabled="fieldForm.formControlType === 'checkbox-group'" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row v-if="fieldForm.formControlType === 'select-table' && fieldForm.relatedEntityName">
+            <el-col :span="24">
+              <el-form-item label="选择结果映射">
+                <div class="mapping-editor">
+                  <div class="mapping-toolbar">
+                    <span class="form-help">选择一条数据后，把关联实体字段复制到当前实体的普通字段中。</span>
+                    <el-button size="small" type="primary" plain @click="handleAddResultMapping">新增映射</el-button>
+                  </div>
+                  <el-table :data="resultMappingRows" border size="small" empty-text="未配置时保持原 select-table 行为">
+                    <el-table-column label="来源字段" min-width="180">
+                      <template #default="{ row }">
+                        <el-select v-model="row.sourceField" placeholder="关联实体字段" style="width: 100%">
+                          <el-option v-for="f in relatedEntityFields" :key="f.name" :label="`${f.name}（${f.description}）`" :value="f.name" />
+                        </el-select>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="写入当前字段" min-width="180">
+                      <template #default="{ row }">
+                        <el-select v-model="row.targetField" placeholder="当前实体字段" style="width: 100%">
+                          <el-option v-for="f in mappingTargetFieldOptions" :key="f.name" :label="`${f.name}（${f.description}）`" :value="f.name" />
+                        </el-select>
+                      </template>
+                    </el-table-column>
+                    <el-table-column label="操作" width="80" align="center">
+                      <template #default="{ $index }">
+                        <el-button link type="danger" @click="resultMappingRows.splice($index, 1)">删除</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </div>
               </el-form-item>
             </el-col>
           </el-row>
@@ -481,6 +563,59 @@
         <el-button type="primary" @click="handleRelationSubmit">确定</el-button>
       </template>
     </el-dialog>
+
+    <!-- 一对一组成关系弹框 -->
+    <el-dialog v-model="entityRelationDialogVisible" :title="entityRelationDialogTitle" width="680px">
+      <el-form ref="entityRelationFormRef" :model="entityRelationForm" :rules="entityRelationRules" label-width="120px">
+        <el-alert
+          title="目标实体字段将沿用它自己的列表、表单和详情显示配置；保存时作为当前实体的组成部分一起处理。"
+          type="info"
+          :closable="false"
+          show-icon
+          style="margin-bottom: 18px"
+        />
+        <el-form-item label="属性名称" prop="relationName">
+          <el-input v-model="entityRelationForm.relationName" placeholder="如 Detail、ShippingAddress" />
+        </el-form-item>
+        <el-form-item label="当前实体字段" prop="sourceField">
+          <el-select v-model="entityRelationForm.sourceField" placeholder="选择当前实体字段" style="width: 100%">
+            <el-option v-for="f in entitySourceFieldOptions" :key="f.name" :label="`${f.name}（${f.description}）`" :value="f.name" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="组成实体" prop="targetEntityId">
+          <el-select v-model="entityRelationForm.targetEntityId" placeholder="选择组成实体" style="width: 100%" @change="handleEntityRelationTargetChange">
+            <el-option v-for="e in entityRelationTargetOptions" :key="e.id" :label="`${e.name}（${e.description}）`" :value="e.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="组成实体外键" prop="targetField">
+          <el-select v-model="entityRelationForm.targetField" placeholder="选择唯一外键字段" style="width: 100%">
+            <el-option
+              v-for="f in entityRelationTargetFieldOptions"
+              :key="f.name"
+              :label="`${f.name}（${f.description}）${f.isPrimaryKey ? ' 主键' : (f.isUnique ? ' 唯一' : '')}`"
+              :value="f.name"
+            />
+          </el-select>
+          <div class="form-help">外键必须与当前实体字段类型一致；建议在生成项目中为该外键建立唯一索引。</div>
+        </el-form-item>
+        <el-form-item label="关系选项">
+          <el-checkbox v-model="entityRelationForm.isRequired">必须填写组成数据</el-checkbox>
+        </el-form-item>
+        <el-form-item v-if="!entityRelationForm.isRequired" label="提交空值时" prop="deleteBehavior">
+          <el-radio-group v-model="entityRelationForm.deleteBehavior">
+            <el-radio :value="1">删除已有组成数据</el-radio>
+            <el-radio :value="2">保留已有组成数据</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="排序">
+          <el-input-number v-model="entityRelationForm.orderNum" :min="0" style="width: 100%" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="entityRelationDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleEntityRelationSubmit">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -498,6 +633,7 @@ const formRef = ref(null)
 const fieldTableRef = ref(null)
 const fieldFormRef = ref(null)
 const relationFormRef = ref(null)
+const entityRelationFormRef = ref(null)
 const loading = ref(false)
 const submitLoading = ref(false)
 const projectList = ref([])
@@ -506,6 +642,8 @@ const dictTypeList = ref([])
 const allEntities = ref([])
 const referenceEntities = ref([])
 const childFieldOptions = ref([])
+const entityRelationTargetFieldOptions = ref([])
+const resultMappingRows = ref([])
 
 const form = reactive({
   id: null, projectId: null, moduleId: null,
@@ -586,6 +724,9 @@ const displayFields = computed(() => {
 
 // 主表字段选项（用于一对多关系选择）
 const masterFieldOptions = computed(() => displayFields.value)
+const mappingTargetFieldOptions = computed(() =>
+  displayFields.value.filter(field => !field._deleted && field.fieldCategory !== 'Computed')
+)
 
 // ===== 一对多关系变更追踪 =====
 function createFieldClientKey() {
@@ -835,6 +976,32 @@ const displayRelations = computed(() => {
   return rels
 })
 
+// ===== 一对一组成关系变更追踪 =====
+const originalEntityRelations = ref([])
+const newEntityRelations = ref([])
+const updatedEntityRelations = ref([])
+const deletedEntityRelationIds = ref([])
+
+const displayEntityRelations = computed(() => {
+  const relations = []
+  originalEntityRelations.value.forEach(relation => {
+    if (!deletedEntityRelationIds.value.includes(relation.id)) {
+      const updated = updatedEntityRelations.value.find(item => item.id === relation.id)
+      relations.push(updated ? { ...relation, ...updated, _status: 'modified' } : { ...relation })
+    }
+  })
+  newEntityRelations.value.forEach(relation => relations.push({ ...relation, _status: 'new' }))
+  return relations.sort((a, b) => (a.orderNum || 0) - (b.orderNum || 0))
+})
+
+const entitySourceFieldOptions = computed(() =>
+  displayFields.value.filter(field => !field._deleted && !field.isIgnore && field.isPrimaryKey)
+)
+
+const entityRelationTargetOptions = computed(() =>
+  allEntities.value.filter(entity => entity.id !== form.id && (!form.projectId || entity.projectId === form.projectId))
+)
+
 // ===== 字段弹框 =====
 const fieldDialogVisible = ref(false)
 const fieldDialogTitle = ref('新增字段')
@@ -849,7 +1016,7 @@ const defaultFieldForm = {
   isNullable: false, isIgnore: false, isSystemField: false, isMultiple: false,
   showInList: true, showInDetail: true, showInAddForm: true, showInEditForm: true, showInSearch: false,
   selectDataSource: null, selectOptions: null,
-  relatedEntityName: null, relatedEntityIdField: null, relatedEntityDisplayFields: null,
+  relatedEntityName: null, relatedEntityIdField: null, relatedEntityDisplayFields: null, resultMappings: null,
   listWidth: null, orderNum: 0,
   fieldCategory: 'Normal', formula: null, aggregateType: null,
   aggregateChildEntityId: null, aggregateChildFieldName: null, aggregateSeparator: null,
@@ -881,13 +1048,43 @@ const relationRules = {
   childForeignKey: [{ required: true, message: '请选择子表外键', trigger: 'change' }]
 }
 
+const entityRelationDialogVisible = ref(false)
+const entityRelationDialogTitle = ref('新增一对一组成关系')
+const editingEntityRelationIndex = ref(-1)
+const editingEntityRelationId = ref(null)
+const editingEntityRelationIsNew = ref(false)
+const editingEntityRelationClientKey = ref('')
+const defaultEntityRelationForm = {
+  targetEntityId: null,
+  relationName: '',
+  sourceField: '',
+  targetField: '',
+  cardinality: 1,
+  ownership: 1,
+  isRequired: false,
+  deleteBehavior: 1,
+  orderNum: 0
+}
+const entityRelationForm = reactive({ ...defaultEntityRelationForm })
+const entityRelationRules = {
+  relationName: [
+    { required: true, message: '请输入属性名称', trigger: 'blur' },
+    { pattern: /^[A-Za-z][A-Za-z0-9_]*$/, message: '属性名称必须是合法的 C# / JavaScript 标识符', trigger: 'blur' }
+  ],
+  sourceField: [{ required: true, message: '请选择当前实体字段', trigger: 'change' }],
+  targetEntityId: [{ required: true, message: '请选择组成实体', trigger: 'change' }],
+  targetField: [{ required: true, message: '请选择组成实体唯一外键', trigger: 'change' }],
+  deleteBehavior: [{ required: true, message: '请选择空值处理方式', trigger: 'change' }]
+}
+
 // ===== 系统字段定义 =====
 const systemFieldDefs = {
   hasPrimaryKey: [
     { name: 'Id', description: '主键', dataType: 'long', isPrimaryKey: true, isRequired: true, isSystemField: true, showInList: false, showInAddForm: false, showInEditForm: false, showInDetail: false, showInSearch: false }
   ],
   isTree: [
-    { name: 'ParentId', description: '父级ID', dataType: 'long?', isNullable: true, isSystemField: true, showInList: false, showInAddForm: true, showInEditForm: true, showInDetail: false, showInSearch: false }
+    { name: 'ParentId', description: '父级ID', dataType: 'long?', isNullable: true, isSystemField: true, showInList: false, showInAddForm: true, showInEditForm: true, showInDetail: false, showInSearch: false },
+    { name: 'Ancestors', description: '祖级列表', dataType: 'string?', isNullable: true, isSystemField: true, showInList: false, showInAddForm: false, showInEditForm: false, showInDetail: false, showInSearch: false }
   ],
   hasTenant: [
     { name: 'TenantId', description: '租户ID', dataType: 'long', isRequired: true, isSystemField: true, showInList: false, showInAddForm: false, showInEditForm: false, showInDetail: false, showInSearch: false }
@@ -974,8 +1171,21 @@ watch(() => form.hasDataPermission, (val, old) => { if (old === undefined) retur
 watch(() => form.hasAudit, (val, old) => { if (old === undefined) return; val ? addSystemFields('hasAudit') : removeSystemFields('hasAudit') })
 watch(() => form.hasSoftDelete, (val, old) => { if (old === undefined) return; val ? addSystemFields('hasSoftDelete') : removeSystemFields('hasSoftDelete') })
 
+// 能力组合约束：无主键只能作为只读查询模型；树形实体必须有主键。
+watch(() => form.hasPrimaryKey, (val) => {
+  if (!val) {
+    form.isTree = false
+    form.isReadOnly = true
+  }
+})
+watch(() => form.isTree, (val) => { if (val) form.hasPrimaryKey = true })
+watch(() => form.isReadOnly, (val) => { if (!val && !form.hasPrimaryKey) form.hasPrimaryKey = true })
+
 // checkbox-group 强制多选
-watch(() => fieldForm.formControlType, (val) => { if (val === 'checkbox-group') fieldForm.isMultiple = true })
+watch(() => fieldForm.formControlType, (val) => {
+  if (val === 'checkbox-group') fieldForm.isMultiple = true
+  else if (val === 'radio-group') fieldForm.isMultiple = false
+})
 
 // select-table / cascader 默认不显示字段本身，只显示关联表的显示字段
 watch(() => fieldForm.formControlType, (val) => {
@@ -989,6 +1199,55 @@ watch(() => fieldForm.formControlType, (val) => {
 
 // 数据源切到字典时加载字典类型
 watch(() => fieldForm.selectDataSource, (val) => { if (val === 'dict') loadDictTypes() })
+
+watch(() => fieldForm.fieldCategory, (val) => {
+  if (val === 'Computed') {
+    fieldForm.aggregateType = null
+    fieldForm.aggregateChildEntityId = null
+    fieldForm.aggregateChildFieldName = null
+    fieldForm.aggregateSeparator = null
+  } else if (val === 'Aggregate') {
+    fieldForm.formula = null
+    fieldForm.aggregateType ||= 'Sum'
+  } else {
+    fieldForm.formula = null
+    fieldForm.aggregateType = null
+    fieldForm.aggregateChildEntityId = null
+    fieldForm.aggregateChildFieldName = null
+    fieldForm.aggregateSeparator = null
+  }
+})
+
+function validateCalculatedFieldForm() {
+  const dataType = String(fieldForm.dataType || '').replace(/\?$/, '').toLowerCase()
+  const numericTypes = ['byte', 'short', 'int', 'long', 'float', 'double', 'decimal']
+  if (fieldForm.fieldCategory === 'Computed') {
+    if (!numericTypes.includes(dataType)) {
+      ElMessage.warning('计算字段必须使用数值类型')
+      return false
+    }
+    if (!fieldForm.formula || !/\[[A-Za-z_]\w*\]/.test(fieldForm.formula)) {
+      ElMessage.warning('计算公式必须使用 [字段名] 引用至少一个字段')
+      return false
+    }
+  }
+  if (fieldForm.fieldCategory === 'Aggregate') {
+    if (!fieldForm.aggregateType || !fieldForm.aggregateChildEntityId || !fieldForm.aggregateChildFieldName) {
+      ElMessage.warning('统计字段必须选择统计类型、统计子表和子表字段')
+      return false
+    }
+    if (fieldForm.aggregateType === 'Concat') {
+      if (!['string', 'text'].includes(dataType)) {
+        ElMessage.warning('字符串拼接统计字段必须使用 string 或 text 类型')
+        return false
+      }
+    } else if (!numericTypes.includes(dataType)) {
+      ElMessage.warning('求和或平均值统计字段必须使用数值类型')
+      return false
+    }
+  }
+  return true
+}
 
 // ===== 生命周期 =====
 onMounted(async () => {
@@ -1072,6 +1331,10 @@ async function loadData() {
     deletedFieldIds.value = []
     fieldOrderDirty.value = false
     originalRelations.value = data.oneToManyRelations || []
+    originalEntityRelations.value = data.entityRelations || []
+    newEntityRelations.value = []
+    updatedEntityRelations.value = []
+    deletedEntityRelationIds.value = []
   } catch (e) {
     ElMessage.error('加载数据失败')
     router.back()
@@ -1085,6 +1348,7 @@ function handleAddField() {
   editingFieldId.value = null
   editingFieldIsNew.value = true
   Object.assign(fieldForm, { ...defaultFieldForm })
+  resultMappingRows.value = []
   fieldDialogVisible.value = true
 }
 
@@ -1095,6 +1359,7 @@ function handleEditField(row, index) {
   editingFieldIsNew.value = row._status === 'new'
   editingFieldOriginalName.value = row.name || ''
   Object.assign(fieldForm, row)
+  resultMappingRows.value = parseResultMappings(fieldForm.resultMappings)
   // 关联表：加载关联实体字段列表（保留已有配置）
   if (['select-table', 'cascader'].includes(fieldForm.formControlType) && fieldForm.relatedEntityName) {
     handleRelatedEntityChange(fieldForm.relatedEntityName, true)
@@ -1115,6 +1380,11 @@ function handleDeleteField(row) {
 async function handleFieldSubmit() {
   try {
     await fieldFormRef.value.validate()
+    if (!validateCalculatedFieldForm()) return
+    if (!validateResultMappings()) return
+    fieldForm.resultMappings = resultMappingRows.value.length > 0
+      ? JSON.stringify(resultMappingRows.value)
+      : null
     const data = { ...fieldForm }
     delete data._status
     delete data._deleted
@@ -1161,10 +1431,64 @@ async function handleFieldSubmit() {
 
 function handleFieldDialogClose() {
   Object.assign(fieldForm, { ...defaultFieldForm })
+  resultMappingRows.value = []
   fieldFormRef.value?.clearValidate()
 }
 
 const relatedEntityFields = ref([])
+
+function parseResultMappings(value) {
+  try {
+    const rows = JSON.parse(value || '[]')
+    return Array.isArray(rows) ? rows.map(row => ({ ...row })) : []
+  } catch {
+    return []
+  }
+}
+
+function handleAddResultMapping() {
+  resultMappingRows.value.push({ sourceField: '', targetField: '' })
+}
+
+function validateResultMappings() {
+  if (resultMappingRows.value.length === 0) return true
+  if (fieldForm.formControlType !== 'select-table') {
+    ElMessage.error('只有关联表选择控件可以配置选择结果映射')
+    return false
+  }
+  if (fieldForm.isMultiple) {
+    ElMessage.error('多选控件暂不支持把一条记录映射到普通字段')
+    return false
+  }
+
+  const sourceNames = new Set(relatedEntityFields.value.map(field => field.name))
+  const targetFields = new Map(mappingTargetFieldOptions.value.map(field => [field.name, field]))
+  const usedTargets = new Set()
+  for (const mapping of resultMappingRows.value) {
+    if (!mapping.sourceField || !sourceNames.has(mapping.sourceField)) {
+      ElMessage.error('选择结果映射中存在无效的来源字段')
+      return false
+    }
+    if (!mapping.targetField || !targetFields.has(mapping.targetField)) {
+      ElMessage.error('选择结果映射中存在无效的当前实体字段')
+      return false
+    }
+    if (usedTargets.has(mapping.targetField)) {
+      ElMessage.error(`字段「${mapping.targetField}」被重复映射`)
+      return false
+    }
+    usedTargets.add(mapping.targetField)
+
+    const source = relatedEntityFields.value.find(field => field.name === mapping.sourceField)
+    const target = targetFields.get(mapping.targetField)
+    const normalizeType = value => String(value || '').replace(/\?$/, '').toLowerCase()
+    if (source && target && normalizeType(source.dataType) !== normalizeType(target.dataType)) {
+      ElMessage.error(`映射字段类型不一致：${source.dataType} 与 ${target.dataType}`)
+      return false
+    }
+  }
+  return true
+}
 
 // 显示字段 JSON 数组 ↔ 多选数组
 const displayFieldsArray = computed({
@@ -1178,6 +1502,8 @@ async function handleRelatedEntityChange(name, keepExisting = false) {
     fieldForm.relatedEntityIdField = null
     fieldForm.relatedEntityDisplayFields = null
     fieldForm.selectOptions = null
+    fieldForm.resultMappings = null
+    resultMappingRows.value = []
   }
   relatedEntityFields.value = []
   if (!name) return
@@ -1271,6 +1597,135 @@ async function handleRelationSubmit() {
   } catch (e) { if (e !== false) console.error(e) }
 }
 
+function getEntityName(entityId) {
+  return allEntities.value.find(entity => entity.id === entityId)?.name || ''
+}
+
+function getDeleteBehaviorLabel(value) {
+  return Number(value) === 2 ? '保留' : Number(value) === 3 ? '阻止' : '删除'
+}
+
+function getNextEntityRelationOrderNum() {
+  const values = displayEntityRelations.value.map(item => Number(item.orderNum || 0))
+  return values.length > 0 ? Math.max(...values) + 10 : 10
+}
+
+function handleAddEntityRelation() {
+  entityRelationDialogTitle.value = '新增一对一组成关系'
+  editingEntityRelationIndex.value = -1
+  editingEntityRelationId.value = null
+  editingEntityRelationIsNew.value = true
+  editingEntityRelationClientKey.value = ''
+  Object.assign(entityRelationForm, { ...defaultEntityRelationForm, orderNum: getNextEntityRelationOrderNum() })
+  entityRelationTargetFieldOptions.value = []
+  entityRelationDialogVisible.value = true
+}
+
+async function handleEditEntityRelation(row, index) {
+  entityRelationDialogTitle.value = '编辑一对一组成关系'
+  editingEntityRelationIndex.value = index
+  editingEntityRelationId.value = row.id || null
+  editingEntityRelationIsNew.value = row._status === 'new'
+  editingEntityRelationClientKey.value = row._clientKey || ''
+  Object.assign(entityRelationForm, { ...defaultEntityRelationForm, ...row })
+  await loadEntityRelationTargetFields(row.targetEntityId)
+  entityRelationDialogVisible.value = true
+}
+
+function handleDeleteEntityRelation(row) {
+  if (row._status === 'new') {
+    const index = newEntityRelations.value.findIndex(item => item._clientKey === row._clientKey)
+    if (index >= 0) newEntityRelations.value.splice(index, 1)
+    return
+  }
+
+  if (row.id && !deletedEntityRelationIds.value.includes(row.id)) {
+    deletedEntityRelationIds.value.push(row.id)
+    updatedEntityRelations.value = updatedEntityRelations.value.filter(item => item.id !== row.id)
+  }
+}
+
+async function handleEntityRelationTargetChange(entityId) {
+  entityRelationForm.targetField = ''
+  const target = allEntities.value.find(entity => entity.id === entityId)
+  if (target && !entityRelationForm.relationName) {
+    entityRelationForm.relationName = target.name
+  }
+  await loadEntityRelationTargetFields(entityId)
+}
+
+async function loadEntityRelationTargetFields(entityId) {
+  entityRelationTargetFieldOptions.value = []
+  if (!entityId) return
+  try {
+    const target = await getById(entityId)
+    entityRelationTargetFieldOptions.value = (target.fields || []).filter(field => !field.isIgnore)
+  } catch (error) {
+    console.error('加载组成实体字段失败:', error)
+  }
+}
+
+function validateEntityRelationCompatibility() {
+  const source = entitySourceFieldOptions.value.find(field => field.name === entityRelationForm.sourceField)
+  const target = entityRelationTargetFieldOptions.value.find(field => field.name === entityRelationForm.targetField)
+  if (!source || !target) {
+    ElMessage.error('请选择有效的对应字段')
+    return false
+  }
+
+  const normalizeType = value => String(value || '').replace(/\?$/, '').toLowerCase()
+  if (normalizeType(source.dataType) !== normalizeType(target.dataType)) {
+    ElMessage.error(`字段类型不一致：${source.dataType} 与 ${target.dataType}`)
+    return false
+  }
+
+  const duplicate = displayEntityRelations.value.some(item =>
+    item.id !== editingEntityRelationId.value &&
+    (!editingEntityRelationClientKey.value || item._clientKey !== editingEntityRelationClientKey.value) &&
+    item.targetEntityId === entityRelationForm.targetEntityId &&
+    item.targetField === entityRelationForm.targetField
+  )
+  if (duplicate) {
+    ElMessage.error('该组成实体外键已被其他一对一关系使用')
+    return false
+  }
+  return true
+}
+
+async function handleEntityRelationSubmit() {
+  try {
+    await entityRelationFormRef.value.validate()
+    if (!validateEntityRelationCompatibility()) return
+
+    const target = allEntities.value.find(entity => entity.id === entityRelationForm.targetEntityId)
+    const data = {
+      ...entityRelationForm,
+      targetEntityName: target?.name || '',
+      targetEntityDescription: target?.description || '',
+      cardinality: 1,
+      ownership: 1,
+      deleteBehavior: entityRelationForm.isRequired ? 1 : entityRelationForm.deleteBehavior
+    }
+    delete data._status
+
+    if (editingEntityRelationIsNew.value && editingEntityRelationIndex.value >= 0) {
+      const index = newEntityRelations.value.findIndex(item => item._clientKey === editingEntityRelationClientKey.value)
+      if (index >= 0) newEntityRelations.value[index] = { ...data, _clientKey: editingEntityRelationClientKey.value }
+    } else if (editingEntityRelationId.value) {
+      const relation = { ...data, id: editingEntityRelationId.value }
+      const index = updatedEntityRelations.value.findIndex(item => item.id === editingEntityRelationId.value)
+      if (index >= 0) updatedEntityRelations.value[index] = relation
+      else updatedEntityRelations.value.push(relation)
+    } else {
+      newEntityRelations.value.push({ ...data, _clientKey: `relation_${Date.now()}` })
+    }
+
+    entityRelationDialogVisible.value = false
+  } catch (error) {
+    if (error !== false) console.error(error)
+  }
+}
+
 // ===== 提交 =====
 async function handleSubmit() {
   try {
@@ -1288,7 +1743,10 @@ async function handleSubmit() {
       deletedFieldIds: deletedFieldIds.value,
       newRelations: newRelations.value.map(r => { const { _status, ...rest } = r; return rest }),
       updatedRelations: updatedRelations.value.map(r => { const { _status, ...rest } = r; return rest }),
-      deletedRelationIds: deletedRelationIds.value
+      deletedRelationIds: deletedRelationIds.value,
+      newEntityRelations: newEntityRelations.value.map(r => { const { _status, _clientKey, targetEntityName, targetEntityDescription, ...rest } = r; return rest }),
+      updatedEntityRelations: updatedEntityRelations.value.map(r => { const { _status, targetEntityName, targetEntityDescription, ...rest } = r; return rest }),
+      deletedEntityRelationIds: deletedEntityRelationIds.value
     }
 
     await update(form.id, submitData)
@@ -1310,6 +1768,29 @@ function handleBack() { router.back() }
 }
 .mx-1 {
   margin: 0 2px;
+}
+.section-hint {
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+  margin-left: 12px;
+}
+.muted-text,
+.form-help {
+  color: var(--el-text-color-secondary);
+}
+.mapping-editor {
+  width: 100%;
+}
+.mapping-toolbar {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.form-help {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 4px;
 }
 .field-drag-handle {
   color: #8a96a8;

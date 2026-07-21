@@ -38,7 +38,7 @@ var connectionString = configuration.GetConnectionString("DefaultConnection")
 
 var dbProvider = configuration["DbProvider"] ?? "SqlServer";
 Console.WriteLine($"数据库提供程序: {dbProvider}");
-Console.WriteLine($"连接字符串: {connectionString}\n");
+Console.WriteLine($"连接字符串: {MaskConnectionString(connectionString)}\n");
 
 #if DB_MYSQL
 await EnsureMySqlDatabaseExistsAsync(connectionString);
@@ -105,6 +105,14 @@ catch (Exception ex)
 }
 
 return 0;
+
+static string MaskConnectionString(string connectionString)
+{
+    return System.Text.RegularExpressions.Regex.Replace(
+        connectionString,
+        @"(?i)(password|pwd)\s*=\s*[^;\r\n]*",
+        "$1=***");
+}
 
 #if DB_MYSQL
 static async Task EnsureMySqlDatabaseExistsAsync(string connectionString)

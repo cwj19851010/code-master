@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using CodeMaster.Application.Services.CodeGen.Marker;
+using CodeMaster.Application.Services.CodeGen.Relations;
 using CodeMaster.Application.ScriptBuilder;
 using CodeMaster.Domain.Entities.CodeGen;
 using SqlSugar;
@@ -39,6 +40,10 @@ public class TemplateCodeGenerator
         if (_db.DbMaintenance.IsAnyTable("sys_one_to_many_relation"))
             relations = await _db.Queryable<OneToManyRelation>()
                 .Where(r => r.ModuleEntityId == entityId).OrderBy(r => r.OrderNum).ToListAsync();
+        var relationGraph = await new EntityRelationGraphBuilder(_db).BuildForProjectAsync(entity.ProjectId);
+        var ownedOneRelations = relationGraph.GetOwnedOutgoing(entityId)
+            .Where(edge => !edge.IsLegacy && edge.Cardinality == EntityRelationCardinality.OneToOne)
+            .ToList();
         _relationContexts.Clear();
 
         var mainTemplate = await _db.Queryable<SysPageTemplate>()
@@ -191,22 +196,116 @@ public class TemplateCodeGenerator
                 childSections[rel.Id] = childSection;
         }
 
+        // Render owned one-to-one fields through the same control templates with nested model paths.
+        foreach (var relation in ownedOneRelations)
+        {
+            var targetEntity = await _db.Queryable<ModuleEntity>()
+                .Where(item => item.Id == relation.TargetEntityId)
+                .FirstAsync();
+            if (targetEntity == null) continue;
+
+            var targetFields = await _db.Queryable<EntityField>()
+                .Where(field => field.ModuleEntityId == relation.TargetEntityId)
+                .OrderBy(field => field.OrderNum)
+                .ToListAsync();
+            var relationPath = ToCamelCase(relation.RelationName);
+
+            if (pageType == "index")
+            {
+                var columns = new List<string>();
+                foreach (var field in targetFields.Where(field =>
+                             field.Name != relation.TargetField &&
+                             (field.ShowInList || ShouldRenderRelatedDisplayField(field))))
+                {
+                    var (html, section, fieldContext) = await RenderFieldControl(
+                        field, "list", targetEntity, genCtx, $"scope.row.{relationPath}");
+                    html = PrefixOwnedFieldGenIds(html, relation.Id);
+                    if (!string.IsNullOrEmpty(html)) columns.Add(html);
+                    if (section != null)
+                    {
+                        var baseGenId = $"gen_owned_{relation.Id}_col_{field.Id}";
+                        var genIds = BuildActualGenIds(baseGenId, fieldContext, "list");
+                        RecordFieldScript(result, $"{relation.RelationName}.{field.Name}", section, genIds, targetEntity.Name);
+                    }
+                }
+                genCtx.ColumnHtml["list"] = genCtx.ColumnHtml.GetValueOrDefault("list", string.Empty) + string.Join("", columns);
+                continue;
+            }
+
+            if (pageType is "add" or "edit")
+            {
+                var columns = new List<string>();
+                foreach (var field in targetFields.Where(field =>
+                             !field.IsPrimaryKey &&
+                             field.Name != relation.TargetField &&
+                             (pageType == "add" ? field.ShowInAddForm : field.ShowInEditForm)))
+                {
+                    var (html, section, fieldContext) = await RenderFieldControl(
+                        field, pageType, targetEntity, genCtx, $"form.{relationPath}");
+                    html = PrefixOwnedFieldGenIds(html, relation.Id);
+                    if (!string.IsNullOrEmpty(html)) columns.Add(html);
+                    if (section != null)
+                    {
+                        var baseGenId = $"gen_owned_{relation.Id}_field_{field.Id}";
+                        var genIds = BuildActualGenIds(baseGenId, fieldContext, pageType);
+                        RecordFieldScript(result, $"{relation.RelationName}.{field.Name}", section, genIds, targetEntity.Name);
+                    }
+                }
+
+                var optionalToggle = relation.IsRequired
+                    ? string.Empty
+                    : $"<el-switch :model-value=\"form.{relationPath} !== null\" active-text=\"启用\" inactive-text=\"不启用\" @change=\"enabled => form.{relationPath} = enabled ? {{}} : null\" />";
+                cardHtmlList.Add(
+                    $"<el-card shadow=\"never\" style=\"margin-top:20px\" data-gen-id=\"gen_owned_{relation.Id}\">" +
+                    $"<template #header><div class=\"card-header\" style=\"display:flex;align-items:center;justify-content:space-between\"><span>{{{{ $t('{ToCamelCase(targetEntity.Name)}') }}}}</span>{optionalToggle}</div></template>" +
+                    $"<el-form v-if=\"form.{relationPath}\" :model=\"form\" :rules=\"rules\" label-width=\"120px\"><el-row :gutter=\"20\">{string.Join("", columns)}</el-row></el-form>" +
+                    $"<el-empty v-else description=\"未启用{targetEntity.Description}\" :image-size=\"60\" /></el-card>");
+                continue;
+            }
+
+            if (pageType == "detail")
+            {
+                var columns = new List<string>();
+                foreach (var field in targetFields.Where(field =>
+                             field.Name != relation.TargetField &&
+                             (field.ShowInDetail || ShouldRenderRelatedDisplayField(field))))
+                {
+                    var (html, section, fieldContext) = await RenderFieldControl(
+                        field, "detail", targetEntity, genCtx, $"detail.{relationPath}");
+                    html = PrefixOwnedFieldGenIds(html, relation.Id);
+                    if (!string.IsNullOrEmpty(html)) columns.Add(html);
+                    if (section != null)
+                    {
+                        var baseGenId = $"gen_owned_{relation.Id}_field_{field.Id}";
+                        var genIds = BuildActualGenIds(baseGenId, fieldContext, "detail");
+                        RecordFieldScript(result, $"{relation.RelationName}.{field.Name}", section, genIds, targetEntity.Name);
+                    }
+                }
+                cardHtmlList.Add(
+                    $"<el-card v-if=\"detail.{relationPath}\" shadow=\"never\" style=\"margin-top:20px\" data-gen-id=\"gen_owned_{relation.Id}\">" +
+                    $"<template #header><div class=\"card-header\"><span>{{{{ $t('{ToCamelCase(targetEntity.Name)}') }}}}</span></div></template>" +
+                    $"<el-descriptions :column=\"2\" border>{string.Join("", columns)}</el-descriptions></el-card>");
+            }
+        }
+
         genCtx.RelationCards = string.Join("\n", cardHtmlList);
         genCtx.RelationDialogs = string.Join("\n", dialogHtmlList);
 
-        result.VueContent = MarkerReplacer.ReplaceGen(mainTemplate.HtmlContent, genCtx);
+        var pageTemplateHtml = ApplyEntityCapabilities(mainTemplate.HtmlContent, globalSection, entity, pageType);
+        result.VueContent = MarkerReplacer.ReplaceGen(pageTemplateHtml, genCtx);
 
         // Page/global script is prepared first. Event handler functions are moved
         // onto the component node that declares the event, while runtime output
         // still receives a deduplicated aggregate of page + node scripts.
         globalSection.ReplaceMarkers(s => MarkerReplacer.ReplaceGen(s, genCtx));
         AddRelationInitializers(globalSection, relations, pageType);
+        AddOwnedOneInitializers(globalSection, ownedOneRelations, pageType);
         AddComputedFieldScripts(globalSection, fields, pageType, "form");
         AddAggregateFieldScripts(globalSection, fields, relations, pageType);
         AddMultipleFieldNormalizers(globalSection, fields, pageType);
         AddDictLabelHelper(globalSection, fields, pageType);
         AddMultipleQueryNormalizer(globalSection, fields, pageType);
-        AddUploadDisplayHelper(globalSection, pageType);
+        AddUploadDisplayHelper(globalSection, result.VueContent);
 
         List<CodeMaster.Infrastructure.VueParser.Model.Component>? tree = null;
 
@@ -307,9 +406,25 @@ public class TemplateCodeGenerator
         if (template == null) return ("", null, null);
         if (pageSection == "search") formPrefix = "queryParams";
 
+        var rowPrefix = pageSection == "list" && formPrefix.StartsWith("scope.row", StringComparison.Ordinal)
+            ? formPrefix
+            : "scope.row";
+        var detailPrefix = pageSection == "detail" && formPrefix.StartsWith("detail", StringComparison.Ordinal)
+            ? formPrefix
+            : "detail";
+        var propertyName = ToCamelCase(field.Name) + (field.IsMultiple && pageSection is "add" or "edit" ? "List" : "");
+        var propertyPath = pageSection switch
+        {
+            "list" => BuildRelativeModelPath(rowPrefix, "scope.row", propertyName),
+            "detail" => BuildRelativeModelPath(detailPrefix, "detail", propertyName),
+            "add" or "edit" => BuildFormPropertyPath(formPrefix, propertyName),
+            _ => propertyName
+        };
+
         var relatedEntityIdField = string.IsNullOrWhiteSpace(field.RelatedEntityIdField)
             ? "Id"
             : field.RelatedEntityIdField.Trim();
+        var resultMappings = SelectTableResultMappingParser.Parse(field.ResultMappings);
 
         var fctx = new FieldContext
         {
@@ -324,9 +439,12 @@ public class TemplateCodeGenerator
             IsRequired = field.IsRequired,
             IsSortable = field.IsSortable,
             FormPrefix = formPrefix,
+            RowPrefix = rowPrefix,
+            DetailPrefix = detailPrefix,
             FormControlType = field.FormControlType ?? "input",
             SelectDataSource = field.SelectDataSource ?? "",
             SelectOptions = field.SelectOptions ?? "",
+            SelectOptionsLiteral = BuildStaticChoiceOptionsLiteral(field.SelectOptions),
             RelatedEntityName = field.RelatedEntityName ?? "",
             RelatedEntityNameLower = ToCamelCase(field.RelatedEntityName ?? ""),
             RelatedEntityIdField = relatedEntityIdField,
@@ -336,8 +454,8 @@ public class TemplateCodeGenerator
             MultipleAttr = field.IsMultiple ? "multiple collapse-tags collapse-tags-tooltip" : "",
             Prop = pageSection switch
             {
-                "list" => $"prop=\"{ToCamelCase(field.Name)}\"",
-                "add" or "edit" => $"prop=\"{ToCamelCase(field.Name)}{(field.IsMultiple ? "List" : "")}\"",
+                "list" => $"prop=\"{propertyPath}\"",
+                "add" or "edit" => $"prop=\"{propertyPath}\"",
                 "search" => $"prop=\"{ToCamelCase(field.Name)}\"",
                 _ => "",
             },
@@ -345,6 +463,14 @@ public class TemplateCodeGenerator
             DictDataUrl = field.SelectDataSource == "dict" ? $"/api/dictdata?dictType={field.SelectOptions}" : "",
             EntityTable = formPrefix == "form" ? "" : entity.Name,
             EntityField = field.Name,
+            ResultMappings = resultMappings.Select(mapping => new SelectTableMappingContext
+            {
+                SourceField = mapping.SourceField,
+                SourceFieldLower = ToCamelCase(mapping.SourceField),
+                TargetField = mapping.TargetField,
+                TargetFieldLower = ToCamelCase(mapping.TargetField)
+            }).ToList(),
+            MappingHandlerName = $"handle{ToJsFunctionSuffix(formPrefix.Replace('.', '_'))}{field.Name}Selection",
         };
 
         // 琛ュ厖 select-table / cascader 鍏宠仈瀹炰綋淇℃伅
@@ -434,6 +560,14 @@ public class TemplateCodeGenerator
         }
 
         var html = MarkerReplacer.ReplaceField(template.HtmlContent, fctx);
+        if (pageSection is "add" or "edit" && field.IsRequired)
+            html = InjectRequiredRule(html, field);
+        if (pageSection is "add" or "edit" &&
+            field.FormControlType == "select-table" &&
+            fctx.ResultMappings.Count > 0)
+        {
+            html = InjectSelectChangeHandler(html, fctx.MappingHandlerName);
+        }
         if (pageSection is "add" or "edit" && IsCalculatedField(field))
             html = DisableEditableControls(html);
         // 娉ㄥ叆 entity-table / entity-field 鏍囪
@@ -444,12 +578,13 @@ public class TemplateCodeGenerator
         {
             var slotBody = field.FormControlType switch
             {
-                "select" when field.SelectDataSource == "dict" =>
-                    $"  <template #default=\"scope\">\n    {{{{ getDictLabel(scope.row.{fctx.NameLower}, {fctx.NameLower}Options) }}}}\n  </template>\n</el-table-column>",
+                "select" or "radio" or "radio-group" or "checkbox-group"
+                    when !string.IsNullOrWhiteSpace(field.SelectOptions) =>
+                    $"  <template #default=\"scope\">\n    {{{{ getDictLabel({fctx.RowPrefix}.{fctx.NameLower}, {fctx.NameLower}Options) }}}}\n  </template>\n</el-table-column>",
                 "date" =>
-                    $"  <template #default=\"scope\">\n    {{{{ formatDate(scope.row.{fctx.NameLower}) }}}}\n  </template>\n</el-table-column>",
+                    $"  <template #default=\"scope\">\n    {{{{ formatDate({fctx.RowPrefix}.{fctx.NameLower}) }}}}\n  </template>\n</el-table-column>",
                 "datetime" =>
-                    $"  <template #default=\"scope\">\n    {{{{ formatDate(scope.row.{fctx.NameLower}, true) }}}}\n  </template>\n</el-table-column>",
+                    $"  <template #default=\"scope\">\n    {{{{ formatDate({fctx.RowPrefix}.{fctx.NameLower}, true) }}}}\n  </template>\n</el-table-column>",
                 _ => null
             };
             if (slotBody != null)
@@ -458,17 +593,237 @@ public class TemplateCodeGenerator
 
         // Replace [field.xxx] markers inside the field script.
         var script = ReplaceFieldMarkersInScript(template.ScriptSections, fctx);
+        ConfigureChoiceOptionsScript(script, field, fctx);
+        AddSelectTableResultMappingScript(script, fctx, pageSection);
         if (pageSection == "list")
             await MergeListSupportScriptAsync(script, field, fctx);
         AddSelectTableDisplaySupportScript(script, fctx, pageSection);
         return (html, script, fctx);
     }
 
+    private static string ApplyEntityCapabilities(
+        string html,
+        ScriptBuilder.ScriptSection section,
+        ModuleEntity entity,
+        string pageType)
+    {
+        if (pageType != "index") return html;
+
+        var hasAdd = !entity.IsReadOnly;
+        var hasEdit = !entity.IsReadOnly;
+        var hasDelete = !entity.IsReadOnly;
+        var hasDetail = entity.HasPrimaryKey;
+
+        if (!hasAdd)
+        {
+            html = RemoveButtonByGenId(html, "gen_action_add");
+            section.Functions.RemoveAll(item => item.Name == "handleAdd");
+        }
+
+        if (!hasEdit)
+        {
+            html = RemoveButtonByGenId(html, "gen_action_edit");
+            section.Functions.RemoveAll(item => item.Name == "handleEdit");
+        }
+
+        if (!hasDelete)
+        {
+            html = RemoveButtonByGenId(html, "gen_action_delete");
+            section.Functions.RemoveAll(item => item.Name == "handleDelete");
+        }
+
+        if (!hasDetail)
+        {
+            html = RemoveButtonByGenId(html, "gen_action_detail");
+            section.Functions.RemoveAll(item => item.Name == "handleDetail");
+        }
+
+        if (!hasEdit && !hasDelete && !hasDetail)
+            html = RemoveElementByGenId(html, "el-table-column", "gen_operations");
+
+        return html;
+    }
+
+    private static string RemoveButtonByGenId(string html, string genId) =>
+        RemoveElementByGenId(html, "el-button", genId);
+
+    private static string RemoveElementByGenId(string html, string tagName, string genId)
+    {
+        var pattern = $@"<{Regex.Escape(tagName)}\b(?=[^>]*\bdata-gen-id\s*=\s*[""']{Regex.Escape(genId)}[""'])[^>]*>.*?</{Regex.Escape(tagName)}>";
+        return Regex.Replace(html, pattern, string.Empty, RegexOptions.Singleline | RegexOptions.IgnoreCase);
+    }
+
+    private static string InjectRequiredRule(string html, EntityField field)
+    {
+        var itemStart = html.IndexOf("<el-form-item", StringComparison.OrdinalIgnoreCase);
+        if (itemStart < 0) return html;
+
+        var itemEnd = html.IndexOf('>', itemStart);
+        if (itemEnd < 0) return html;
+
+        var openingTag = html[itemStart..itemEnd];
+        if (Regex.IsMatch(openingTag, @"\s:?rules\s*=", RegexOptions.IgnoreCase))
+            return html;
+
+        var trigger = field.FormControlType is
+            "select" or "select-table" or "cascader" or
+            "date" or "datetime" or "switch" or
+            "radio" or "radio-group" or "checkbox" or "checkbox-group" or
+            "file" or "image"
+                ? "change"
+                : "blur";
+        var message = ToJsSingleQuotedString($"请输入{field.Description ?? field.Name}");
+        var rule = $" :rules=\"[{{ required: true, message: {message}, trigger: '{trigger}' }}]\"";
+        return html.Insert(itemStart + "<el-form-item".Length, rule);
+    }
+
+    private static string ToJsSingleQuotedString(string value) =>
+        "'" + value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("'", "\\'", StringComparison.Ordinal)
+            .Replace("\r", " ", StringComparison.Ordinal)
+            .Replace("\n", " ", StringComparison.Ordinal) + "'";
+
+    private static string BuildRelativeModelPath(string prefix, string root, string propertyName)
+    {
+        if (string.Equals(prefix, root, StringComparison.Ordinal))
+            return propertyName;
+        var relative = prefix.StartsWith(root + ".", StringComparison.Ordinal)
+            ? prefix[(root.Length + 1)..]
+            : prefix;
+        return string.IsNullOrWhiteSpace(relative) ? propertyName : $"{relative}.{propertyName}";
+    }
+
+    private static string BuildFormPropertyPath(string formPrefix, string propertyName)
+    {
+        if (string.Equals(formPrefix, "form", StringComparison.Ordinal))
+            return propertyName;
+        if (formPrefix.StartsWith("form.", StringComparison.Ordinal))
+            return $"{formPrefix["form.".Length..]}.{propertyName}";
+
+        // Child dialogs bind their el-form directly to e.g. orderItemForm.
+        return propertyName;
+    }
+
+    private static string InjectSelectChangeHandler(string html, string handlerName)
+    {
+        var index = html.IndexOf("<el-select", StringComparison.Ordinal);
+        if (index < 0) return html;
+        var insertAt = index + "<el-select".Length;
+        return html.Insert(insertAt, $" @change=\"{handlerName}\"");
+    }
+
+    private static void AddSelectTableResultMappingScript(
+        ScriptSection section,
+        FieldContext context,
+        string pageSection)
+    {
+        if (pageSection is not ("add" or "edit") || context.ResultMappings.Count == 0) return;
+        var optionsName = context.RelatedEntityNameLower + "Options";
+        var lines = new List<string>
+        {
+            $"const selected = {optionsName}.value.find(item => String(item.value) === String(value));"
+        };
+        lines.AddRange(context.ResultMappings.Select(mapping =>
+            $"{context.FormPrefix}.{mapping.TargetFieldLower} = selected ? selected.{mapping.SourceFieldLower} : null;"));
+        section.Functions.Add(new FunctionBlock
+        {
+            Name = context.MappingHandlerName,
+            Parameters = "value",
+            Body = lines
+        });
+    }
+
+    private static void ConfigureChoiceOptionsScript(
+        ScriptSection section,
+        EntityField field,
+        FieldContext context)
+    {
+        if (!IsChoiceControl(field.FormControlType) || string.IsNullOrWhiteSpace(field.SelectOptions))
+            return;
+        if (string.Equals(field.SelectDataSource, "dict", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        var optionsName = context.NameLower + "Options";
+        var optionsRef = section.Refs.FirstOrDefault(item => item.Name == optionsName);
+        if (optionsRef == null)
+        {
+            section.Refs.Add(new RefItem
+            {
+                Name = optionsName,
+                InitialValue = context.SelectOptionsLiteral
+            });
+        }
+        else
+        {
+            optionsRef.InitialValue = context.SelectOptionsLiteral;
+        }
+
+        foreach (var hook in section.Hooks)
+        {
+            hook.Body.RemoveAll(line =>
+                line.Contains("getDataListByType", StringComparison.Ordinal) &&
+                line.Contains(optionsName, StringComparison.Ordinal));
+        }
+        section.Hooks.RemoveAll(hook => hook.Body.Count == 0);
+    }
+
+    private static bool IsChoiceControl(string? controlType) =>
+        controlType is "select" or "radio" or "radio-group" or "checkbox-group";
+
+    private static string BuildStaticChoiceOptionsLiteral(string? rawOptions)
+    {
+        if (string.IsNullOrWhiteSpace(rawOptions)) return "[]";
+
+        var trimmed = rawOptions.Trim();
+        try
+        {
+            using var document = JsonDocument.Parse(trimmed);
+            if (document.RootElement.ValueKind == JsonValueKind.Array)
+            {
+                var options = new List<Dictionary<string, object?>>();
+                foreach (var item in document.RootElement.EnumerateArray())
+                {
+                    if (item.ValueKind == JsonValueKind.Object)
+                    {
+                        var value = item.TryGetProperty("value", out var valueElement)
+                            ? JsonSerializer.Deserialize<object?>(valueElement.GetRawText())
+                            : null;
+                        var label = item.TryGetProperty("label", out var labelElement)
+                            ? labelElement.ToString()
+                            : value?.ToString() ?? string.Empty;
+                        options.Add(new Dictionary<string, object?>
+                        {
+                            ["label"] = label,
+                            ["value"] = value ?? label
+                        });
+                    }
+                    else
+                    {
+                        var value = item.ToString();
+                        options.Add(new Dictionary<string, object?> { ["label"] = value, ["value"] = value });
+                    }
+                }
+                return JsonSerializer.Serialize(options);
+            }
+        }
+        catch (JsonException)
+        {
+            // Comma-separated enum values are also supported by MCP and the Web UI.
+        }
+
+        return JsonSerializer.Serialize(trimmed
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(value => new Dictionary<string, object?> { ["label"] = value, ["value"] = value })
+            .ToList());
+    }
+
     private async Task MergeListSupportScriptAsync(ScriptSection script, EntityField field, FieldContext fctx)
     {
         string? supportControlType = field.FormControlType switch
         {
-            "select" when field.SelectDataSource == "dict" => "select",
+            "select" or "radio" or "radio-group" or "checkbox-group"
+                when field.SelectDataSource == "dict" => "select",
             _ => null
         };
 
@@ -682,12 +1037,22 @@ public class TemplateCodeGenerator
         if (pageSection == "list")
             return formControlType switch { "image" => "image", "file" or "upload" => "file", "select-table" => "select-table", "editor" => "editor", _ => "table-column" };
         if (pageSection == "search")
-            return formControlType switch { "date" or "datetime" or "select" or "select-table" => formControlType, _ => "search-input" };
+            return formControlType switch
+            {
+                "date" or "datetime" or "select" or "select-table" => formControlType,
+                "switch" or "checkbox" => "switch",
+                "radio" or "radio-group" or "checkbox-group" => "select",
+                _ => "search-input"
+            };
+        if (pageSection == "detail" && formControlType is "select" or "radio" or "radio-group" or "checkbox-group")
+            return "select";
         return formControlType switch
         {
-            "input" or "textarea" or "number" or "switch" or "select" or "select-table" or "select-enum"
-                or "date" or "datetime" or "editor" or "file" or "image" or "cascader" or "checkbox" or "radio"
-                => formControlType == "select-enum" ? "select" : formControlType,
+            "select-enum" => "select",
+            "radio" => "radio-group",
+            "input" or "textarea" or "number" or "switch" or "select" or "select-table"
+                or "date" or "datetime" or "editor" or "file" or "image" or "cascader"
+                or "checkbox" or "radio-group" or "checkbox-group" => formControlType,
             _ => dataType switch { "int" or "long" or "decimal" or "float" or "double" => "number", "bool" => "switch", "DateTime" or "DateTime?" => "date", _ => "input" }
         };
     }
@@ -1170,6 +1535,14 @@ public class TemplateCodeGenerator
 
     private static string BuildColumnGenId(EntityField field) => $"gen_col_{field.Id}";
 
+    private static string PrefixOwnedFieldGenIds(string html, long relationId)
+    {
+        if (string.IsNullOrEmpty(html)) return html;
+        return html
+            .Replace("gen_field_", $"gen_owned_{relationId}_field_", StringComparison.Ordinal)
+            .Replace("gen_col_", $"gen_owned_{relationId}_col_", StringComparison.Ordinal);
+    }
+
     private static IReadOnlyList<string> BuildActualGenIds(string baseGenId, FieldContext? fieldContext, string pageSection)
     {
         if (fieldContext?.FormControlType == "select-table" &&
@@ -1478,6 +1851,41 @@ public class TemplateCodeGenerator
         }
     }
 
+    private static void AddOwnedOneInitializers(
+        ScriptBuilder.ScriptSection mainSection,
+        IReadOnlyList<EntityRelationEdge> relations,
+        string pageType)
+    {
+        if (relations.Count == 0 || pageType is not ("add" or "edit")) return;
+
+        var fields = relations.ToDictionary(
+            relation => ToCamelCase(relation.RelationName),
+            relation => relation.IsRequired ? "{}" : "null");
+        mainSection.Merge(new ScriptBuilder.ScriptSection
+        {
+            Reactives =
+            {
+                new ReactiveInfo { Name = "form", Fields = fields }
+            }
+        });
+
+        if (pageType != "edit") return;
+        var getDetail = mainSection.Functions.FirstOrDefault(function => function.Name == "getDetail");
+        if (getDetail == null) return;
+        var requiredNormalizers = relations
+            .Where(relation => relation.IsRequired)
+            .Select(relation =>
+            {
+                var relationName = ToCamelCase(relation.RelationName);
+                return $"form.{relationName} = form.{relationName} || {{}};";
+            })
+            .ToList();
+        if (requiredNormalizers.Count == 0) return;
+        getDetail.Body = string.IsNullOrWhiteSpace(getDetail.Body)
+            ? string.Join("\n", requiredNormalizers)
+            : getDetail.Body.TrimEnd() + "\n" + string.Join("\n", requiredNormalizers);
+    }
+
     /// <summary>瑙ｆ瀽 JSON 鏁扮粍鏍煎紡鐨勬樉绀哄瓧娈靛垪琛紝濡?["Name","Phone"]</summary>
     private static void AddMultipleFieldNormalizers(ScriptBuilder.ScriptSection mainSection, List<EntityField> fields, string pageType)
     {
@@ -1546,7 +1954,7 @@ public class TemplateCodeGenerator
     private static void AddDictLabelHelper(ScriptBuilder.ScriptSection mainSection, List<EntityField> fields, string pageType)
     {
         if (pageType is not ("index" or "detail")) return;
-        if (!fields.Any(f => f.FormControlType == "select" && f.SelectDataSource == "dict")) return;
+        if (!fields.Any(f => IsChoiceControl(f.FormControlType) && !string.IsNullOrWhiteSpace(f.SelectOptions))) return;
 
         AddOrReplaceFunction(mainSection, new FunctionInfo
         {
@@ -1595,9 +2003,11 @@ public class TemplateCodeGenerator
             StringComparison.Ordinal);
     }
 
-    private static void AddUploadDisplayHelper(ScriptBuilder.ScriptSection mainSection, string pageType)
+    private static void AddUploadDisplayHelper(ScriptBuilder.ScriptSection mainSection, string vueContent)
     {
-        if (pageType is not ("index" or "detail")) return;
+        if (!vueContent.Contains("getUploadValues(", StringComparison.Ordinal) &&
+            !vueContent.Contains("getUploadFileName(", StringComparison.Ordinal))
+            return;
 
         AddOrReplaceFunction(mainSection, new FunctionInfo
         {
@@ -1766,8 +2176,8 @@ public class TemplateCodeGenerator
                 Index = index
             };
 
-            ctx.ListContent = BuildDisplayFieldContent(ctx, owner, "scope.row", isDetail: false);
-            ctx.DetailContent = BuildDisplayFieldContent(ctx, owner, "detail", isDetail: true);
+            ctx.ListContent = BuildDisplayFieldContent(ctx, owner, owner.RowPrefix, isDetail: false);
+            ctx.DetailContent = BuildDisplayFieldContent(ctx, owner, owner.DetailPrefix, isDetail: true);
             return ctx;
         }).ToList();
     }
@@ -1822,7 +2232,8 @@ public class TemplateCodeGenerator
 
     private static string BuildImageDisplayContent(string valuesExpr, bool isDetail)
     {
-        return BuildUploadLinkDisplayContent(valuesExpr);
+        var size = isDetail ? 80 : 40;
+        return $"<div v-if=\"{valuesExpr}.length\" class=\"cm-image-list\"><el-image v-for=\"(url,index) in {valuesExpr}\" :key=\"index\" :src=\"url\" :preview-src-list=\"{valuesExpr}\" :initial-index=\"index\" fit=\"cover\" style=\"width:{size}px;height:{size}px;margin-right:8px\" /></div><span v-else>-</span>";
     }
 
     private static string BuildFileDisplayContent(string valuesExpr)

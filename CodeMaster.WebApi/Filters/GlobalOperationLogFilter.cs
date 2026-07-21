@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using CodeMaster.Application.Services.Monitor;
 using CodeMaster.Core.Attributes;
 using CodeMaster.Core.Enums;
@@ -17,6 +18,17 @@ namespace CodeMaster.WebApi.Filters;
 /// </summary>
 public class GlobalOperationLogFilter : IAsyncActionFilter
 {
+    private static readonly string[] SensitiveKeyFragments =
+    [
+        "password",
+        "passwd",
+        "secret",
+        "apikey",
+        "token",
+        "authorization",
+        "connectionstring"
+    ];
+
     private readonly ISysOperLogService _operLogService;
     private readonly ILogger<GlobalOperationLogFilter> _logger;
 
@@ -213,11 +225,14 @@ public class GlobalOperationLogFilter : IAsyncActionFilter
                 parameters[query.Key] = query.Value.ToString();
             }
 
-            var json = JsonSerializer.Serialize(parameters, new JsonSerializerOptions
+            var options = new JsonSerializerOptions
             {
                 WriteIndented = false,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
-            });
+            };
+            var node = JsonSerializer.SerializeToNode(parameters, options);
+            RedactSensitiveValues(node);
+            var json = node?.ToJsonString(options) ?? string.Empty;
 
             return Truncate(json, 4000);
         }
@@ -225,6 +240,38 @@ public class GlobalOperationLogFilter : IAsyncActionFilter
         {
             return string.Empty;
         }
+    }
+
+    private static void RedactSensitiveValues(JsonNode? node)
+    {
+        if (node is JsonObject jsonObject)
+        {
+            foreach (var property in jsonObject.ToList())
+            {
+                if (IsSensitiveKey(property.Key))
+                {
+                    jsonObject[property.Key] = "***";
+                }
+                else
+                {
+                    RedactSensitiveValues(property.Value);
+                }
+            }
+        }
+        else if (node is JsonArray jsonArray)
+        {
+            foreach (var item in jsonArray)
+            {
+                RedactSensitiveValues(item);
+            }
+        }
+    }
+
+    private static bool IsSensitiveKey(string key)
+    {
+        var normalized = key.Replace("_", string.Empty).Replace("-", string.Empty);
+        return SensitiveKeyFragments.Any(fragment =>
+            normalized.Contains(fragment, StringComparison.OrdinalIgnoreCase));
     }
 
     private static string Truncate(string value, int maxLength)

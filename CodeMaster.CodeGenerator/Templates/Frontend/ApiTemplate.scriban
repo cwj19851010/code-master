@@ -23,6 +23,7 @@ export function getList(params) {
   })
 }
 
+{{~ if entity.has_primary_key ~}}
 // 获取详情
 export function getById(id) {
   return request({
@@ -30,6 +31,7 @@ export function getById(id) {
     method: 'get'
   })
 }
+{{~ end ~}}
 
 {{~ if !entity.is_read_only ~}}
 // 创建

@@ -130,7 +130,10 @@ namespace CodeMaster.SourceGenerator
             else
             {
                 // 没有 SugarTable 特性，使用默认规则（类名转 snake_case 并复数化）
-                entityInfo.TableName = ToSnakeCase(typeSymbol.Name) + "s";
+                var tableName = ToSnakeCase(typeSymbol.Name);
+                entityInfo.TableName = tableName.EndsWith("s")
+                    ? tableName
+                    : tableName + "s";
             }
 
             // 2. 分析所有属性
@@ -301,8 +304,8 @@ namespace CodeMaster.SourceGenerator
                     var pkName = entity.PrimaryKeys[0];
                     sb.AppendLine($"            builder.HasKey(e => e.{pkName});");
 
-                    // 如果继承 EntityBase，Id 为非自增
-                    if (entity.InheritsEntityBase && pkName == "Id")
+                    // IEntity<long> uses application-generated snowflake IDs.
+                    if (pkName == "Id")
                     {
                         sb.AppendLine($"            builder.Property(e => e.{pkName}).ValueGeneratedNever();");
                     }

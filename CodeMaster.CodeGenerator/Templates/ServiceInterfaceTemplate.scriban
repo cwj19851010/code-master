@@ -8,7 +8,13 @@ namespace {{ entity.project_name }}.Application.Services.{{ entity.module_name }
 /// {{ entity.description }}服务接口
 /// </summary>
 {{~ if entity.is_read_only ~}}
-public interface I{{ entity.name }}Service : IReadOnlyApplicationService<{{ entity.name }}, {{ entity.name }}Dto>
+{{~ if entity.is_tree ~}}
+public interface I{{ entity.name }}Service : IReadOnlyTreeApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto>
+{{~ else if entity.has_primary_key ~}}
+public interface I{{ entity.name }}Service : IReadOnlyApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto>
+{{~ else ~}}
+public interface I{{ entity.name }}Service : IQueryApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}QueryDto>
+{{~ end ~}}
 {{~ else if entity.is_tree ~}}
 public interface I{{ entity.name }}Service : ITreeApplicationService<{{ entity.name }}, {{ entity.name }}Dto, {{ entity.name }}Dto, {{ entity.name }}QueryDto, Create{{ entity.name }}Dto, Update{{ entity.name }}Dto>, IApplicationService
 {{~ else ~}}

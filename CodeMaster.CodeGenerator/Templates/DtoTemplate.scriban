@@ -7,10 +7,9 @@ namespace {{ entity.project_name }}.Application.Dtos.{{ entity.module_name }};
 /// <summary>
 /// {{ entity.description }}DTO
 /// </summary>
-public class {{ entity.name }}Dto : EntityDto, IBaseEntity{{ entity.dto_interface_list }}
+public class {{ entity.name }}Dto : IBaseEntity
 {
 {{~ for field in entity.fields ~}}
-{{~ if !field.is_primary_key ~}}
     /// <summary>
     /// {{ field.description }}
     /// </summary>
@@ -33,7 +32,6 @@ public class {{ entity.name }}Dto : EntityDto, IBaseEntity{{ entity.dto_interfac
 {{~ end ~}}
 
 {{~ end ~}}
-{{~ end ~}}
 {{~ for relation in entity.one_to_many_relations ~}}
     /// <summary>
     /// {{ relation.child_entity_name }}列表
@@ -41,12 +39,20 @@ public class {{ entity.name }}Dto : EntityDto, IBaseEntity{{ entity.dto_interfac
     public List<{{ relation.child_entity_name }}Dto>? {{ relation.child_entity_name }}s { get; set; }
 
 {{~ end ~}}
+{{~ for relation in entity.owned_one_relations ~}}
+    /// <summary>
+    /// {{ relation.target_entity_description }}
+    /// </summary>
+    public {{ entity.project_name }}.Application.Dtos.{{ relation.target_module_name }}.{{ relation.target_entity_name }}Dto? {{ relation.relation_name }} { get; set; }
+
+{{~ end ~}}
 }
 
+{{~ if !entity.is_read_only ~}}
 /// <summary>
 /// 创建{{ entity.description }}DTO
 /// </summary>
-public class Create{{ entity.name }}Dto : IBaseEntity{{ entity.create_update_dto_interface_list }}
+public class Create{{ entity.name }}Dto : IBaseEntity
 {
 {{~ for field in entity.fields ~}}
 {{~ if !field.is_primary_key && field.show_in_add_form ~}}
@@ -80,12 +86,21 @@ public class Create{{ entity.name }}Dto : IBaseEntity{{ entity.create_update_dto
     public List<Create{{ relation.child_entity_name }}Dto>? {{ relation.child_entity_name }}s { get; set; }
 
 {{~ end ~}}
+{{~ for relation in entity.owned_one_relations ~}}
+    /// <summary>
+    /// {{ relation.target_entity_description }}
+    /// </summary>
+{{~ if relation.is_required ~}}    [Required(ErrorMessage = "请输入{{ relation.target_entity_description }}")]
+{{~ end ~}}
+    public {{ entity.project_name }}.Application.Dtos.{{ relation.target_module_name }}.Create{{ relation.target_entity_name }}Dto? {{ relation.relation_name }} { get; set; }
+
+{{~ end ~}}
 }
 
 /// <summary>
 /// 更新{{ entity.description }}DTO
 /// </summary>
-public class Update{{ entity.name }}Dto : IBaseEntity, IHasRowStatus{{ entity.create_update_dto_interface_list }}
+public class Update{{ entity.name }}Dto : IBaseEntity, IHasRowStatus
 {
     /// <summary>
     /// 主键ID（子表追踪时需要）
@@ -130,7 +145,17 @@ public class Update{{ entity.name }}Dto : IBaseEntity, IHasRowStatus{{ entity.cr
     public List<Update{{ relation.child_entity_name }}Dto>? {{ relation.child_entity_name }}s { get; set; }
 
 {{~ end ~}}
+{{~ for relation in entity.owned_one_relations ~}}
+    /// <summary>
+    /// {{ relation.target_entity_description }}
+    /// </summary>
+{{~ if relation.is_required ~}}    [Required(ErrorMessage = "请输入{{ relation.target_entity_description }}")]
+{{~ end ~}}
+    public {{ entity.project_name }}.Application.Dtos.{{ relation.target_module_name }}.Update{{ relation.target_entity_name }}Dto? {{ relation.relation_name }} { get; set; }
+
+{{~ end ~}}
 }
+{{~ end ~}}
 
 /// <summary>
 /// {{ entity.description }}查询DTO

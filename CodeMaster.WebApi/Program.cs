@@ -25,6 +25,7 @@ using CodeMaster.Infrastructure.Caching.Extensions;
 using CodeMaster.Infrastructure.SignalR;
 using CodeMaster.Core.Repositories;
 using Microsoft.Extensions.FileProviders;
+using CodeMaster.Agent.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +43,9 @@ builder.Services.AddSingleton<IDataFilter, DataFilter>();
 
 // 注册 HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
+
+// Register the built-in CodeMaster Agent runtime and provider adapters.
+builder.Services.AddCodeMasterAgent();
 
 // 注册数据权限上下文（Scoped）
 builder.Services.AddScoped<IDataPermissionContext, DataPermissionContext>();

@@ -67,6 +67,7 @@ public class FieldContext
     public string FormControlType { get; set; } = string.Empty;
     public string SelectDataSource { get; set; } = string.Empty;
     public string SelectOptions { get; set; } = string.Empty;
+    public string SelectOptionsLiteral { get; set; } = "[]";
     public string RelatedEntityName { get; set; } = string.Empty;
     public string RelatedEntityNameLower { get; set; } = string.Empty;
     public string RelatedModuleNameLower { get; set; } = string.Empty;
@@ -91,11 +92,27 @@ public class FieldContext
     /// <summary>表单数据前缀: form (主表) 或 orderItemForm (子表)</summary>
     public string FormPrefix { get; set; } = "form";
 
+    /// <summary>列表行数据前缀: scope.row（主表）或 scope.row.detail（组成实体）</summary>
+    public string RowPrefix { get; set; } = "scope.row";
+
+    /// <summary>详情数据前缀: detail（主表）或 detail.detail（组成实体）</summary>
+    public string DetailPrefix { get; set; } = "detail";
+
     /// <summary>所属表名: 空=主表, "OrderItem"=子表</summary>
     public string EntityTable { get; set; } = string.Empty;
 
     /// <summary>所属字段名</summary>
     public string EntityField { get; set; } = string.Empty;
+    public List<SelectTableMappingContext> ResultMappings { get; set; } = new();
+    public string MappingHandlerName { get; set; } = string.Empty;
+}
+
+public class SelectTableMappingContext
+{
+    public string SourceField { get; set; } = string.Empty;
+    public string SourceFieldLower { get; set; } = string.Empty;
+    public string TargetField { get; set; } = string.Empty;
+    public string TargetFieldLower { get; set; } = string.Empty;
 }
 
 public class DisplayFieldContext

@@ -47,6 +47,10 @@ public class CodeGeneratorService
         {
             throw new Exception($"实体 {entity.Name} 非只读但未设置主键（HasPrimaryKey 必须为 true）");
         }
+        if (entity.IsTree && !entity.HasPrimaryKey)
+        {
+            throw new Exception($"树形实体 {entity.Name} 必须启用主键");
+        }
 
         foreach (var field in fields.Where(f => f.IsMultiple))
         {
@@ -107,7 +111,7 @@ public class CodeGeneratorService
     /// </summary>
     public string CalculateBaseClassName(ModuleEntity entity)
     {
-        return "EntityBase";
+        return "IBaseEntity";
     }
 
     /// <summary>
@@ -152,6 +156,28 @@ public class CodeGeneratorService
         return normalized is "int" or "long" or "decimal" or "double" or "float" or "short" or "byte";
     }
 
+    private static string BuildSugarColumnArguments(EntityField field)
+    {
+        if (field.IsIgnore)
+            return "IsIgnore = true";
+
+        var arguments = new List<string>();
+        if (field.IsPrimaryKey)
+            arguments.Add("IsPrimaryKey = true");
+
+        arguments.Add($"ColumnName = \"{ToSnakeCase(field.Name)}\"");
+
+        if (field.MaxLength is > 0)
+            arguments.Add($"Length = {field.MaxLength.Value}");
+        else if (field.Precision is > 0)
+            arguments.Add($"Length = {field.Precision.Value}");
+
+        if (field.Scale is >= 0)
+            arguments.Add($"DecimalDigits = {field.Scale.Value}");
+
+        return string.Join(", ", arguments);
+    }
+
     /// <summary>
     /// </summary>
     public ScriptObject BuildTemplateContext(
@@ -159,12 +185,14 @@ public class CodeGeneratorService
         List<EntityField> fields,
         List<OneToManyRelation> relations,
         string projectName,
-        string moduleName)
+        string moduleName,
+        List<EntityRelation>? entityRelations = null)
     {
+        entityRelations ??= new List<EntityRelation>();
         var baseClassName = CalculateBaseClassName(entity);
         var interfaceList = CalculateInterfaceList(entity);
-        var dtoInterfaceList = CalculateInterfaceList(entity, excludeFramework: true, excludeEntity: true);
-        var createUpdateDtoInterfaceList = CalculateInterfaceList(entity, excludeFramework: true, excludeEntity: true);
+        var dtoInterfaceList = string.Empty;
+        var createUpdateDtoInterfaceList = string.Empty;
 
         fields = fields
             .GroupBy(f => f.Name)
@@ -186,6 +214,7 @@ public class CodeGeneratorService
             ["is_system_field"] = f.IsSystemField,
             ["is_interface_field"] = IsInterfaceField(f.Name, entity, baseClassName),
             ["is_ignore"] = f.IsIgnore,
+            ["sugar_column_args"] = BuildSugarColumnArguments(f),
             ["form_control_type"] = f.FormControlType,
             ["select_data_source"] = f.SelectDataSource,
             ["select_options"] = f.SelectOptions,
@@ -195,6 +224,7 @@ public class CodeGeneratorService
             ["related_entity_id_field"] = GetRelatedEntityIdField(f),
             ["related_entity_id_field_lower"] = ToCamelCase(GetRelatedEntityIdField(f)),
             ["related_entity_display_fields"] = f.RelatedEntityDisplayFields,
+            ["result_mappings"] = f.ResultMappings,
             ["related_display_label"] = GetFirstDisplayField(f.RelatedEntityDisplayFields),
             ["related_display_fields_list"] = ParseDisplayFields(f.RelatedEntityDisplayFields),
             ["show_in_list"] = f.ShowInList,
@@ -217,7 +247,10 @@ public class CodeGeneratorService
             ["regex_pattern_literal"] = ToCSharpStringLiteral(regexPattern),
             ["is_email"] = f.IsEmail,
             ["is_phone"] = f.IsPhone,
-            ["default_value"] = f.DefaultValue,
+            ["default_value"] = FormatDefaultValue(f),
+            ["max_length"] = f.MaxLength,
+            ["precision"] = f.Precision,
+            ["scale"] = f.Scale,
             ["show_condition"] = f.ShowCondition,
             ["is_sortable"] = f.IsSortable,
             };
@@ -383,6 +416,66 @@ public class CodeGeneratorService
             });
         }
 
+        var ownedOneRelationList = new List<Dictionary<string, object?>>();
+        foreach (var relation in entityRelations
+                     .Where(r => r.Cardinality == EntityRelationCardinality.OneToOne &&
+                                 r.Ownership == EntityRelationOwnership.Owned)
+                     .OrderBy(r => r.OrderNum)
+                     .ThenBy(r => r.Id))
+        {
+            var sourceField = fields.FirstOrDefault(f => f.Name == relation.SourceField);
+            if (sourceField == null &&
+                entity.HasPrimaryKey &&
+                string.Equals(relation.SourceField, "Id", StringComparison.OrdinalIgnoreCase))
+            {
+                sourceField = new EntityField
+                {
+                    ModuleEntityId = entity.Id,
+                    Name = "Id",
+                    Description = "Primary key",
+                    DataType = "long",
+                    IsPrimaryKey = true,
+                    IsSystemField = true
+                };
+            }
+            if (sourceField == null)
+                throw new InvalidOperationException($"Owned relation source field does not exist: {relation.SourceField}");
+            var targetEntity = _db.Queryable<ModuleEntity>()
+                .Where(e => e.Id == relation.TargetEntityId)
+                .First();
+            if (targetEntity == null)
+                throw new InvalidOperationException($"Owned relation target entity does not exist: {relation.TargetEntityId}");
+            if (!targetEntity.HasPrimaryKey)
+                throw new InvalidOperationException($"Owned relation target entity must have a primary key: {targetEntity.Name}");
+
+            var targetModule = _db.Queryable<ProjectModule>()
+                .Where(m => m.Id == targetEntity.ModuleId)
+                .First();
+            var targetModuleName = targetModule?.ModuleName ?? moduleName;
+            ownedOneRelationList.Add(new Dictionary<string, object?>
+            {
+                ["id"] = relation.Id,
+                ["relation_name"] = relation.RelationName,
+                ["relation_name_lower"] = ToCamelCase(relation.RelationName),
+                ["source_field"] = relation.SourceField,
+                ["source_field_lower"] = ToCamelCase(relation.SourceField),
+                ["source_data_type"] = GetGenerationDataType(sourceField),
+                ["create_source_expression"] = relation.SourceField == "Id" ? "id" : $"entity.{relation.SourceField}",
+                ["target_field"] = relation.TargetField,
+                ["target_field_lower"] = ToCamelCase(relation.TargetField),
+                ["target_entity_name"] = targetEntity.Name,
+                ["target_entity_name_lower"] = ToCamelCase(targetEntity.Name),
+                ["target_entity_description"] = targetEntity.Description,
+                ["target_module_name"] = targetModuleName,
+                ["target_module_name_lower"] = targetModuleName.ToLowerInvariant(),
+                ["is_required"] = relation.IsRequired,
+                ["delete_behavior"] = (int)relation.DeleteBehavior,
+                ["delete_when_null"] = relation.DeleteBehavior == EntityRelationDeleteBehavior.Delete,
+                ["keep_when_null"] = relation.DeleteBehavior == EntityRelationDeleteBehavior.Keep,
+                ["target_has_soft_delete"] = targetEntity.HasSoftDelete,
+            });
+        }
+
         var allRelatedEntityNames = new HashSet<string>(
             fields.Where(f => (f.FormControlType == "select-table" || f.FormControlType == "cascader")
                         && !string.IsNullOrEmpty(f.RelatedEntityName))
@@ -526,7 +619,7 @@ public class CodeGeneratorService
                 ["project_name"] = projectName,
                 ["module_name"] = moduleName,
                 ["module_name_lower"] = moduleName.ToLower(),
-                ["table_name"] = entity.TableName,
+                ["table_name"] = ResolveTableName(entity.Name, entity.TableName),
                 ["base_class_name"] = baseClassName,
                 ["has_primary_key"] = entity.HasPrimaryKey,
                 ["is_tree"] = entity.IsTree,
@@ -543,6 +636,9 @@ public class CodeGeneratorService
                 ["fields"] = fieldList,
                 ["one_to_many_relations"] = relationList,
                 ["has_one_to_many"] = relations.Count > 0,
+                ["owned_one_relations"] = ownedOneRelationList,
+                ["has_owned_one"] = ownedOneRelationList.Count > 0,
+                ["has_aggregate_relations"] = relations.Count > 0 || ownedOneRelationList.Count > 0,
                 ["search_fields"] = searchFields,
                 ["list_fields"] = listFields,
                 ["add_fields"] = addFields,
@@ -575,10 +671,10 @@ public class CodeGeneratorService
     /// </summary>
     public async Task<string> GenerateEntityAutoAsync(long entityId, string projectName, string moduleName)
     {
-        var (entity, fields, relations) = await LoadMetadataAsync(entityId);
+        var (entity, fields, relations, entityRelations) = await LoadMetadataAsync(entityId);
         ValidateConstraints(entity, fields);
 
-        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName);
+        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName, entityRelations);
         return await RenderTemplateAsync("EntityAutoTemplate.scriban", context);
     }
 
@@ -586,8 +682,8 @@ public class CodeGeneratorService
     /// </summary>
     public async Task<string> GenerateEntityAsync(long entityId, string projectName, string moduleName)
     {
-        var (entity, fields, relations) = await LoadMetadataAsync(entityId);
-        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName);
+        var (entity, fields, relations, entityRelations) = await LoadMetadataAsync(entityId);
+        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName, entityRelations);
         return await RenderTemplateAsync("EntityTemplate.scriban", context);
     }
 
@@ -595,8 +691,8 @@ public class CodeGeneratorService
     /// </summary>
     public async Task<string> GenerateDtoAsync(long entityId, string projectName, string moduleName)
     {
-        var (entity, fields, relations) = await LoadMetadataAsync(entityId);
-        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName);
+        var (entity, fields, relations, entityRelations) = await LoadMetadataAsync(entityId);
+        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName, entityRelations);
         return await RenderTemplateAsync("DtoTemplate.scriban", context);
     }
 
@@ -604,8 +700,8 @@ public class CodeGeneratorService
     /// </summary>
     public async Task<string> GenerateServiceInterfaceAsync(long entityId, string projectName, string moduleName)
     {
-        var (entity, fields, relations) = await LoadMetadataAsync(entityId);
-        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName);
+        var (entity, fields, relations, entityRelations) = await LoadMetadataAsync(entityId);
+        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName, entityRelations);
         return await RenderTemplateAsync("ServiceInterfaceTemplate.scriban", context);
     }
 
@@ -613,8 +709,8 @@ public class CodeGeneratorService
     /// </summary>
     public async Task<string> GenerateServiceImplementationAsync(long entityId, string projectName, string moduleName)
     {
-        var (entity, fields, relations) = await LoadMetadataAsync(entityId);
-        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName);
+        var (entity, fields, relations, entityRelations) = await LoadMetadataAsync(entityId);
+        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName, entityRelations);
         return await RenderTemplateAsync("ServiceTemplate.scriban", context);
     }
 
@@ -622,8 +718,8 @@ public class CodeGeneratorService
     /// </summary>
     public async Task<string> GenerateFrontendApiAsync(long entityId, string projectName, string moduleName)
     {
-        var (entity, fields, relations) = await LoadMetadataAsync(entityId);
-        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName);
+        var (entity, fields, relations, entityRelations) = await LoadMetadataAsync(entityId);
+        var context = BuildTemplateContext(entity, fields, relations, projectName, moduleName, entityRelations);
         return await RenderTemplateAsync(Path.Combine("Frontend", "ApiTemplate.scriban"), context);
     }
 
@@ -637,7 +733,7 @@ public class CodeGeneratorService
 
     /// <summary>
     /// </summary>
-    private async Task<(ModuleEntity entity, List<EntityField> fields, List<OneToManyRelation> relations)> LoadMetadataAsync(long entityId)
+    private async Task<(ModuleEntity entity, List<EntityField> fields, List<OneToManyRelation> relations, List<EntityRelation> entityRelations)> LoadMetadataAsync(long entityId)
     {
         var entity = await _db.Queryable<ModuleEntity>()
             .Where(e => e.Id == entityId)
@@ -656,7 +752,16 @@ public class CodeGeneratorService
             .OrderBy(r => r.OrderNum)
             .ToListAsync();
 
-        return (entity, fields, relations);
+        var entityRelations = new List<EntityRelation>();
+        if (_db.DbMaintenance.IsAnyTable("sys_entity_relation"))
+        {
+            entityRelations = await _db.Queryable<EntityRelation>()
+                .Where(r => r.SourceEntityId == entityId)
+                .OrderBy(r => r.OrderNum)
+                .ToListAsync();
+        }
+
+        return (entity, fields, relations, entityRelations);
     }
 
     /// <summary>
@@ -771,6 +876,35 @@ public class CodeGeneratorService
         return "@\"" + value.Replace("\"", "\"\"") + "\"";
     }
 
+    private static string? FormatDefaultValue(EntityField field)
+    {
+        if (string.IsNullOrWhiteSpace(field.DefaultValue))
+            return null;
+
+        var value = field.DefaultValue.Trim();
+        if (!string.Equals(GetGenerationDataType(field), "string", StringComparison.OrdinalIgnoreCase))
+            return value;
+
+        if (value is "string.Empty" or "default" or "default!" or "null" ||
+            IsCSharpStringLiteral(value) ||
+            (value.Contains('(') && value.EndsWith(')')))
+        {
+            return value;
+        }
+
+        return ToCSharpStringLiteral(value);
+    }
+
+    private static bool IsCSharpStringLiteral(string value)
+    {
+        return value.EndsWith('"') &&
+               (value.StartsWith('"') ||
+                value.StartsWith("@\"") ||
+                value.StartsWith("$\"") ||
+                value.StartsWith("$@\"") ||
+                value.StartsWith("@$\""));
+    }
+
     /// <summary>
     /// </summary>
     private static string ToSnakeCase(string str)
@@ -778,21 +912,26 @@ public class CodeGeneratorService
         if (string.IsNullOrEmpty(str))
             return str;
 
-        var result = new global::System.Text.StringBuilder();
-        for (int i = 0; i < str.Length; i++)
-        {
-            if (char.IsUpper(str[i]))
-            {
-                if (i > 0 && !char.IsUpper(str[i - 1]))
-                    result.Append('_');
-                result.Append(char.ToLowerInvariant(str[i]));
-            }
-            else
-            {
-                result.Append(str[i]);
-            }
-        }
-        return result.ToString();
+        var result = global::System.Text.RegularExpressions.Regex.Replace(
+            str,
+            "([A-Z]+)([A-Z][a-z])",
+            "$1_$2");
+        result = global::System.Text.RegularExpressions.Regex.Replace(
+            result,
+            "([a-z0-9])([A-Z])",
+            "$1_$2");
+        return result.ToLowerInvariant();
+    }
+
+    private static string ResolveTableName(string entityName, string? configuredTableName)
+    {
+        if (!string.IsNullOrWhiteSpace(configuredTableName))
+            return configuredTableName.Trim();
+
+        var tableName = ToSnakeCase(entityName);
+        return tableName.EndsWith("s", StringComparison.OrdinalIgnoreCase)
+            ? tableName
+            : tableName + "s";
     }
 
     /// <summary>

@@ -1,31 +1,60 @@
 # CodeMaster MCP Server
 
-CodeMaster.McpServer exposes CodeMaster project metadata and code generation workflows through MCP over stdio.
+`CodeMaster.McpServer` exposes CodeMaster project and code-generation workflows through the official .NET MCP SDK over stdio.
+
+## Architecture
+
+The MCP process never connects to the CodeMaster metadata database.
+
+- Project, module, entity, field, and structure operations call the authenticated CodeMaster WebApi.
+- MCP tokens are validated by CodeMaster and saved under `~/.codemaster/mcp-auth.json`.
+- Initialization, generation, migration, build, and process operations reuse `CodeMaster.LocalAgent` and run on the user's machine.
+- LocalAgent downloads a tenant-filtered generation bundle and templates from WebApi, uses a temporary local SQLite metadata snapshot, and reports completion to WebApi.
 
 ## Tools
 
-- `codemaster_login`: validate and save a CodeMaster MCP token in `~/.codemaster/mcp-auth.json`.
-- `codemaster_logout`: remove saved MCP tokens.
-- `codemaster_whoami`: validate and show the saved MCP identity.
-- `resolve_project_context`: read `.codemaster/project-context.json` from a generated project directory.
-- `query_project`: inspect projects, modules, entities, fields, and relations.
-- `analyze_requirements`: return a CodeMaster-oriented schema checklist and example payload.
-- `create_or_update_entity`: create or add fields/relations without deleting existing metadata.
-- `generate_code`: generate code for an entity and optionally validate generated builds.
+- `codemaster_login`
+- `codemaster_logout`
+- `codemaster_whoami`
+- `resolve_project_context`
+- `query_project`
+- `analyze_requirements`
+- `save_project`
+- `save_module`
+- `create_or_update_entity`
+- `run_project_operation`
+- `generate_code`
+- `get_project_structure`
 
-## Auth And Project Context
+`create_or_update_entity` supports the same relation metadata used by the Web UI:
 
-Generated projects contain `.codemaster/project-context.json` with the CodeMaster project id, project name, ports, database type, and optional server base URL. It does not contain user tokens.
+- `relations`: legacy one-to-many child-table relations.
+- `ownedOneRelations`: owned one-to-one composition relations, resolved across modules in the same project.
+- `fields[].resultMappings`: `select-table` source-to-local field assignments.
 
-For production-style MCP usage:
+Entity capability rules are shared by Web UI, Agent, MCP, generated services, and migration scanning:
+
+- Every generated entity starts from `IBaseEntity`.
+- `hasPrimaryKey=true` adds the standard `long Id`, `IEntity<long>`, migration scanning, and `getById` support.
+- `isReadOnly=true` disables create/update/delete. A keyed read-only entity keeps `getById`; a keyless read-only entity exposes list/query/export only.
+- Writable and tree entities require a primary key.
+- Audit fields are `CreateUserId`, `CreateBy`, `CreateTime`, `UpdateUserId`, `UpdateBy`, and `UpdateTime`.
+
+Field controls include `input`, `textarea`, `number`, `select`, `select-table`, `date`, `datetime`, `switch`, `checkbox`, `radio-group`, `checkbox-group`, `file`, `image`, `editor`, and `cascader`.
+
+- Computed fields use `fieldCategory=Computed` and arithmetic formulas with `[FieldName]` references.
+- Aggregate fields use `fieldCategory=Aggregate`, `aggregateType=Sum|Avg|Concat`, and a child field from an existing one-to-many relation.
+
+All metadata writes still go through the authenticated CodeMaster WebApi. The MCP process does not receive or require a database connection string.
+
+## Authentication And Project Context
 
 1. Generate an MCP Token in CodeMaster personal center.
-2. Open the generated project directory in the AI client.
-3. Call `resolve_project_context` to confirm the current project.
-4. Call `codemaster_login` with the token. If the context has no `serverBaseUrl`, pass it explicitly.
-5. Future MCP calls can omit `projectId`; tools resolve it from `.codemaster/project-context.json`.
+2. Open a generated project directory containing `.codemaster/project-context.json`.
+3. Call `codemaster_login` once and paste the token.
+4. Future tools resolve `serverBaseUrl` and `projectId` from project context and the saved token.
 
-Saved tokens live in `~/.codemaster/mcp-auth.json`, outside the generated project.
+Tokens are never written into generated project directories.
 
 ## Build
 
@@ -33,28 +62,7 @@ Saved tokens live in `~/.codemaster/mcp-auth.json`, outside the generated projec
 dotnet build CodeMaster.McpServer/CodeMaster.McpServer.csproj
 ```
 
-## Recommended MCP Config
-
-Use a prebuilt server so dotnet restore/build output cannot pollute MCP stdout.
-
-```json
-{
-  "mcpServers": {
-    "codemaster": {
-      "command": "dotnet",
-      "args": [
-        "run",
-        "--project",
-        "D:/MyHomeWorks/CodeMaster/CodeMaster.McpServer/CodeMaster.McpServer.csproj",
-        "--no-build"
-      ],
-      "cwd": "D:/MyHomeWorks/CodeMaster"
-    }
-  }
-}
-```
-
-Direct DLL launch is also valid after building:
+## Recommended MCP Configuration
 
 ```json
 {
@@ -64,10 +72,10 @@ Direct DLL launch is also valid after building:
       "args": [
         "D:/MyHomeWorks/CodeMaster/CodeMaster.McpServer/bin/Debug/net10.0/CodeMaster.McpServer.dll"
       ],
-      "cwd": "D:/MyHomeWorks/CodeMaster"
+      "cwd": "D:/your-generated-project"
     }
   }
 }
 ```
 
-The server writes MCP JSON-RPC responses only to stdout. Diagnostics and application logs go to stderr.
+Use a prebuilt DLL. Running `dotnet run` can write restore/build output before the MCP stdio transport starts.

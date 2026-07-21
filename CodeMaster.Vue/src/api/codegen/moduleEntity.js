@@ -107,6 +107,28 @@ export function generateIncrementalCode(id) {
   )
 }
 
+export function generateProjectCode(projectId, entityIds = []) {
+  const data = { projectId, entityIds }
+  return executeCodegenAction('generateProjectCode', data, () =>
+    request({
+      url: '/codegen/moduleentity/generateprojectcode',
+      method: 'post',
+      data
+    })
+  )
+}
+
+export function generateProjectIncrementalCode(projectId, entityIds = []) {
+  const data = { projectId, entityIds }
+  return executeCodegenAction('generateProjectIncrementalCode', data, () =>
+    request({
+      url: '/codegen/moduleentity/generateprojectincrementalcode',
+      method: 'post',
+      data
+    })
+  )
+}
+
 /**
  * 同步菜单到目标项目数据库
  */
@@ -119,6 +141,17 @@ export function syncMenu(id) {
   )
 }
 
+export function syncProjectMenus(projectId, entityIds = []) {
+  const data = { projectId, entityIds }
+  return executeCodegenAction('syncProjectMenus', data, () =>
+    request({
+      url: '/codegen/moduleentity/syncprojectmenustotarget',
+      method: 'post',
+      data
+    })
+  )
+}
+
 /**
  * 同步字段多语言到目标项目数据库
  */
@@ -127,6 +160,17 @@ export function syncLanguage(id) {
     request({
       url: `/codegen/moduleentity/synclanguagetotarget/${id}`,
       method: 'post'
+    })
+  )
+}
+
+export function syncProjectLanguages(projectId, entityIds = []) {
+  const data = { projectId, entityIds }
+  return executeCodegenAction('syncProjectLanguages', data, () =>
+    request({
+      url: '/codegen/moduleentity/syncprojectlanguagestotarget',
+      method: 'post',
+      data
     })
   )
 }
@@ -155,6 +199,14 @@ export function deleteChildRelation(id, childEntityName) {
     url: `/codegen/moduleentity/deletechildrelation/${id}`,
     method: 'delete',
     params: { childEntityName }
+  })
+}
+
+export function deleteEntityRelation(id, relationId) {
+  return request({
+    url: `/codegen/moduleentity/deleteentityrelation/${id}`,
+    method: 'delete',
+    params: { relationId }
   })
 }
 

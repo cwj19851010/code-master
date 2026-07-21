@@ -166,6 +166,16 @@ translations_export.json
 translations_clean.json
 webapi.pid
 
+# Local runtime configuration. Commit sanitized appsettings.example.json files instead.
+**/appsettings.json
+**/appsettings.*.json
+!**/appsettings.example.json
+!**/appsettings.*.example.json
+
+# Generated-project templates must retain their default application configuration.
+!Templates/**/appsettings.json
+!Templates/**/appsettings.*.json
+
 # Root-level scratch scripts used during manual repair/smoke testing
 /*.csx
 /*.py

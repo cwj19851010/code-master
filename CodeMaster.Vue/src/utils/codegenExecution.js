@@ -3,7 +3,9 @@ import { getToken } from '@/utils/auth'
 import { isTauriRuntime } from '@/utils/tauriBridge'
 
 const CLIENT_CONFIG_KEY = 'codeMasterClientConfig'
-export const DEFAULT_CODEMASTER_SERVER_BASE_URL = import.meta.env.VITE_CODEMASTER_SERVER_BASE_URL || ''
+const CLIENT_CONFIG_VERSION = 2
+export const DEFAULT_CODEMASTER_SERVER_BASE_URL =
+  import.meta.env.VITE_CODEMASTER_SERVER_BASE_URL || 'http://124.221.136.83:8000'
 
 export function normalizeCodeMasterServerBaseUrl(value) {
   let raw = String(value || '').trim()
@@ -36,7 +38,19 @@ export function getCodeMasterClientConfig() {
   }
 
   try {
-    return JSON.parse(raw) || {}
+    const config = JSON.parse(raw) || {}
+    if (isTauriRuntime() && Number(config.configVersion || 0) < CLIENT_CONFIG_VERSION) {
+      const migrated = {
+        ...config,
+        configVersion: CLIENT_CONFIG_VERSION
+      }
+      if (!config.serverBaseUrl || isLegacyLocalServerBaseUrl(config.serverBaseUrl)) {
+        migrated.serverBaseUrl = DEFAULT_CODEMASTER_SERVER_BASE_URL
+      }
+      localStorage.setItem(CLIENT_CONFIG_KEY, JSON.stringify(migrated))
+      return migrated
+    }
+    return config
   } catch (error) {
     console.error('Failed to parse CodeMaster client config:', error)
     return {}
@@ -44,7 +58,20 @@ export function getCodeMasterClientConfig() {
 }
 
 export function saveCodeMasterClientConfig(config) {
-  localStorage.setItem(CLIENT_CONFIG_KEY, JSON.stringify(config || {}))
+  localStorage.setItem(CLIENT_CONFIG_KEY, JSON.stringify({
+    ...(config || {}),
+    configVersion: CLIENT_CONFIG_VERSION
+  }))
+}
+
+function isLegacyLocalServerBaseUrl(value) {
+  try {
+    const normalized = normalizeCodeMasterServerBaseUrl(value)
+    const hostname = new URL(normalized).hostname.toLowerCase()
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '[::1]'
+  } catch {
+    return true
+  }
 }
 
 function getClientConfig() {

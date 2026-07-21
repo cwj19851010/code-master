@@ -29,6 +29,16 @@
           <breadcrumb class="breadcrumb" />
         </div>
         <div class="header-right">
+          <el-tooltip content="AI 助手" placement="bottom">
+            <el-button
+              class="agent-trigger"
+              text
+              circle
+              aria-label="AI 助手"
+              :icon="ChatDotRound"
+              @click="agentVisible = true"
+            />
+          </el-tooltip>
           <theme-picker class="header-item" />
           <language-switcher class="header-item" />
 
@@ -58,6 +68,8 @@
         </router-view>
       </el-main>
     </el-container>
+
+    <agent-drawer v-model="agentVisible" />
   </el-container>
 </template>
 
@@ -65,7 +77,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Fold, Expand } from '@element-plus/icons-vue'
+import { Fold, Expand, ChatDotRound } from '@element-plus/icons-vue'
 import SidebarItem from './SidebarItem.vue'
 import ThemePicker from './components/ThemePicker.vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
@@ -78,6 +90,7 @@ import { useSettingsStore } from '@/stores/settings'
 import { useTagsViewStore } from '@/stores/tagsView'
 import { useI18n } from 'vue-i18n'
 import defaultAvatarImg from '@/assets/images/default-avatar.svg'
+import AgentDrawer from '@/components/AgentAssistant/AgentDrawer.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -88,6 +101,7 @@ const tagsViewStore = useTagsViewStore()
 const { t } = useI18n()
 
 const isCollapse = ref(false)
+const agentVisible = ref(false)
 const defaultAvatar = defaultAvatarImg
 
 const userInfo = computed(() => userStore.userInfo)
@@ -241,6 +255,16 @@ onUnmounted(async () => {
       display: flex;
       align-items: center;
       flex-shrink: 0;
+    }
+
+    .agent-trigger {
+      color: var(--app-text-muted, #64748b);
+      font-size: 18px;
+
+      &:hover {
+        color: var(--app-primary, #2563eb);
+        background: rgba(var(--app-primary-rgb, 37, 99, 235), 0.08);
+      }
     }
 
     .user-info {

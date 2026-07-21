@@ -105,6 +105,7 @@ public class CodeMasterClient : IDisposable
             ("/api/codegen/project/initialize/step4", "Step4_更新端口配置"),
             ("/api/codegen/project/initialize/step7", "Step7_还原依赖"),
             ("/api/codegen/project/initialize/step8", "Step8_写入翻译"),
+            ("/api/codegen/project/initialize/step9", "Step9_安装前端依赖"),
         };
 
         foreach (var (url, stepName) in stepApis)

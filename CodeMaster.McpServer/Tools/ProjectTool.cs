@@ -1,6 +1,5 @@
 using System.Text.Json;
 using CodeMaster.Application.Dtos.CodeGen;
-using CodeMaster.Application.Services.CodeGen;
 using CodeMaster.Core.Enums;
 using CodeMaster.McpServer.Services;
 
@@ -11,12 +10,12 @@ namespace CodeMaster.McpServer.Tools;
 /// </summary>
 public class ProjectTool
 {
-    private readonly IProjectService _projectService;
+    private readonly CodeMasterApiClient _apiClient;
     private readonly ProjectContextResolver _contextResolver;
 
-    public ProjectTool(IProjectService projectService, ProjectContextResolver contextResolver)
+    public ProjectTool(CodeMasterApiClient apiClient, ProjectContextResolver contextResolver)
     {
-        _projectService = projectService;
+        _apiClient = apiClient;
         _contextResolver = contextResolver;
     }
 
@@ -59,7 +58,7 @@ public class ProjectTool
             if (string.IsNullOrWhiteSpace(args.ProjectName))
                 return new { success = false, message = "projectName is required when creating a project." };
 
-            var id = await _projectService.CreateAsync(new CreateProjectDto
+            var id = await _apiClient.PostAsync<long>("/api/codegen/project/create", new CreateProjectDto
             {
                 ProjectName = args.ProjectName,
                 DisplayName = args.DisplayName ?? args.ProjectName,
@@ -73,7 +72,7 @@ public class ProjectTool
                 ProjectType = ParseProjectType(args.ProjectType, ProjectType.Server),
                 FrontendPort = args.FrontendPort,
                 BackendPort = args.BackendPort
-            });
+            }, args.WorkspacePath);
 
             return new { success = true, isNew = true, projectId = id.ToString(), projectName = args.ProjectName };
         }
@@ -95,7 +94,7 @@ public class ProjectTool
             BackendPort = args.BackendPort ?? existing.BackendPort
         };
 
-        await _projectService.UpdateAsync(existing.Id, update);
+        await _apiClient.PutAsync<int>($"/api/codegen/project/update/{existing.Id}", update, args.WorkspacePath);
         return new
         {
             success = true,
@@ -109,12 +108,15 @@ public class ProjectTool
     private async Task<ProjectDto?> ResolveExistingAsync(ProjectToolInput args)
     {
         if (args.ProjectId > 0)
-            return await _projectService.GetByIdAsync(args.ProjectId);
+            return await _apiClient.GetAsync<ProjectDto>($"/api/codegen/project/getbyid/{args.ProjectId}", args.WorkspacePath);
 
         if (string.IsNullOrWhiteSpace(args.ProjectName))
             return null;
 
-        var projects = await _projectService.GetListAsync(new ProjectQueryDto { ProjectName = args.ProjectName, PageSize = 1000 });
+        var projectName = Uri.EscapeDataString(args.ProjectName);
+        var projects = await _apiClient.GetAsync<List<ProjectDto>>(
+            $"/api/codegen/project/getlist?projectName={projectName}&pageSize=1000",
+            args.WorkspacePath);
         return projects.FirstOrDefault(p => string.Equals(p.ProjectName, args.ProjectName, StringComparison.OrdinalIgnoreCase));
     }
 

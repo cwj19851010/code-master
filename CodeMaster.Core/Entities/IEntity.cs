@@ -4,7 +4,7 @@ namespace CodeMaster.Core.Entities;
 /// 实体标记接口（泛型），用于标识需要生成 EF Core 配置的实体
 /// </summary>
 /// <typeparam name="TKey">主键类型</typeparam>
-public interface IEntity<TKey>
+public interface IEntity<TKey> : IBaseEntity
 {
     /// <summary>
     /// 主键ID

@@ -1,39 +1,44 @@
 using System.Text.Json;
-using CodeMaster.Application.Dtos.CodeGen;
-using CodeMaster.Application.Services.CodeGen;
+using CodeMaster.LocalAgent.Models;
+using CodeMaster.LocalAgent.Services;
 using CodeMaster.McpServer.Services;
 
 namespace CodeMaster.McpServer.Tools;
 
-/// <summary>
-/// MCP tool for project initialization and runtime operations.
-/// </summary>
-public class ProjectOperationTool
+public sealed class ProjectOperationTool
 {
-    private readonly IProjectService _projectService;
+    private const int MaxMcpOutputLength = 12_000;
+    private const int OutputHeadLength = 2_000;
+
+    private readonly LocalCodegenExecutionService _localExecutor;
+    private readonly CodeMasterApiClient _apiClient;
     private readonly ProjectContextResolver _contextResolver;
 
-    public ProjectOperationTool(IProjectService projectService, ProjectContextResolver contextResolver)
+    public ProjectOperationTool(
+        LocalCodegenExecutionService localExecutor,
+        CodeMasterApiClient apiClient,
+        ProjectContextResolver contextResolver)
     {
-        _projectService = projectService;
+        _localExecutor = localExecutor;
+        _apiClient = apiClient;
         _contextResolver = contextResolver;
     }
 
     public static McpTool Definition => new()
     {
         Name = "run_project_operation",
-        Description = "Run CodeMaster project operations through the shared project service: initialize, initialize_step, start_frontend, start_backend, start_all, stop_frontend, stop_backend, stop_all, status, migrate_database, or build.",
+        Description = "Run initialization, migration, build, start, stop, status, project menu sync, or project language sync on the local generated project. Metadata and templates are downloaded from CodeMaster WebApi; the CodeMaster database is never opened by MCP.",
         InputType = typeof(ProjectOperationInput),
         InputSchema = JsonSerializer.SerializeToNode(new
         {
             type = "object",
             properties = new
             {
-                operation = new { type = "string", description = "initialize, initialize_step, start_frontend, start_backend, start_all, stop_frontend, stop_backend, stop_all, status, migrate_database, or build." },
+                operation = new { type = "string", description = "initialize, initialize_step, start_frontend, start_backend, start_all, stop_frontend, stop_backend, stop_all, status, migrate_database, build, sync_menus, or sync_languages." },
                 projectId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Target project id." },
-                targetPath = new { type = "string", description = "Optional initialization target path." },
+                targetPath = new { type = "string", description = "Optional local initialization target path." },
                 step = new { type = "integer", description = "Step number 1-11 when operation=initialize_step." },
-                workspacePath = new { type = "string", description = "Optional generated project directory. Used to resolve projectId from .codemaster/project-context.json." }
+                workspacePath = new { type = "string", description = "Optional generated project directory. Used to resolve projectId and serverBaseUrl from .codemaster/project-context.json." }
             },
             required = new[] { "operation" }
         })!
@@ -42,92 +47,93 @@ public class ProjectOperationTool
     public async Task<object?> HandleAsync(object? input)
     {
         var args = (ProjectOperationInput?)input ?? throw new ArgumentException("Invalid input");
-        args.ProjectId = await McpProjectContextHelper.ResolveProjectIdAsync(_contextResolver, args.ProjectId, args.WorkspacePath);
+        args.ProjectId = await McpProjectContextHelper.ResolveProjectIdAsync(
+            _contextResolver,
+            args.ProjectId,
+            args.WorkspacePath);
+
         if (args.ProjectId <= 0)
             return new { success = false, message = "projectId is required." };
 
         return args.Operation switch
         {
-            "initialize" => await InitializeAsync(args),
-            "initialize_step" => await InitializeStepAsync(args),
-            "start_frontend" => await _projectService.StartFrontendAsync(new ProjectActionDto { ProjectId = args.ProjectId }),
-            "start_backend" => await _projectService.StartBackendAsync(new ProjectActionDto { ProjectId = args.ProjectId }),
-            "start_all" => await StartAllAsync(args.ProjectId),
-            "stop_frontend" => await _projectService.StopFrontendAsync(new ProjectActionDto { ProjectId = args.ProjectId }),
-            "stop_backend" => await _projectService.StopBackendAsync(new ProjectActionDto { ProjectId = args.ProjectId }),
-            "stop_all" => await StopAllAsync(args.ProjectId),
-            "status" => await _projectService.GetStatusAsync(new ProjectActionDto { ProjectId = args.ProjectId }),
-            "migrate_database" => await _projectService.MigrateDatabaseAsync(new ProjectActionDto { ProjectId = args.ProjectId }),
-            "build" => await _projectService.BuildAsync(new ProjectActionDto { ProjectId = args.ProjectId }),
-            _ => new { success = false, message = "operation must be one of: initialize, initialize_step, start_frontend, start_backend, start_all, stop_frontend, stop_backend, stop_all, status, migrate_database, build." }
-        };
-    }
-
-    private async Task<object> InitializeAsync(ProjectOperationInput args)
-    {
-        var ok = await _projectService.InitializeAsync(new InitializeProjectDto
-        {
-            Id = args.ProjectId,
-            TargetPath = args.TargetPath
-        });
-
-        return new { success = ok, projectId = args.ProjectId.ToString(), message = ok ? "Project initialized." : "Project initialization failed." };
-    }
-
-    private async Task<object> InitializeStepAsync(ProjectOperationInput args)
-    {
-        var dto = new InitializeStepDto { ProjectId = args.ProjectId, TargetPath = args.TargetPath };
-        return args.Step switch
-        {
-            1 => await _projectService.Step1_ExtractTemplateAsync(dto),
-            2 => await _projectService.Step2_GenerateSolutionAsync(dto),
-            3 => await _projectService.Step3_UpdateDatabaseConfigAsync(dto),
-            4 => await _projectService.Step4_UpdatePortConfigAsync(dto),
-            5 => await _projectService.Step5_CreateMigrationAsync(dto),
-            6 => await _projectService.Step6_ApplyMigrationAsync(dto),
-            7 => await _projectService.Step7_DotnetRestoreAsync(dto),
-            8 => await _projectService.Step8_WriteTranslationsAsync(dto),
-            9 => await _projectService.Step9_NpmInstallAsync(dto),
-            10 => await _projectService.Step10_StartBackendAsync(dto),
-            11 => await _projectService.Step11_StartFrontendAsync(dto),
-            _ => new InitializeStepResultDto
+            "initialize" => await ExecuteAsync("initializeProject", args),
+            "initialize_step" when args.Step is >= 1 and <= 11 =>
+                await ExecuteAsync($"initializeStep{args.Step}", args),
+            "start_frontend" => await ExecuteAsync("startFrontend", args),
+            "start_backend" => await ExecuteAsync("startBackend", args),
+            "start_all" => await ExecuteAsync("startProject", args),
+            "stop_frontend" => await ExecuteAsync("stopFrontend", args),
+            "stop_backend" => await ExecuteAsync("stopBackend", args),
+            "stop_all" => await ExecuteAsync("stopProject", args),
+            "status" => await ExecuteAsync("getProjectStatus", args),
+            "migrate_database" => await ExecuteAsync("migrateDatabase", args),
+            "build" => await ExecuteAsync("buildProject", args),
+            "sync_menus" => await ExecuteAsync("syncProjectMenus", args),
+            "sync_languages" => await ExecuteAsync("syncProjectLanguages", args),
+            _ => new
             {
-                Success = false,
-                Message = "step must be between 1 and 11.",
-                Step = "invalid_step",
-                Progress = 0
+                success = false,
+                message = "operation must be one of: initialize, initialize_step, start_frontend, start_backend, start_all, stop_frontend, stop_backend, stop_all, status, migrate_database, build, sync_menus, sync_languages."
             }
         };
     }
 
-    private async Task<object> StartAllAsync(long projectId)
+    private async Task<object> ExecuteAsync(string action, ProjectOperationInput args)
     {
-        var backend = await _projectService.StartBackendAsync(new ProjectActionDto { ProjectId = projectId });
-        var frontend = await _projectService.StartFrontendAsync(new ProjectActionDto { ProjectId = projectId });
-        return new
+        var session = await _apiClient.ResolveSessionAsync(args.WorkspacePath);
+        var payload = JsonSerializer.SerializeToElement(new
         {
-            success = backend.Success && frontend.Success,
-            projectId = projectId.ToString(),
-            backend,
-            frontend
-        };
+            projectId = args.ProjectId,
+            targetPath = args.TargetPath
+        });
+
+        var result = await _localExecutor.ExecuteAsync(action, new LocalExecutionRequest
+        {
+            Action = action,
+            Payload = payload,
+            ServerBaseUrl = session.ServerBaseUrl,
+            AccessToken = session.AccessToken
+        });
+
+        return CompactOperationResult(result);
     }
 
-    private async Task<object> StopAllAsync(long projectId)
+    private static object CompactOperationResult(LocalExecutionResult result)
     {
-        var frontend = await _projectService.StopFrontendAsync(new ProjectActionDto { ProjectId = projectId });
-        var backend = await _projectService.StopBackendAsync(new ProjectActionDto { ProjectId = projectId });
+        var output = result.Output ?? string.Empty;
+        if (output.Length <= MaxMcpOutputLength)
+        {
+            return new
+            {
+                success = result.Success,
+                message = result.Message,
+                data = result.Data,
+                output,
+                outputTruncated = false
+            };
+        }
+
+        var tailLength = MaxMcpOutputLength - OutputHeadLength;
+        var compactOutput = output[..OutputHeadLength] +
+                            Environment.NewLine +
+                            $"... MCP output truncated ({output.Length - MaxMcpOutputLength} characters omitted) ..." +
+                            Environment.NewLine +
+                            output[^tailLength..];
+
         return new
         {
-            success = backend.Success && frontend.Success,
-            projectId = projectId.ToString(),
-            backend,
-            frontend
+            success = result.Success,
+            message = result.Message,
+            data = result.Data,
+            output = compactOutput,
+            outputTruncated = true,
+            originalOutputLength = output.Length
         };
     }
 }
 
-public class ProjectOperationInput
+public sealed class ProjectOperationInput
 {
     public string Operation { get; set; } = string.Empty;
     public long ProjectId { get; set; }

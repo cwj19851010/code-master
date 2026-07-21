@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CodeMaster.Application.Dtos.CodeGen;
 using CodeMaster.Application.Services.CodeGen;
@@ -53,8 +54,12 @@ public class LocalCodegenExecutionService
                 "initializeStep11" => await RunInitializationStepAsync(request, 11),
                 "generateCode" => await GenerateCodeAsync(request),
                 "generateIncrementalCode" => await GenerateIncrementalCodeAsync(request),
+                "generateProjectCode" => await GenerateProjectCodeAsync(request, incremental: false),
+                "generateProjectIncrementalCode" => await GenerateProjectCodeAsync(request, incremental: true),
                 "syncMenu" => await SyncMenuAsync(request),
                 "syncLanguage" => await SyncLanguageAsync(request),
+                "syncProjectMenus" => await SyncProjectMenusAsync(request),
+                "syncProjectLanguages" => await SyncProjectLanguagesAsync(request),
                 "syncModuleToMenu" => await SyncModuleToMenuAsync(request),
                 "getPageContent" => await GetPageContentAsync(request),
                 "savePageContent" => await SavePageContentAsync(request),
@@ -65,6 +70,8 @@ public class LocalCodegenExecutionService
                 "getDictTypes" => await GetDictTypesAsync(request),
                 "migrateDatabase" => await MigrateDatabaseAsync(request),
                 "buildProject" => await BuildProjectAsync(request),
+                "buildFrontend" => await BuildFrontendAsync(request),
+                "enhanceUiPage" => await EnhanceUiPageAsync(request),
                 "startFrontend" => await StartFrontendAsync(request),
                 "startBackend" => await StartBackendAsync(request),
                 "startProject" => await StartProjectAsync(request),
@@ -233,6 +240,32 @@ public class LocalCodegenExecutionService
         return LocalExecutionResult.Ok("增量生成完成");
     }
 
+    private async Task<LocalExecutionResult> GenerateProjectCodeAsync(LocalExecutionRequest request, bool incremental)
+    {
+        var projectId = GetRequiredLong(request.Payload, "projectId", "id");
+        var entityIds = GetLongList(request.Payload, "entityIds");
+        var bundle = await _serverClient.GetGenerationBundleAsync(request.ServerBaseUrl, projectId, request.AccessToken);
+        ApplyProjectOverrides(bundle.Project, request.Payload);
+
+        using var context = await _metadataStore.CreateAsync(bundle, GetFullProjectPathOverride(bundle.Project, request.Payload));
+        var input = new ProjectCodeGenerationDto
+        {
+            ProjectId = projectId,
+            EntityIds = entityIds
+        };
+        if (incremental)
+            await context.ModuleEntityService.GenerateProjectIncrementalCodeAsync(input);
+        else
+            await context.ModuleEntityService.GenerateProjectCodeAsync(input);
+
+        var message = incremental && input.EntityIds.Count == 0
+            ? "未检测到需要增量生成的实体"
+            : incremental
+                ? $"项目增量生成完成，共处理 {input.EntityIds.Count} 个实体"
+                : $"项目全量重新生成完成，共处理 {input.EntityIds.Count} 个实体";
+        return LocalExecutionResult.Ok(message, new { entityIds = input.EntityIds });
+    }
+
     private async Task<LocalExecutionResult> SyncMenuAsync(LocalExecutionRequest request)
     {
         var entityId = GetRequiredLong(request.Payload, "entityId", "id");
@@ -251,6 +284,38 @@ public class LocalCodegenExecutionService
         using var context = await _metadataStore.CreateAsync(bundle, GetFullProjectPathOverride(bundle.Project, request.Payload));
         await context.ModuleEntityService.SyncLanguageToTargetAsync(entityId);
         return LocalExecutionResult.Ok("多语言同步完成");
+    }
+
+    private async Task<LocalExecutionResult> SyncProjectMenusAsync(LocalExecutionRequest request)
+    {
+        var projectId = GetRequiredLong(request.Payload, "projectId", "id");
+        var bundle = await _serverClient.GetGenerationBundleAsync(request.ServerBaseUrl, projectId, request.AccessToken);
+        ApplyProjectOverrides(bundle.Project, request.Payload);
+
+        using var context = await _metadataStore.CreateAsync(bundle, GetFullProjectPathOverride(bundle.Project, request.Payload));
+        var input = new ProjectCodeGenerationDto
+        {
+            ProjectId = projectId,
+            EntityIds = GetLongList(request.Payload, "entityIds")
+        };
+        await context.ModuleEntityService.SyncProjectMenusToTargetAsync(input);
+        return LocalExecutionResult.Ok($"项目菜单同步完成，共处理 {input.EntityIds.Count} 个实体");
+    }
+
+    private async Task<LocalExecutionResult> SyncProjectLanguagesAsync(LocalExecutionRequest request)
+    {
+        var projectId = GetRequiredLong(request.Payload, "projectId", "id");
+        var bundle = await _serverClient.GetGenerationBundleAsync(request.ServerBaseUrl, projectId, request.AccessToken);
+        ApplyProjectOverrides(bundle.Project, request.Payload);
+
+        using var context = await _metadataStore.CreateAsync(bundle, GetFullProjectPathOverride(bundle.Project, request.Payload));
+        var input = new ProjectCodeGenerationDto
+        {
+            ProjectId = projectId,
+            EntityIds = GetLongList(request.Payload, "entityIds")
+        };
+        await context.ModuleEntityService.SyncProjectLanguagesToTargetAsync(input);
+        return LocalExecutionResult.Ok($"项目多语言同步完成，共处理 {input.EntityIds.Count} 个实体");
     }
 
     private async Task<LocalExecutionResult> SyncModuleToMenuAsync(LocalExecutionRequest request)
@@ -383,8 +448,98 @@ public class LocalCodegenExecutionService
         var project = await GetProjectAsync(request);
         var projectPath = GetFullProjectPath(project.ProjectName, project.ProjectPath);
         var slnPath = Path.Combine(projectPath, $"{project.ProjectName}.sln");
-        var output = await RunCommandAsync("dotnet", new[] { "build", slnPath }, projectPath, TimeSpan.FromMinutes(5));
-        return LocalExecutionResult.Ok("项目构建完成", output: output);
+        var frontendPath = Path.Combine(projectPath, $"{project.ProjectName}.Vue");
+        var output = new StringBuilder();
+        try
+        {
+            output.AppendLine("[1/2] 构建后端解决方案...");
+            output.AppendLine(await RunCommandAsync(
+                "dotnet",
+                new[] { "build", slnPath },
+                projectPath,
+                TimeSpan.FromMinutes(5)));
+
+            if (Directory.Exists(frontendPath) && File.Exists(Path.Combine(frontendPath, "package.json")))
+            {
+                output.AppendLine("[2/2] 构建前端项目...");
+                var npmCommand = OperatingSystem.IsWindows() ? "npm.cmd" : "npm";
+                output.AppendLine(await RunCommandAsync(
+                    npmCommand,
+                    new[] { "run", "build" },
+                    frontendPath,
+                    TimeSpan.FromMinutes(10)));
+            }
+            else
+            {
+                output.AppendLine("[2/2] 未发现前端 package.json，跳过前端构建。");
+            }
+
+            return LocalExecutionResult.Ok("项目前后端构建完成", output: output.ToString());
+        }
+        catch (Exception ex)
+        {
+            var failureMessage = GetFirstLine(FormatExceptionMessage(ex));
+            output.AppendLine(ex.ToString());
+            return LocalExecutionResult.Fail(
+                $"项目构建失败: {failureMessage}",
+                BuildDiagnosticFormatter.Summarize(output.ToString(), failureMessage));
+        }
+    }
+
+    private async Task<LocalExecutionResult> BuildFrontendAsync(LocalExecutionRequest request)
+    {
+        var project = await GetProjectAsync(request);
+        var projectPath = GetFullProjectPath(project.ProjectName, project.ProjectPath);
+        var frontendPath = Path.Combine(projectPath, $"{project.ProjectName}.Vue");
+        var npmCommand = OperatingSystem.IsWindows() ? "npm.cmd" : "npm";
+        var output = await RunCommandAsync(
+            npmCommand,
+            new[] { "run", "build" },
+            frontendPath,
+            TimeSpan.FromMinutes(10));
+        return LocalExecutionResult.Ok("Frontend build completed", output: output);
+    }
+
+    private async Task<LocalExecutionResult> EnhanceUiPageAsync(LocalExecutionRequest request)
+    {
+        var projectId = GetRequiredLong(request.Payload, "projectId", "id");
+        var bundle = await _serverClient.GetGenerationBundleAsync(request.ServerBaseUrl, projectId, request.AccessToken);
+        ApplyProjectOverrides(bundle.Project, request.Payload);
+        var input = request.Payload.Deserialize<ProjectUiEnhancementDto>(new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString
+        }) ?? throw new InvalidOperationException("Invalid UI enhancement payload");
+        input.ProjectId = projectId;
+        var projectPath = GetFullProjectPath(bundle.Project.ProjectName, bundle.Project.ProjectPath);
+
+        ProjectUiEnhancementResultDto result;
+        if (string.Equals(input.TargetKind, "EntityPage", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!input.EntityId.HasValue)
+                throw new InvalidOperationException("EntityPage design requires entityId");
+            var entity = bundle.Entities.FirstOrDefault(item => item.Id == input.EntityId.Value)
+                ?? throw new InvalidOperationException($"Entity not found: {input.EntityId.Value}");
+            var module = bundle.Modules.FirstOrDefault(item => item.Id == entity.ModuleId)
+                ?? throw new InvalidOperationException($"Entity module not found: {entity.ModuleId}");
+            result = await ProjectUiDesignService.ApplyEntityPageAsync(
+                bundle.Project,
+                module,
+                entity,
+                input,
+                projectPath);
+        }
+        else
+        {
+            result = await ProjectUiPageRenderer.ApplyAsync(
+                bundle.Project,
+                bundle.Modules,
+                bundle.Entities,
+                input,
+                projectPath);
+        }
+
+        return LocalExecutionResult.Ok(result.Message, result);
     }
 
     private async Task<LocalExecutionResult> StartFrontendAsync(LocalExecutionRequest request)
@@ -584,11 +739,11 @@ public class LocalCodegenExecutionService
             throw new DirectoryNotFoundException(workingDirectory);
 
         using var cts = new CancellationTokenSource(timeout);
-        var output = new StringBuilder();
         var startInfo = new ProcessStartInfo
         {
             FileName = fileName,
             WorkingDirectory = workingDirectory,
+            RedirectStandardInput = true,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
@@ -599,20 +754,48 @@ public class LocalCodegenExecutionService
             startInfo.ArgumentList.Add(arg);
 
         using var process = new Process { StartInfo = startInfo };
-        process.OutputDataReceived += (_, e) => { if (e.Data != null) output.AppendLine(e.Data); };
-        process.ErrorDataReceived += (_, e) => { if (e.Data != null) output.AppendLine(e.Data); };
-
         if (!process.Start())
             throw new InvalidOperationException($"Failed to start process: {fileName}");
 
-        process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
-        await process.WaitForExitAsync(cts.Token);
+        process.StandardInput.Close();
+        var standardOutputTask = process.StandardOutput.ReadToEndAsync();
+        var standardErrorTask = process.StandardError.ReadToEndAsync();
+        try
+        {
+            await process.WaitForExitAsync(cts.Token);
+        }
+        catch (OperationCanceledException ex) when (cts.IsCancellationRequested)
+        {
+            if (!process.HasExited)
+                process.Kill(entireProcessTree: true);
+
+            await process.WaitForExitAsync();
+            var timedOutOutput = CombineProcessOutput(
+                await standardOutputTask,
+                await standardErrorTask);
+            throw new TimeoutException(
+                $"{fileName} {string.Join(' ', args)} timed out after {timeout.TotalMinutes:0.#} minutes.\n{timedOutOutput}",
+                ex);
+        }
+
+        var output = CombineProcessOutput(
+            await standardOutputTask,
+            await standardErrorTask);
 
         if (process.ExitCode != 0)
             throw new InvalidOperationException($"{fileName} {string.Join(' ', args)} exited with code {process.ExitCode}\n{output}");
 
-        return output.ToString();
+        return output;
+    }
+
+    private static string CombineProcessOutput(string standardOutput, string standardError)
+    {
+        if (string.IsNullOrWhiteSpace(standardOutput))
+            return standardError;
+        if (string.IsNullOrWhiteSpace(standardError))
+            return standardOutput;
+
+        return standardOutput.TrimEnd() + Environment.NewLine + standardError;
     }
 
 
@@ -629,6 +812,21 @@ public class LocalCodegenExecutionService
             ModuleId = GetOptionalLong(request.Payload, "moduleId"),
             CompletedAt = DateTime.UtcNow
         };
+
+        if (action is "generateProjectCode" or "generateProjectIncrementalCode")
+        {
+            complete.EntityIds = GetLongList(request.Payload, "entityIds");
+            if (result.Data != null)
+            {
+                var resultData = JsonSerializer.SerializeToElement(result.Data);
+                if (TryGetProperty(resultData, "entityIds", out _))
+                {
+                    complete.EntityIds = GetLongList(resultData, "entityIds");
+                    if (complete.EntityIds.Count == 0)
+                        return;
+                }
+            }
+        }
 
         if (!complete.ProjectId.HasValue &&
             action is "initializeProject" or "initializeStep11" or "startProject" or "stopProject")
@@ -665,6 +863,8 @@ public class LocalCodegenExecutionService
             "stopProject" or
             "generateCode" or
             "generateIncrementalCode" or
+            "generateProjectCode" or
+            "generateProjectIncrementalCode" or
             "syncModuleToMenu";
     }
 
@@ -750,6 +950,21 @@ public class LocalCodegenExecutionService
         return null;
     }
 
+    private static List<long> GetLongList(JsonElement payload, string name)
+    {
+        if (!TryGetProperty(payload, name, out var value) || value.ValueKind != JsonValueKind.Array)
+            return new List<long>();
+
+        var result = new List<long>();
+        foreach (var item in value.EnumerateArray())
+        {
+            if (TryReadLong(item, out var id) && id > 0)
+                result.Add(id);
+        }
+
+        return result.Distinct().ToList();
+    }
+
     private static string GetRequiredString(JsonElement payload, string name)
     {
         var value = GetString(payload, name);
@@ -831,5 +1046,13 @@ public class LocalCodegenExecutionService
             message = baseException.GetType().FullName ?? ex.GetType().FullName ?? "Unknown local execution error";
 
         return message;
+    }
+
+    private static string GetFirstLine(string value)
+    {
+        return value
+            .Split(new[] { "\r\n", "\n" }, StringSplitOptions.None)
+            .FirstOrDefault()
+            ?.Trim() ?? string.Empty;
     }
 }

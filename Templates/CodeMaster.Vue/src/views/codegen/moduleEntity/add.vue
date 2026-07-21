@@ -80,7 +80,8 @@
         <el-table-column label="选项" width="200">
           <template #default="{ row }">
             <el-tag v-if="row.isPrimaryKey" size="small" type="danger">主键</el-tag>
-            <el-tag v-if="row.isRequired" size="small" type="warning">必填</el-tag>
+            <el-tag v-if="row.isRequired" size="small" type="warning">表单必填</el-tag>
+            <el-tag v-if="row.isNullable" size="small" type="success">数据库可空</el-tag>
             <el-tag v-if="row.isUnique" size="small" type="info">唯一</el-tag>
             <el-tag v-if="row.isIndexed" size="small">索引</el-tag>
           </template>
@@ -164,7 +165,8 @@
           <el-col :span="24">
             <el-form-item label="选项">
               <el-checkbox v-model="fieldForm.isPrimaryKey">主键</el-checkbox>
-              <el-checkbox v-model="fieldForm.isRequired">必填</el-checkbox>
+              <el-checkbox v-model="fieldForm.isRequired">表单/接口必填</el-checkbox>
+              <el-checkbox v-model="fieldForm.isNullable">数据库可空</el-checkbox>
               <el-checkbox v-model="fieldForm.isUnique">唯一</el-checkbox>
               <el-checkbox v-model="fieldForm.isIndexed">索引</el-checkbox>
               <el-checkbox v-model="fieldForm.isSearchable">可搜索</el-checkbox>
@@ -230,6 +232,7 @@ const fieldForm = reactive({
   defaultValue: '',
   isPrimaryKey: false,
   isRequired: false,
+  isNullable: false,
   isUnique: false,
   isIndexed: false,
   isSearchable: false,
@@ -316,6 +319,7 @@ function resetFieldForm() {
     defaultValue: '',
     isPrimaryKey: false,
     isRequired: false,
+    isNullable: false,
     isUnique: false,
     isIndexed: false,
     isSearchable: false,

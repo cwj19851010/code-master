@@ -200,6 +200,17 @@ export function buildProject(projectId) {
   )
 }
 
+export function enhanceUiPage(data) {
+  return executeCodegenAction('enhanceUiPage', data, () =>
+    request({
+      url: '/codegen/project/enhanceuipage',
+      method: 'post',
+      data,
+      timeout: 120000
+    })
+  )
+}
+
 /**
  * 导出模板
  */

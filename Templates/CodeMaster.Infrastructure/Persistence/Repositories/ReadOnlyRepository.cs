@@ -8,7 +8,7 @@ namespace CodeMaster.Infrastructure.Persistence.Repositories;
 /// <summary>
 /// SqlSugar只读仓储实现
 /// </summary>
-public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TEntity : class, IEntity<long>, new()
+public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TEntity : class, IBaseEntity, new()
 {
     protected readonly ISqlSugarClient _db;
 
@@ -17,7 +17,7 @@ public class ReadOnlyRepository<TEntity> : IReadOnlyRepository<TEntity> where TE
         _db = db;
     }
 
-    public virtual dynamic GetQueryable()
+    public virtual ISugarQueryable<TEntity> GetQueryable()
     {
         return _db.Queryable<TEntity>();
     }

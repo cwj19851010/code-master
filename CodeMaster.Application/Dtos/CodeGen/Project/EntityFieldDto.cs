@@ -189,6 +189,8 @@ public class EntityFieldDto : EntityDto
     /// </summary>
     public string? RelatedEntityDisplayFields { get; set; }
 
+    public string? ResultMappings { get; set; }
+
     #endregion
 
     #region 计算/统计字段配置
@@ -373,6 +375,8 @@ public class CreateEntityFieldDto
     /// </summary>
     public string? RelatedEntityDisplayFields { get; set; }
 
+    public string? ResultMappings { get; set; }
+
     public string FieldCategory { get; set; } = "Normal";
     public string? Formula { get; set; }
     public string? AggregateType { get; set; }
@@ -540,6 +544,8 @@ public class UpdateEntityFieldDto
     /// 关联表显示字段列表（JSON 数组）
     /// </summary>
     public string? RelatedEntityDisplayFields { get; set; }
+
+    public string? ResultMappings { get; set; }
 
     public string FieldCategory { get; set; } = "Normal";
     public string? Formula { get; set; }

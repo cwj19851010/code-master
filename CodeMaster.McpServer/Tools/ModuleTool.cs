@@ -1,6 +1,5 @@
 using System.Text.Json;
 using CodeMaster.Application.Dtos.CodeGen;
-using CodeMaster.Application.Services.CodeGen;
 using CodeMaster.McpServer.Services;
 
 namespace CodeMaster.McpServer.Tools;
@@ -10,12 +9,12 @@ namespace CodeMaster.McpServer.Tools;
 /// </summary>
 public class ModuleTool
 {
-    private readonly IProjectModuleService _moduleService;
+    private readonly CodeMasterApiClient _apiClient;
     private readonly ProjectContextResolver _contextResolver;
 
-    public ModuleTool(IProjectModuleService moduleService, ProjectContextResolver contextResolver)
+    public ModuleTool(CodeMasterApiClient apiClient, ProjectContextResolver contextResolver)
     {
-        _moduleService = moduleService;
+        _apiClient = apiClient;
         _contextResolver = contextResolver;
     }
 
@@ -56,7 +55,7 @@ public class ModuleTool
         var module = await ResolveExistingAsync(args);
         if (module == null)
         {
-            var id = await _moduleService.CreateAsync(new CreateProjectModuleDto
+            var id = await _apiClient.PostAsync<long>("/api/codegen/projectmodule/create", new CreateProjectModuleDto
             {
                 ProjectId = args.ProjectId,
                 ModuleName = args.ModuleName,
@@ -65,12 +64,12 @@ public class ModuleTool
                 OrderNum = args.OrderNum ?? 1,
                 RoutePath = args.RoutePath,
                 Remark = args.Remark
-            });
+            }, args.WorkspacePath);
 
             return new { success = true, isNew = true, projectId = args.ProjectId.ToString(), moduleId = id.ToString(), moduleName = args.ModuleName };
         }
 
-        await _moduleService.UpdateAsync(module.Id, new UpdateProjectModuleDto
+        await _apiClient.PutAsync<int>($"/api/codegen/projectmodule/update/{module.Id}", new UpdateProjectModuleDto
         {
             ModuleName = args.ModuleName ?? module.ModuleName,
             ModuleDescription = args.ModuleDescription ?? module.ModuleDescription,
@@ -78,7 +77,7 @@ public class ModuleTool
             OrderNum = args.OrderNum ?? module.OrderNum,
             RoutePath = args.RoutePath ?? module.RoutePath,
             Remark = args.Remark ?? module.Remark
-        });
+        }, args.WorkspacePath);
 
         return new
         {
@@ -94,9 +93,13 @@ public class ModuleTool
     private async Task<ProjectModuleDto?> ResolveExistingAsync(ModuleToolInput args)
     {
         if (args.ModuleId > 0)
-            return await _moduleService.GetByIdAsync(args.ModuleId);
+            return await _apiClient.GetAsync<ProjectModuleDto>(
+                $"/api/codegen/projectmodule/getbyid/{args.ModuleId}",
+                args.WorkspacePath);
 
-        var modules = await _moduleService.GetByProjectIdAsync(args.ProjectId);
+        var modules = await _apiClient.GetAsync<List<ProjectModuleDto>>(
+            $"/api/codegen/projectmodule/getbyprojectid/{args.ProjectId}",
+            args.WorkspacePath);
         return modules.FirstOrDefault(m => string.Equals(m.ModuleName, args.ModuleName, StringComparison.OrdinalIgnoreCase));
     }
 }

@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using CodeMaster.Core.Entities;
+using SqlSugar;
 
 namespace CodeMaster.Core.Repositories;
 
@@ -7,12 +8,12 @@ namespace CodeMaster.Core.Repositories;
 /// 只读仓储接口
 /// </summary>
 /// <typeparam name="TEntity">实体类型</typeparam>
-public interface IReadOnlyRepository<TEntity> where TEntity : class, IEntity<long>
+public interface IReadOnlyRepository<TEntity> where TEntity : class, IBaseEntity
 {
     /// <summary>
     /// 获取可查询对象（返回动态类型，由具体ORM实现）
     /// </summary>
-    dynamic GetQueryable();
+    ISugarQueryable<TEntity> GetQueryable();
 
     /// <summary>
     /// 获取可查询对象（IQueryable）

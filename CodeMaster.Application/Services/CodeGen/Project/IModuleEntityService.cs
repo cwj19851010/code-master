@@ -27,9 +27,19 @@ public interface IModuleEntityService : ICrudApplicationService<ModuleEntity, Mo
     Task<bool> GenerateCodeAsync(long id);
 
     /// <summary>
+    /// Generate one project or a selected set of persisted entities in one execution.
+    /// </summary>
+    Task<bool> GenerateProjectCodeAsync(ProjectCodeGenerationDto input);
+
+    /// <summary>
     /// 增量生成代码（按字段/子表变更合并 tree.json 与页面）
     /// </summary>
     Task<bool> GenerateIncrementalCodeAsync(long id);
+
+    /// <summary>
+    /// Incrementally generate one project or a selected set of persisted entities in one execution.
+    /// </summary>
+    Task<bool> GenerateProjectIncrementalCodeAsync(ProjectCodeGenerationDto input);
 
     /// <summary>
     /// 同步菜单到目标项目数据库
@@ -37,9 +47,19 @@ public interface IModuleEntityService : ICrudApplicationService<ModuleEntity, Mo
     Task<bool> SyncMenuToTargetAsync(long id);
 
     /// <summary>
+    /// 同步项目内全部或指定实体的菜单到目标项目数据库。
+    /// </summary>
+    Task<bool> SyncProjectMenusToTargetAsync(ProjectCodeGenerationDto input);
+
+    /// <summary>
     /// 同步字段多语言到目标项目数据库
     /// </summary>
     Task<bool> SyncLanguageToTargetAsync(long id);
+
+    /// <summary>
+    /// 同步项目内全部或指定实体的多语言到目标项目数据库。
+    /// </summary>
+    Task<bool> SyncProjectLanguagesToTargetAsync(ProjectCodeGenerationDto input);
 
     /// <summary>
     /// 获取页面模板内容（用于可视化设计器加载）
@@ -100,4 +120,6 @@ public interface IModuleEntityService : ICrudApplicationService<ModuleEntity, Mo
     Task<List<SysChildTemplate>> GetChildTemplatesAsync();
 
     Task<bool> SaveChildTemplateAsync(SysChildTemplate template);
+
+    Task<bool> DeleteEntityRelationAsync(long id, long relationId);
 }

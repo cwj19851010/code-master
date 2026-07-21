@@ -5,7 +5,7 @@ namespace CodeMaster.Core.Entities;
 /// <summary>
 /// 树形实体基类（支持路径枚举模型）
 /// </summary>
-public abstract class TreeEntityBase : EntityBase
+public abstract class TreeEntityBase : EntityBase, ITree
 {
     /// <summary>
     /// 父节点ID（根节点为null或0）
