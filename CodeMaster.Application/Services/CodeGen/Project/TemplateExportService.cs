@@ -2,6 +2,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace CodeMaster.Application.Services.CodeGen;
 
@@ -92,11 +93,14 @@ public class TemplateExportService
 
             // 4.5 在 WebApi Program.cs 中删除 CodeGen 相关 using
             await RemoveCodeGenLinesAsync(tempDir);
+            await RemovePlatformWebApiProjectReferencesAsync(tempDir);
             await RemoveFrontendMcpReferencesAsync(tempDir);
+            await RemoveFrontendAgentReferencesAsync(tempDir);
             await RemoveTauriBridgeLinesAsync(tempDir);
             await RewriteRequestWithoutClientBridgeAsync(tempDir);
             await RewriteSignalRWithoutClientBridgeAsync(tempDir);
             await RemoveLoginClientBridgeAsync(tempDir);
+            await RemoveAgentDbContextReferencesAsync(tempDir);
 
             // 5. 复制 template.sln 并重命名
             await CopySolutionTemplateAsync(tempDir);
@@ -313,13 +317,64 @@ public class TemplateExportService
                 "IPublicAccountService",
                 "PublicAccountService",
                 "Application.Services.Community",
-                "McpToken"
+                "McpToken",
+                "CodeMaster.Agent.Extensions",
+                "AddCodeMasterAgent"
             };
             var utf8WithoutBom = new UTF8Encoding(false);
             var lines = await File.ReadAllLinesAsync(programPath, utf8WithoutBom);
             var result = lines.Where(line => !codeGenTypes.Any(t => line.Contains(t))).ToList();
             await File.WriteAllLinesAsync(programPath, result, utf8WithoutBom);
         }
+    }
+
+    internal async Task RemovePlatformWebApiProjectReferencesAsync(string tempDir)
+    {
+        var projectPath = Path.Combine(tempDir, "CodeMaster.WebApi", "CodeMaster.WebApi.csproj");
+        if (!File.Exists(projectPath))
+        {
+            return;
+        }
+
+        await using var input = File.OpenRead(projectPath);
+        var document = await XDocument.LoadAsync(input, LoadOptions.PreserveWhitespace, CancellationToken.None);
+        input.Close();
+
+        var elementsToRemove = document
+            .Descendants()
+            .Where(element =>
+            {
+                var include = element.Attribute("Include")?.Value.Replace('\\', '/');
+                if (string.IsNullOrWhiteSpace(include))
+                {
+                    return false;
+                }
+
+                return element.Name.LocalName switch
+                {
+                    "ProjectReference" => include.Contains("/CodeMaster.Agent/", StringComparison.OrdinalIgnoreCase),
+                    "Content" => include.Contains("/Templates/CodeMaster_Template_", StringComparison.OrdinalIgnoreCase) ||
+                                 include.Contains("/CodeMaster.CodeGenerator/Templates/", StringComparison.OrdinalIgnoreCase),
+                    _ => false
+                };
+            })
+            .ToList();
+
+        foreach (var element in elementsToRemove)
+        {
+            element.Remove();
+        }
+
+        foreach (var itemGroup in document
+                     .Descendants()
+                     .Where(element => element.Name.LocalName == "ItemGroup" && !element.Elements().Any())
+                     .ToList())
+        {
+            itemGroup.Remove();
+        }
+
+        await using var output = File.Create(projectPath);
+        await document.SaveAsync(output, SaveOptions.DisableFormatting, CancellationToken.None);
     }
 
     internal async Task RemoveFrontendMcpReferencesAsync(string tempDir)
@@ -378,6 +433,59 @@ public class TemplateExportService
 
             await File.WriteAllLinesAsync(layoutPath, result, utf8WithoutBom);
         }
+    }
+
+    internal async Task RemoveFrontendAgentReferencesAsync(string tempDir)
+    {
+        var layoutPath = Path.Combine(tempDir, "CodeMaster.Vue", "src", "layout", "index.vue");
+        if (!File.Exists(layoutPath))
+        {
+            return;
+        }
+
+        var utf8WithoutBom = new UTF8Encoding(false);
+        var lines = (await File.ReadAllLinesAsync(layoutPath, utf8WithoutBom)).ToList();
+        var result = new List<string>(lines.Count);
+
+        for (var i = 0; i < lines.Count; i++)
+        {
+            var line = lines[i];
+            if (line.Contains("<el-tooltip content=\"AI 助手\"", StringComparison.Ordinal))
+            {
+                while (i < lines.Count && !lines[i].Contains("</el-tooltip>", StringComparison.Ordinal))
+                {
+                    i++;
+                }
+
+                continue;
+            }
+
+            if (line.Contains("<agent-drawer", StringComparison.OrdinalIgnoreCase) ||
+                line.Contains("@/components/AgentAssistant/", StringComparison.OrdinalIgnoreCase) ||
+                line.Contains("const agentVisible", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (line.TrimStart().StartsWith(".agent-trigger {", StringComparison.Ordinal))
+            {
+                var depth = 0;
+                do
+                {
+                    depth += lines[i].Count(ch => ch == '{');
+                    depth -= lines[i].Count(ch => ch == '}');
+                    i++;
+                }
+                while (i < lines.Count && depth > 0);
+
+                i--;
+                continue;
+            }
+
+            result.Add(line.Replace(", ChatDotRound", string.Empty, StringComparison.Ordinal));
+        }
+
+        await File.WriteAllLinesAsync(layoutPath, result, utf8WithoutBom);
     }
 
     private static bool ContainsFrontendMcpReference(string value)
@@ -442,6 +550,47 @@ public class TemplateExportService
         var content = await File.ReadAllTextAsync(loginPath, utf8WithoutBom);
         content = GeneratedTemplateCleanup.RemoveLoginClientBridge(content);
         await File.WriteAllTextAsync(loginPath, content, utf8WithoutBom);
+    }
+
+    internal async Task RemoveAgentDbContextReferencesAsync(string tempDir)
+    {
+        var dbContextPath = Path.Combine(
+            tempDir,
+            "CodeMaster.Migrator",
+            "Persistence",
+            "EfCore",
+            "CodeMasterDbContext.cs");
+        if (!File.Exists(dbContextPath))
+        {
+            return;
+        }
+
+        var utf8WithoutBom = new UTF8Encoding(false);
+        var lines = (await File.ReadAllLinesAsync(dbContextPath, utf8WithoutBom)).ToList();
+        var result = new List<string>(lines.Count);
+
+        for (var i = 0; i < lines.Count; i++)
+        {
+            var line = lines[i];
+            if (line.Contains(".Domain.Entities.Ai;", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (line.Contains("modelBuilder.Entity<Ai", StringComparison.Ordinal))
+            {
+                while (i < lines.Count && !lines[i].TrimEnd().EndsWith(';'))
+                {
+                    i++;
+                }
+
+                continue;
+            }
+
+            result.Add(line);
+        }
+
+        await File.WriteAllLinesAsync(dbContextPath, result, utf8WithoutBom);
     }
 
     private static string GetCleanRequestJs()
@@ -717,7 +866,9 @@ export const signalRService = new SignalRService()
                 "CodeMaster.E2eTests",
                 "CodeMaster.McpServer",
                 "CodeMaster.LocalAgent",
-                "CodeMaster.LocalAgent.Tests"
+                "CodeMaster.LocalAgent.Tests",
+                "CodeMaster.Agent",
+                "CodeMaster.Agent.Tests"
             };
 
             content = RemoveSolutionProjects(content, projectsToRemove);

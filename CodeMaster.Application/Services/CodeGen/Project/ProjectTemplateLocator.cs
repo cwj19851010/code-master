@@ -1,10 +1,19 @@
 using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 namespace CodeMaster.Application.Services.CodeGen;
 
 internal static class ProjectTemplateLocator
 {
     private const string TemplatePattern = "CodeMaster_Template_*.zip";
+    private static readonly string[] RequiredFrameworkEntries =
+    [
+        "CodeMaster.Core/Entities/ITree.cs",
+        "CodeMaster.Core/Services/IQueryApplicationService.cs",
+        "CodeMaster.Core/Services/IReadOnlyTreeApplicationService.cs",
+        "CodeMaster.Application/Services/QueryApplicationService.cs",
+        "CodeMaster.Application/Services/ReadOnlyTreeApplicationService.cs"
+    ];
 
     public static string ResolveWritableDirectory(
         string? configuredPath,
@@ -74,11 +83,61 @@ internal static class ProjectTemplateLocator
             if (!entries.Contains("CodeMaster.sln", StringComparer.OrdinalIgnoreCase))
                 throw new Exception("Template ZIP must contain CodeMaster.sln at the root");
 
+            var solutionEntry = archive.Entries.First(entry =>
+                NormalizeZipEntryName(entry.FullName).Equals("CodeMaster.sln", StringComparison.OrdinalIgnoreCase));
+            var solutionContent = ReadEntryContent(solutionEntry);
+            var missingSolutionProjects = Regex.Matches(
+                    solutionContent,
+                    "Project\\(\\\"[^\\\"]+\\\"\\)\\s*=\\s*\\\"[^\\\"]+\\\",\\s*\\\"(?<path>[^\\\"]+\\.csproj)\\\"",
+                    RegexOptions.IgnoreCase)
+                .Select(match => NormalizeZipEntryName(match.Groups["path"].Value))
+                .Where(projectPath => !entries.Contains(projectPath, StringComparer.OrdinalIgnoreCase))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            if (missingSolutionProjects.Count > 0)
+            {
+                throw new Exception(
+                    $"Template solution references project files that are not included: {string.Join(", ", missingSolutionProjects)}");
+            }
+
+            var missingProjectReferences = archive.Entries
+                .Where(entry => NormalizeZipEntryName(entry.FullName).EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
+                .SelectMany(entry =>
+                {
+                    var entryName = NormalizeZipEntryName(entry.FullName);
+                    var projectDirectory = entryName.Contains('/')
+                        ? entryName[..entryName.LastIndexOf('/')]
+                        : string.Empty;
+                    var projectContent = ReadEntryContent(entry);
+                    return Regex.Matches(
+                            projectContent,
+                            "<ProjectReference\\s+Include=\\\"(?<path>[^\\\"]+)\\\"",
+                            RegexOptions.IgnoreCase)
+                        .Select(match => NormalizeZipRelativePath(projectDirectory, match.Groups["path"].Value))
+                        .Where(projectPath => !entries.Contains(projectPath, StringComparer.OrdinalIgnoreCase));
+                })
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            if (missingProjectReferences.Count > 0)
+            {
+                throw new Exception(
+                    $"Template project files reference projects that are not included: {string.Join(", ", missingProjectReferences)}");
+            }
+
             if (!entries.Any(entry => entry.StartsWith("CodeMaster.WebApi/", StringComparison.OrdinalIgnoreCase)))
                 throw new Exception("Template ZIP must contain CodeMaster.WebApi");
 
             if (!entries.Any(entry => entry.StartsWith("CodeMaster.Vue/", StringComparison.OrdinalIgnoreCase)))
                 throw new Exception("Template ZIP must contain CodeMaster.Vue");
+
+            var missingFrameworkEntries = RequiredFrameworkEntries
+                .Where(required => !entries.Contains(required, StringComparer.OrdinalIgnoreCase))
+                .ToList();
+            if (missingFrameworkEntries.Count > 0)
+            {
+                throw new Exception(
+                    $"Template ZIP is missing required framework files: {string.Join(", ", missingFrameworkEntries)}");
+            }
 
             var migrationEntry = entries.FirstOrDefault(IsHistoricalMigrationEntry);
             if (migrationEntry != null)
@@ -121,6 +180,42 @@ internal static class ProjectTemplateLocator
                 throw new Exception(
                     $"Template ZIP contains an MCP frontend reference in '{NormalizeZipEntryName(frontendMcpEntry.FullName)}' " +
                     "without the excluded MCP page. Generate a new clean template before initializing a project.");
+            }
+
+            var frontendAgentEntry = archive.Entries.FirstOrDefault(entry =>
+            {
+                var entryName = NormalizeZipEntryName(entry.FullName);
+                if (!entryName.Equals("CodeMaster.Vue/src/layout/index.vue", StringComparison.OrdinalIgnoreCase))
+                {
+                    return false;
+                }
+
+                var content = ReadEntryContent(entry);
+                return content.Contains("AgentAssistant", StringComparison.OrdinalIgnoreCase) ||
+                       content.Contains("<agent-drawer", StringComparison.OrdinalIgnoreCase) ||
+                       content.Contains("agentVisible", StringComparison.Ordinal);
+            });
+            if (frontendAgentEntry != null)
+            {
+                throw new Exception(
+                    "Template ZIP contains a CodeMaster Agent frontend reference without the excluded Agent component. " +
+                    "Generate a new clean template before initializing a project.");
+            }
+
+            var migratorDbContextEntry = archive.Entries.FirstOrDefault(entry =>
+                NormalizeZipEntryName(entry.FullName).Equals(
+                    "CodeMaster.Migrator/Persistence/EfCore/CodeMasterDbContext.cs",
+                    StringComparison.OrdinalIgnoreCase));
+            if (migratorDbContextEntry != null)
+            {
+                var dbContextContent = ReadEntryContent(migratorDbContextEntry);
+                if (dbContextContent.Contains("Domain.Entities.Ai", StringComparison.Ordinal) ||
+                    dbContextContent.Contains("modelBuilder.Entity<Ai", StringComparison.Ordinal))
+                {
+                    throw new Exception(
+                        "Template ZIP contains CodeMaster Agent entity references in the generated-project Migrator. " +
+                        "Generate a new clean template before initializing a project.");
+                }
             }
         }
         catch (InvalidDataException ex)
@@ -179,6 +274,35 @@ internal static class ProjectTemplateLocator
     private static string NormalizeZipEntryName(string entryName)
     {
         return entryName.Replace('\\', '/').TrimStart('/');
+    }
+
+    private static string NormalizeZipRelativePath(string baseDirectory, string relativePath)
+    {
+        var segments = $"{baseDirectory}/{relativePath.Replace('\\', '/')}"
+            .Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var normalized = new List<string>();
+
+        foreach (var segment in segments)
+        {
+            if (segment == ".")
+            {
+                continue;
+            }
+
+            if (segment == "..")
+            {
+                if (normalized.Count > 0)
+                {
+                    normalized.RemoveAt(normalized.Count - 1);
+                }
+
+                continue;
+            }
+
+            normalized.Add(segment);
+        }
+
+        return string.Join('/', normalized);
     }
 
     private static string ReadEntryContent(ZipArchiveEntry entry)

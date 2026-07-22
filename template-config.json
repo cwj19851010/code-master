@@ -71,6 +71,7 @@
       "CodeMaster.Core/Entities/ISoftDelete.cs",
       "CodeMaster.Core/Entities/ITenant.cs",
       "CodeMaster.Core/Entities/ITenantEntity.cs",
+      "CodeMaster.Core/Entities/ITree.cs",
       "CodeMaster.Core/Entities/TreeEntityBase.cs",
 
       "CodeMaster.Core/Enums/BusinessType.cs",
@@ -99,8 +100,10 @@
       "CodeMaster.Core/Services/ICrudService.cs",
       "CodeMaster.Core/Services/IDataPermissionService.cs",
       "CodeMaster.Core/Services/IExcelService.cs",
+      "CodeMaster.Core/Services/IQueryApplicationService.cs",
       "CodeMaster.Core/Services/IReadOnlyApplicationService.cs",
       "CodeMaster.Core/Services/IReadOnlyService.cs",
+      "CodeMaster.Core/Services/IReadOnlyTreeApplicationService.cs",
       "CodeMaster.Core/Services/ITreeApplicationService.cs"
     ],
     "domain": [
@@ -174,7 +177,9 @@
       "CodeMaster.Application/Services/CrudServiceBase.cs",
       "CodeMaster.Application/Services/DataPermissionContext.cs",
       "CodeMaster.Application/Services/DataPermissionService.cs",
+      "CodeMaster.Application/Services/QueryApplicationService.cs",
       "CodeMaster.Application/Services/ReadOnlyApplicationService.cs",
+      "CodeMaster.Application/Services/ReadOnlyTreeApplicationService.cs",
       "CodeMaster.Application/Services/TreeApplicationService.cs"
 
 
