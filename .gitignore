@@ -141,6 +141,14 @@ Templates/CodeMaster_Template_*.tar.gz
 CodeMaster.WebApi/Templates/CodeMaster_Template_*.zip
 CodeMaster.WebApi/Templates/CodeMaster_Template_*.tar.gz
 
+# Tauri icon command also emits mobile/store assets; desktop releases only track desktop icons.
+CodeMaster.Vue/src-tauri/icons/android/
+CodeMaster.Vue/src-tauri/icons/ios/
+CodeMaster.Vue/src-tauri/icons/Square*Logo.png
+CodeMaster.Vue/src-tauri/icons/StoreLogo.png
+CodeMaster.Vue/src-tauri/icons/64x64.png
+CodeMaster.Vue/src-tauri/icons/icon.png
+
 # Local maintenance/update scripts
 /scripts/
 

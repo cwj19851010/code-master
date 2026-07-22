@@ -165,6 +165,15 @@ CodeMaster 的 Tauri 客户端用于连接服务端前端，同时通过 LocalAg
 - 启动本地生成项目的前端和后端
 - 下载和管理生成模板
 
+客户端安装包由 GitHub Actions 跨平台构建。推送 `v1.0.1` 形式的 Git Tag 后，工作流会自动生成 Windows x64、macOS Intel、macOS Apple Silicon、Linux x64 和 Linux ARM64 安装包，并上传到对应的 GitHub Release。也可以在仓库的 `Actions` 页面选择 `Release CodeMaster Client` 手动输入版本号运行。
+
+```bash
+git tag v1.0.1
+git push github v1.0.1
+```
+
+客户端不内置项目模板 ZIP。安装后可在项目列表点击“下载模板”，由 LocalAgent 将服务器上的最新模板保存到本地模板目录。
+
 ## 安全提醒
 
 公开仓库或生产部署前请务必：

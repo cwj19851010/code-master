@@ -1,4 +1,4 @@
-import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs'
+import { chmodSync, copyFileSync, cpSync, existsSync, mkdirSync, rmSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
@@ -49,10 +49,17 @@ const targets = {
   }
 }
 
-const target = targets[`${process.platform}-${process.arch}`]
+const requestedTarget = process.env.CODEMASTER_SIDECAR_TARGET?.trim()
+const target = requestedTarget
+  ? Object.values(targets).find((item) => item.triple === requestedTarget || item.rid === requestedTarget)
+  : targets[`${process.platform}-${process.arch}`]
 
 if (!target) {
-  throw new Error(`Unsupported sidecar publish platform: ${process.platform}-${process.arch}`)
+  throw new Error(
+    requestedTarget
+      ? `Unsupported sidecar publish target: ${requestedTarget}`
+      : `Unsupported sidecar publish platform: ${process.platform}-${process.arch}`
+  )
 }
 
 mkdirSync(binariesDir, { recursive: true })
@@ -96,13 +103,15 @@ if (!existsSync(sourcePath)) {
 
 const outputPath = join(binariesDir, `codemaster-local-agent-${target.triple}${target.extension}`)
 copyFileSync(sourcePath, outputPath)
+if (target.extension !== '.exe') {
+  chmodSync(outputPath, 0o755)
+}
 
 console.log(`Published Tauri sidecar: ${outputPath}`)
 
 function prepareBundledResources() {
   rmSync(resourcesDir, { recursive: true, force: true })
   copyLegacyCodeGeneratorTemplates()
-  copyLatestProjectTemplate()
 }
 
 function copyLegacyCodeGeneratorTemplates() {
@@ -114,32 +123,4 @@ function copyLegacyCodeGeneratorTemplates() {
   const targetTemplatesDir = join(resourcesDir, 'CodeMaster.CodeGenerator', 'Templates')
   mkdirSync(targetTemplatesDir, { recursive: true })
   cpSync(sourceTemplatesDir, targetTemplatesDir, { recursive: true })
-}
-
-function copyLatestProjectTemplate() {
-  const sourceTemplatesDir = join(repoRoot, 'Templates')
-  if (!existsSync(sourceTemplatesDir)) {
-    throw new Error(`Project templates directory was not found: ${sourceTemplatesDir}`)
-  }
-
-  const latestTemplate = readdirSync(sourceTemplatesDir)
-    .filter((name) => /^CodeMaster_Template_.*\.zip$/i.test(name))
-    .map((name) => {
-      const filePath = join(sourceTemplatesDir, name)
-      return {
-        name,
-        filePath,
-        mtimeMs: statSync(filePath).mtimeMs
-      }
-    })
-    .sort((left, right) => right.mtimeMs - left.mtimeMs)[0]
-
-  if (!latestTemplate) {
-    throw new Error(`No project template zip was found in: ${sourceTemplatesDir}`)
-  }
-
-  const targetTemplatesDir = join(resourcesDir, 'Templates')
-  mkdirSync(targetTemplatesDir, { recursive: true })
-  copyFileSync(latestTemplate.filePath, join(targetTemplatesDir, latestTemplate.name))
-  console.log(`Bundled latest project template: ${latestTemplate.name}`)
 }
