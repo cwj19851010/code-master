@@ -80,62 +80,22 @@
     <el-card shadow="never" style="margin-top: 20px">
       <template #header>
         <div class="card-header">
-          <span>字段列表</span>
+          <span>字段列表（基础信息）</span>
           <el-button type="primary" size="small" @click="handleAddField">新增字段</el-button>
         </div>
       </template>
-
-      <!-- 字段筛选 -->
-      <el-row :gutter="12" style="margin-bottom: 12px">
-        <el-col :span="4">
-          <el-select v-model="filterDeleted" placeholder="是否已删除" clearable style="width: 100%" size="small">
-            <el-option label="全部" :value="null" />
-            <el-option label="正常" :value="false" />
-            <el-option label="已删除" :value="true" />
-          </el-select>
-        </el-col>
-        <el-col :span="4">
-          <el-select v-model="filterSystem" placeholder="是否系统" clearable style="width: 100%" size="small">
-            <el-option label="全部" :value="null" />
-            <el-option label="系统字段" :value="true" />
-            <el-option label="自定义字段" :value="false" />
-          </el-select>
-        </el-col>
-        <el-col :span="4">
-          <el-input v-model="filterName" placeholder="字段名" clearable size="small" />
-        </el-col>
-        <el-col :span="4">
-          <el-input v-model="filterDesc" placeholder="描述" clearable size="small" />
-        </el-col>
-      </el-row>
 
       <el-table :data="displayFields" border style="width: 100%">
         <el-table-column prop="name" label="字段名" width="150" />
         <el-table-column prop="description" label="描述" width="150" />
         <el-table-column prop="dataType" label="数据类型" width="120" />
-        <el-table-column prop="maxLength" label="长度" width="80" />
-        <el-table-column label="选项" width="200">
-          <template #default="{ row }">
-            <el-tag v-if="row.isPrimaryKey" size="small" type="danger">主键</el-tag>
-            <el-tag v-if="row.isRequired" size="small" type="warning">表单必填</el-tag>
-            <el-tag v-if="row.isNullable" size="small" type="success">数据库可空</el-tag>
-            <el-tag v-if="row.isUnique" size="small" type="info">唯一</el-tag>
-            <el-tag v-if="row.isIndexed" size="small">索引</el-tag>
-            <el-tag v-if="row.isSystemField" size="small" type="info">系统</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" width="80">
-          <template #default="{ row }">
-            <el-tag v-if="row._deleted" size="small" type="danger">已删除</el-tag>
-            <el-tag v-else size="small" type="success">新增</el-tag>
-          </template>
-        </el-table-column>
+        <el-table-column prop="maxLength" label="最大长度" width="100" />
+        <el-table-column prop="defaultValue" label="默认值" min-width="140" show-overflow-tooltip />
         <el-table-column prop="orderNum" label="排序" width="80" />
-        <el-table-column label="操作" width="180" fixed="right">
-          <template #default="{ row, $index }">
-            <el-button link type="primary" size="small" @click="handleEditField(row, $index)" :disabled="row._deleted">编辑</el-button>
-            <el-button v-if="!row._deleted" link type="danger" size="small" @click="handleDeleteField(row, $index)">删除</el-button>
-            <el-button v-else link type="success" size="small" @click="handleRestoreField(row, $index)">恢复</el-button>
+        <el-table-column label="操作" width="130" fixed="right">
+          <template #default="{ row }">
+            <el-button link type="primary" size="small" :disabled="row.isSystemField" @click="handleEditField(row)">编辑</el-button>
+            <el-button link type="danger" size="small" :disabled="row.isSystemField" @click="handleDeleteField(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -206,153 +166,6 @@
           </el-col>
         </el-row>
 
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="选项">
-              <el-checkbox v-model="fieldForm.isPrimaryKey">主键</el-checkbox>
-              <el-checkbox v-model="fieldForm.isRequired">表单/接口必填</el-checkbox>
-              <el-checkbox v-model="fieldForm.isNullable">数据库可空</el-checkbox>
-              <el-checkbox v-model="fieldForm.isUnique">唯一</el-checkbox>
-              <el-checkbox v-model="fieldForm.isIndexed">索引</el-checkbox>
-              <el-checkbox v-model="fieldForm.isSearchable">可搜索</el-checkbox>
-              <el-checkbox v-model="fieldForm.isSortable">可排序</el-checkbox>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="最小值">
-              <el-input v-model="fieldForm.minValue" placeholder="如 0" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="最大值">
-              <el-input v-model="fieldForm.maxValue" placeholder="如 100" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="验证类型">
-              <el-checkbox v-model="fieldForm.isEmail" style="margin-right:12px">邮箱</el-checkbox>
-              <el-checkbox v-model="fieldForm.isPhone">手机号</el-checkbox>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="16">
-            <el-form-item label="正则表达式">
-              <el-input v-model="fieldForm.regexPattern" placeholder="如 ^[A-Z]{3}-\d{4}$" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="控件类型">
-              <el-select v-model="fieldForm.formControlType" placeholder="默认input" clearable style="width: 100%">
-                <el-option label="input" value="input" />
-                <el-option label="textarea" value="textarea" />
-                <el-option label="number" value="number" />
-                <el-option label="select" value="select" />
-                <el-option label="switch" value="switch" />
-                <el-option label="radio-group" value="radio-group" />
-                <el-option label="checkbox" value="checkbox" />
-                <el-option label="checkbox-group" value="checkbox-group" />
-                <el-option label="date" value="date" />
-                <el-option label="datetime" value="datetime" />
-                <el-option label="图片上传" value="image" />
-                <el-option label="富文本" value="editor" />
-                <el-option label="附件上传" value="file" />
-                <el-option label="关联表选择（保存后在编辑页配置）" value="select-table" disabled />
-                <el-option label="级联选择（保存后在编辑页配置）" value="cascader" disabled />
-              </el-select>
-              <div class="form-tip">关联表和级联控件需要选择目标实体，请先保存实体，再到编辑页配置。</div>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" v-if="['select', 'checkbox-group', 'radio-group'].includes(fieldForm.formControlType)">
-          <el-col :span="8">
-            <el-form-item label="数据来源">
-              <el-select v-model="fieldForm.selectDataSource" style="width: 100%">
-                <el-option label="枚举/静态选项" value="enum" />
-                <el-option label="字典" value="dict" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="16">
-            <el-form-item label="选项数据">
-              <el-select v-if="fieldForm.selectDataSource === 'dict'" v-model="fieldForm.selectOptions" placeholder="选择字典类型" style="width: 100%">
-                <el-option v-for="item in dictTypeList" :key="item.dictType" :label="`${item.dictName} (${item.dictType})`" :value="item.dictType" />
-              </el-select>
-              <el-input v-else v-model="fieldForm.selectOptions" placeholder='JSON 如 [{"value":1,"label":"启用"}]' />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" v-if="['select', 'checkbox-group'].includes(fieldForm.formControlType)">
-          <el-col :span="8">
-            <el-form-item label="允许多选">
-              <el-switch v-model="fieldForm.isMultiple" :disabled="fieldForm.formControlType === 'checkbox-group'" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <!-- 字段类别 -->
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <el-form-item label="字段类别">
-              <el-select v-model="fieldForm.fieldCategory" style="width: 100%">
-                <el-option label="普通字段" value="Normal" />
-                <el-option label="计算字段" value="Computed" />
-                <el-option label="统计字段（保存后在编辑页配置）" value="Aggregate" disabled />
-              </el-select>
-              <div class="form-tip">统计字段依赖已保存的一对多子表关系，请先保存实体，再到编辑页配置。</div>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <template v-if="fieldForm.fieldCategory === 'Computed'">
-          <el-row :gutter="20">
-            <el-col :span="24">
-              <el-form-item label="计算公式">
-                <el-input v-model="fieldForm.formula" placeholder="如 [Price]*[Quantity]" style="width: 100%" />
-                <div style="color: #999; font-size: 12px; margin-top: 4px">用 [字段名] 引用同表字段</div>
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </template>
-        <template v-if="fieldForm.fieldCategory === 'Aggregate'">
-          <el-row :gutter="20">
-            <el-col :span="8">
-              <el-form-item label="统计类型">
-                <el-select v-model="fieldForm.aggregateType" style="width: 100%">
-                  <el-option label="数值累加" value="Sum" />
-                  <el-option label="平均值" value="Avg" />
-                  <el-option label="字符串拼接" value="Concat" />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="统计子表">
-                <el-select v-model="fieldForm.aggregateChildEntityId" style="width: 100%" @change="handleAggChildEntityChange">
-                  <el-option v-for="r in displayRelations" :key="r.childEntityId" :label="r.childEntityName" :value="r.childEntityId" />
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :span="8">
-              <el-form-item label="子表字段">
-                <el-select v-model="fieldForm.aggregateChildFieldName" style="width: 100%">
-                  <el-option v-for="f in aggChildFieldOptions" :key="f.name" :label="`${f.name}（${f.description}）`" :value="f.name" />
-                </el-select>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20" v-if="fieldForm.aggregateType === 'Concat'">
-            <el-col :span="8">
-              <el-form-item label="分隔符">
-                <el-input v-model="fieldForm.aggregateSeparator" placeholder="如 , " />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </template>
       </el-form>
 
       <template #footer>
@@ -365,21 +178,22 @@
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted } from 'vue'
-import { resetReactiveForm, resetFormValidation } from '@/utils/pageLifecycle'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { t2 } from '@/i18n'
-import { create, getById } from '@/api/codegen/moduleEntity'
+import { create } from '@/api/codegen/moduleEntity'
 import { getByProjectId } from '@/api/codegen/projectModule'
-import { getList as getProjectList, getDictTypes } from '@/api/codegen/project'
+import { getList as getProjectList } from '@/api/codegen/project'
+import { useTagsViewStore } from '@/stores/tagsView'
 
 const router = useRouter()
+const route = useRoute()
+const tagsViewStore = useTagsViewStore()
 const formRef = ref(null)
 const fieldFormRef = ref(null)
 const submitLoading = ref(false)
 const projectList = ref([])
 const moduleList = ref([])
-const dictTypeList = ref([])
 
 // 实体表单（不包含 fields，字段单独追踪）
 const form = reactive({
@@ -398,8 +212,6 @@ const form = reactive({
   isChildTable: false,
   orderNum: 0
 })
-
-const initialForm = JSON.parse(JSON.stringify(form))
 
 const rules = {
   projectId: [{ required: true, message: t2('please_select', 'project'), trigger: 'change' }],
@@ -444,29 +256,8 @@ const systemFieldDefs = {
 // ===== 字段追踪（全部视为新增状态） =====
 const allFields = ref([])
 
-// ===== 字段筛选 =====
-const filterDeleted = ref(null)
-const filterSystem = ref(null)
-const filterName = ref('')
-const filterDesc = ref('')
-
 const displayFields = computed(() => {
-  let list = [...allFields.value]
-  if (filterDeleted.value != null) {
-    list = list.filter(f => (filterDeleted.value ? f._deleted : !f._deleted))
-  }
-  if (filterSystem.value != null) {
-    list = list.filter(f => f.isSystemField === filterSystem.value)
-  }
-  if (filterName.value) {
-    const kw = filterName.value.toLowerCase()
-    list = list.filter(f => (f.name || '').toLowerCase().includes(kw))
-  }
-  if (filterDesc.value) {
-    const kw = filterDesc.value.toLowerCase()
-    list = list.filter(f => (f.description || '').toLowerCase().includes(kw))
-  }
-  return list.sort((a, b) => (a.orderNum || 0) - (b.orderNum || 0))
+  return [...allFields.value].sort((a, b) => (a.orderNum || 0) - (b.orderNum || 0))
 })
 
 // ===== 默认字段表单 =====
@@ -487,7 +278,6 @@ function getDefaultFieldForm() {
 
 // ===== 字段弹框 =====
 const fieldDialogVisible = ref(false)
-const aggChildFieldOptions = ref([])
 const fieldDialogTitle = ref('新增字段')
 const editingFieldIndex = ref(-1)
 
@@ -549,47 +339,6 @@ watch(() => form.hasPrimaryKey, (val) => {
 watch(() => form.isTree, (val) => { if (val) form.hasPrimaryKey = true })
 watch(() => form.isReadOnly, (val) => { if (!val && !form.hasPrimaryKey) form.hasPrimaryKey = true })
 
-// 数据源切到字典时加载字典类型
-watch(() => fieldForm.selectDataSource, (val) => { if (val === 'dict') loadDictTypes() })
-watch(() => fieldForm.formControlType, (val) => {
-  if (val === 'checkbox-group') fieldForm.isMultiple = true
-  else if (val === 'radio-group') fieldForm.isMultiple = false
-})
-
-watch(() => fieldForm.fieldCategory, (val) => {
-  if (val === 'Computed') {
-    fieldForm.aggregateType = null
-    fieldForm.aggregateChildEntityId = null
-    fieldForm.aggregateChildFieldName = null
-    fieldForm.aggregateSeparator = null
-  } else if (val === 'Aggregate') {
-    fieldForm.formula = null
-    fieldForm.aggregateType ||= 'Sum'
-  } else {
-    fieldForm.formula = null
-    fieldForm.aggregateType = null
-    fieldForm.aggregateChildEntityId = null
-    fieldForm.aggregateChildFieldName = null
-    fieldForm.aggregateSeparator = null
-  }
-})
-
-function validateCalculatedFieldForm() {
-  const dataType = String(fieldForm.dataType || '').replace(/\?$/, '').toLowerCase()
-  const numericTypes = ['byte', 'short', 'int', 'long', 'float', 'double', 'decimal']
-  if (fieldForm.fieldCategory === 'Computed') {
-    if (!numericTypes.includes(dataType)) {
-      ElMessage.warning('计算字段必须使用数值类型')
-      return false
-    }
-    if (!fieldForm.formula || !/\[[A-Za-z_]\w*\]/.test(fieldForm.formula)) {
-      ElMessage.warning('计算公式必须使用 [字段名] 引用至少一个字段')
-      return false
-    }
-  }
-  return true
-}
-
 // ===== 生命周期 =====
 onMounted(() => {
   loadProjectList()
@@ -628,16 +377,6 @@ async function loadModuleList() {
 function handleProjectChange() {
   form.moduleId = null
   loadModuleList()
-  dictTypeList.value = []
-}
-
-async function loadDictTypes() {
-  if (!form.projectId) return
-  try {
-    dictTypeList.value = await getDictTypes(form.projectId)
-  } catch (e) {
-    console.error('加载字典类型失败:', e)
-  }
 }
 
 // ===== 字段操作 =====
@@ -645,10 +384,12 @@ function handleAddField() {
   fieldDialogTitle.value = '新增字段'
   editingFieldIndex.value = -1
   resetFieldForm()
+  const orders = allFields.value.map(field => Number(field.orderNum || 0))
+  fieldForm.orderNum = orders.length > 0 ? Math.max(...orders) + 10 : 10
   fieldDialogVisible.value = true
 }
 
-function handleEditField(row, index) {
+function handleEditField(row) {
   fieldDialogTitle.value = '编辑字段'
   editingFieldIndex.value = allFields.value.findIndex(f => f === row)
   resetFieldForm()
@@ -656,46 +397,19 @@ function handleEditField(row, index) {
   fieldDialogVisible.value = true
 }
 
-function handleDeleteField(row, index) {
-  // 软删除：标记为已删除
+function handleDeleteField(row) {
   const idx = allFields.value.findIndex(f => f === row)
-  if (idx >= 0) {
-    allFields.value[idx]._deleted = true
-  }
-}
-
-function handleRestoreField(row, index) {
-  // 恢复已删除字段
-  const idx = allFields.value.findIndex(f => f === row)
-  if (idx >= 0) {
-    allFields.value[idx]._deleted = false
-  }
-}
-
-async function handleAggChildEntityChange(entityId) {
-  aggChildFieldOptions.value = []
-  if (!entityId) return
-  try {
-    const data = await getById(entityId)
-    aggChildFieldOptions.value = (data.fields || []).filter(f => !f.isSystemField)
-  } catch (e) { console.error(e) }
+  if (idx >= 0) allFields.value.splice(idx, 1)
 }
 
 // 字段弹框提交
 async function handleFieldSubmit() {
   try {
     await fieldFormRef.value.validate()
-    if (!validateCalculatedFieldForm()) return
 
     const data = { ...fieldForm }
-    // 确保 _deleted 标记不被覆盖
-    if (editingFieldIndex.value >= 0) {
-      const existingField = allFields.value[editingFieldIndex.value]
-      data._deleted = existingField._deleted
-    }
 
-    // 同名字段：新增时 >0 重复，编辑时 >1 重复
-    const sameCount = allFields.value.filter(f => f.name === data.name && !f._deleted).length
+    const sameCount = allFields.value.filter(f => f.name === data.name).length
     const maxOk = editingFieldIndex.value >= 0 ? 1 : 0
     if (data.name && sameCount > maxOk) {
       ElMessage.warning(`字段名「${data.name}」已存在，不能重复添加`)
@@ -707,8 +421,6 @@ async function handleFieldSubmit() {
       allFields.value.splice(editingFieldIndex.value, 1, data)
       ElMessage.success('修改成功')
     } else {
-      // 新增模式：添加字段
-      data._deleted = false
       allFields.value.push(data)
       ElMessage.success('添加成功')
     }
@@ -735,7 +447,7 @@ async function handleSubmit() {
   try {
     await formRef.value.validate()
 
-    const activeFields = allFields.value.filter(f => !f._deleted)
+    const activeFields = allFields.value
     if (activeFields.length === 0) {
       ElMessage.warning('请至少添加一个字段')
       return
@@ -743,11 +455,13 @@ async function handleSubmit() {
 
     submitLoading.value = true
     const submitData = { ...form, fields: activeFields }
-    await create(submitData)
-    ElMessage.success('新增成功')
-    resetReactiveForm(form, initialForm)
-    resetFormValidation(formRef)
-    router.back()
+    const entityId = await create(submitData)
+    ElMessage.success('新增成功，请继续配置字段')
+    await tagsViewStore.delView(route)
+    await router.replace({
+      path: '/codegen/moduleentity/edit',
+      query: { id: entityId }
+    })
   } catch (error) {
     if (error !== false) {
       ElMessage.error('新增失败')
@@ -768,11 +482,5 @@ function handleBack() {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.form-tip {
-  font-size: 12px;
-  color: #909399;
-  margin-top: 4px;
 }
 </style>

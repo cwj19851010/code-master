@@ -148,7 +148,7 @@
         </el-table-column>
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row, $index }">
-            <el-button link type="primary" size="small" @click="handleEditField(row, $index)">编辑</el-button>
+            <el-button link type="primary" size="small" @click="handleEditField(row, $index)">配置</el-button>
             <el-button link type="danger" size="small" @click="handleDeleteField(row, $index)" :disabled="row.isSystemField">删除</el-button>
           </template>
         </el-table-column>
@@ -579,8 +579,14 @@
         </el-form-item>
         <el-form-item label="当前实体字段" prop="sourceField">
           <el-select v-model="entityRelationForm.sourceField" placeholder="选择当前实体字段" style="width: 100%">
-            <el-option v-for="f in entitySourceFieldOptions" :key="f.name" :label="`${f.name}（${f.description}）`" :value="f.name" />
+            <el-option
+              v-for="f in entitySourceFieldOptions"
+              :key="f.name"
+              :label="`${f.name}（${f.description}）${f.isPrimaryKey ? ' 主键' : ''}`"
+              :value="f.name"
+            />
           </el-select>
+          <div class="form-help">可以使用主键或业务字段；业务字段应保证非空且唯一，避免多条主数据关联到同一组成数据。</div>
         </el-form-item>
         <el-form-item label="组成实体" prop="targetEntityId">
           <el-select v-model="entityRelationForm.targetEntityId" placeholder="选择组成实体" style="width: 100%" @change="handleEntityRelationTargetChange">
@@ -995,12 +1001,17 @@ const displayEntityRelations = computed(() => {
 })
 
 const entitySourceFieldOptions = computed(() =>
-  displayFields.value.filter(field => !field._deleted && !field.isIgnore && field.isPrimaryKey)
+  displayFields.value.filter(field => !field._deleted && isPersistedRelationField(field))
 )
 
 const entityRelationTargetOptions = computed(() =>
   allEntities.value.filter(entity => entity.id !== form.id && (!form.projectId || entity.projectId === form.projectId))
 )
+
+function isPersistedRelationField(field) {
+  const category = String(field?.fieldCategory || 'Normal').toLowerCase()
+  return !field?.isIgnore && category !== 'computed' && category !== 'aggregate'
+}
 
 // ===== 字段弹框 =====
 const fieldDialogVisible = ref(false)
@@ -1353,7 +1364,7 @@ function handleAddField() {
 }
 
 function handleEditField(row, index) {
-  fieldDialogTitle.value = '编辑字段'
+  fieldDialogTitle.value = '配置字段'
   editingFieldIndex.value = index
   editingFieldId.value = row.id || null
   editingFieldIsNew.value = row._status === 'new'
@@ -1659,7 +1670,7 @@ async function loadEntityRelationTargetFields(entityId) {
   if (!entityId) return
   try {
     const target = await getById(entityId)
-    entityRelationTargetFieldOptions.value = (target.fields || []).filter(field => !field.isIgnore)
+    entityRelationTargetFieldOptions.value = (target.fields || []).filter(isPersistedRelationField)
   } catch (error) {
     console.error('加载组成实体字段失败:', error)
   }

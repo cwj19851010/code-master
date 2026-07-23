@@ -17,6 +17,7 @@ namespace CodeMaster.Agent.Tools;
 public interface ICodeMasterAgentToolFactory
 {
     Task<IList<AITool>> CreateToolsAsync(long conversationId, long projectId, string requestId);
+    Task<string> InvokeAsync(long conversationId, long projectId, string requestId, string toolName, JsonElement arguments);
     Task<AiToolExecutionDto> ApproveAsync(long executionId);
     Task<AiToolExecutionDto> RejectAsync(long executionId);
     Task<AiToolExecutionDto> CompleteClientActionsAsync(long executionId, CompleteAiClientActionsRequest request);
@@ -151,46 +152,62 @@ internal sealed class CodeMasterAgentToolFactory : ICodeMasterAgentToolFactory
             }, JsonOptions);
         }
 
-        var tools = new List<AITool>();
-        if (await _authorizationService.HasAnyAsync("codegen:project:list", "codegen:project:view"))
-        {
-            tools.Add(AIFunctionFactory.Create(
-                (Func<Task<string>>)GetProjectStructureAsync,
-                name: "get_project_structure",
-                description: "Read the complete CodeMaster blueprint for the project bound to this conversation, including modules, entities, every field option, relations, generation state, and the available control/template catalog."));
-
-            tools.Add(AIFunctionFactory.Create(
-                (Func<EntityBlueprintQuery, Task<string>>)GetEntityBlueprintAsync,
-                name: "get_entity_blueprint",
-                description: "Read one entity in full detail by entityId or entityName from the project bound to this conversation."));
-
-            tools.Add(AIFunctionFactory.Create(
-                (Func<UiPageBlueprintQuery, Task<string>>)GetUiPageBlueprintAsync,
-                name: "get_ui_page_blueprint",
-                description: "Read the stable generated node identifiers for one entity page. Use this before proposing page layout, grouping, grid, visual property, movement, or compatible node-type changes."));
-        }
-
-        if (await _authorizationService.HasAnyAsync(
+        var canRead = await _authorizationService.HasAnyAsync("codegen:project:list", "codegen:project:view");
+        var canChange = await _authorizationService.HasAnyAsync(
                 "codegen:projectModule:create",
                 "codegen:projectModule:update",
                 "codegen:projectModule:delete",
                 "codegen:moduleEntity:create",
                 "codegen:moduleEntity:update",
                 "codegen:moduleEntity:delete",
-                "codegen:project:build"))
-        {
-            tools.Add(AIFunctionFactory.Create(
-                (Func<ProjectChangeSetProposal, Task<string>>)ProposeProjectChangeSetAsync,
-                name: "propose_project_change_set",
-                description: "Validate and create one approval card for a complete CodeMaster project change set. It can create, edit, reorder, and delete modules, entities, fields, and relations, then request full or incremental generation through the existing Web/Tauri execution bridge."));
+                "codegen:project:build");
 
-            tools.Add(AIFunctionFactory.Create(
-                (Func<UiPageEnhancementProposal, Task<string>>)ProposeUiPageEnhancementAsync,
-                name: "propose_ui_page_enhancement",
-                description: "Create an approval card for a controlled visual redesign. Scaffold targets redesign Login or Dashboard. EntityPage targets index/add/edit/detail and uses stable genId-anchored SetTag, SetProp, RemoveProp, SetGrid, Move, and Group operations that are replayed after future code generation."));
+        return CodeMasterAgentToolCatalog.Create(
+            canRead,
+            GetProjectStructureAsync,
+            GetEntityBlueprintAsync,
+            GetUiPageBlueprintAsync,
+            canChange,
+            ProposeProjectChangeSetAsync,
+            ProposeUiPageEnhancementAsync);
+    }
+
+    public async Task<string> InvokeAsync(
+        long conversationId,
+        long projectId,
+        string requestId,
+        string toolName,
+        JsonElement arguments)
+    {
+        if (string.IsNullOrWhiteSpace(toolName))
+            throw new ArgumentException("Tool name is required.");
+
+        var function = (await CreateToolsAsync(conversationId, projectId, requestId))
+            .OfType<AIFunction>()
+            .FirstOrDefault(item => string.Equals(item.Name, toolName.Trim(), StringComparison.Ordinal));
+        if (function == null)
+            throw new UnauthorizedAccessException($"Tool '{toolName}' is unavailable for the current user.");
+
+        var values = new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+        if (arguments.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in arguments.EnumerateObject())
+                values[property.Name] = property.Value.Clone();
+        }
+        else if (arguments.ValueKind is not (JsonValueKind.Undefined or JsonValueKind.Null))
+        {
+            throw new ArgumentException("Tool arguments must be a JSON object.");
         }
 
-        return tools;
+        var result = await function.InvokeAsync(new AIFunctionArguments(values));
+        return result switch
+        {
+            null => string.Empty,
+            string text => text,
+            JsonElement element when element.ValueKind == JsonValueKind.String => element.GetString() ?? string.Empty,
+            JsonElement element => element.GetRawText(),
+            _ => JsonSerializer.Serialize(result, JsonOptions)
+        };
     }
 
     public async Task<AiToolExecutionDto> ApproveAsync(long executionId)
@@ -198,12 +215,8 @@ internal sealed class CodeMasterAgentToolFactory : ICodeMasterAgentToolFactory
         var execution = await GetOwnedExecutionAsync(executionId);
         if (execution.Status is "Completed" or "AwaitingClientExecution")
             return ToDto(execution);
-        if (string.Equals(execution.Status, "Executing", StringComparison.Ordinal))
-            throw new InvalidOperationException("This tool execution is already running.");
         if (!string.Equals(execution.Status, "PendingApproval", StringComparison.Ordinal))
-        {
-            throw new InvalidOperationException("This tool execution is no longer pending approval.");
-        }
+            return ToDto(execution);
 
         var approvedAt = DateTime.UtcNow;
         var claimed = await _db.Updateable<AiToolExecution>()
@@ -219,9 +232,7 @@ internal sealed class CodeMasterAgentToolFactory : ICodeMasterAgentToolFactory
         if (claimed == 0)
         {
             execution = await GetOwnedExecutionAsync(executionId);
-            if (execution.Status is "Completed" or "AwaitingClientExecution")
-                return ToDto(execution);
-            throw new InvalidOperationException("This tool execution was already claimed by another request.");
+            return ToDto(execution);
         }
 
         execution = await GetOwnedExecutionAsync(executionId);
@@ -335,12 +346,8 @@ internal sealed class CodeMasterAgentToolFactory : ICodeMasterAgentToolFactory
     public async Task<AiToolExecutionDto> RejectAsync(long executionId)
     {
         var execution = await GetOwnedExecutionAsync(executionId);
-        if (string.Equals(execution.Status, "Rejected", StringComparison.Ordinal))
-            return ToDto(execution);
         if (!string.Equals(execution.Status, "PendingApproval", StringComparison.Ordinal))
-        {
-            throw new InvalidOperationException("This tool execution is no longer pending approval.");
-        }
+            return ToDto(execution);
 
         var completedAt = DateTime.UtcNow;
         var updated = await _db.Updateable<AiToolExecution>()
@@ -354,7 +361,7 @@ internal sealed class CodeMasterAgentToolFactory : ICodeMasterAgentToolFactory
                            item.Status == "PendingApproval")
             .ExecuteCommandAsync();
         if (updated == 0)
-            throw new InvalidOperationException("This tool execution was already handled by another request.");
+            return ToDto(await GetOwnedExecutionAsync(executionId));
         execution = await GetOwnedExecutionAsync(executionId);
         return ToDto(execution);
     }

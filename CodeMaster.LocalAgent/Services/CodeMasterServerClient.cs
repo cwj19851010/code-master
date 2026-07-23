@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CodeMaster.Agent.Contracts;
 using CodeMaster.Application.Dtos.CodeGen;
 using CodeMaster.Core.Common;
 
@@ -50,6 +51,42 @@ public class CodeMasterServerClient
         return GetApiDataAsync<ProjectModuleDto>(
             serverBaseUrl,
             $"/api/codegen/projectmodule/getbyid/{moduleId}",
+            token);
+    }
+
+    public Task<BeginLocalAiChatResult> BeginLocalAiChatAsync(
+        string serverBaseUrl,
+        SendAiMessageRequest input,
+        string? token)
+    {
+        return PostApiDataAsync<SendAiMessageRequest, BeginLocalAiChatResult>(
+            serverBaseUrl,
+            "/api/agent/local/chat/begin",
+            input,
+            token);
+    }
+
+    public Task<InvokeLocalAiToolResult> InvokeLocalAiToolAsync(
+        string serverBaseUrl,
+        InvokeLocalAiToolRequest input,
+        string? token)
+    {
+        return PostApiDataAsync<InvokeLocalAiToolRequest, InvokeLocalAiToolResult>(
+            serverBaseUrl,
+            "/api/agent/local/chat/invoke-tool",
+            input,
+            token);
+    }
+
+    public Task<AiChatResult> CompleteLocalAiChatAsync(
+        string serverBaseUrl,
+        CompleteLocalAiChatRequest input,
+        string? token)
+    {
+        return PostApiDataAsync<CompleteLocalAiChatRequest, AiChatResult>(
+            serverBaseUrl,
+            "/api/agent/local/chat/complete",
+            input,
             token);
     }
 
@@ -135,6 +172,31 @@ public class CodeMasterServerClient
         }
 
         return DeserializeApiData<T>(content, path);
+    }
+
+    private async Task<TResponse> PostApiDataAsync<TRequest, TResponse>(
+        string serverBaseUrl,
+        string path,
+        TRequest input,
+        string? token)
+    {
+        if (string.IsNullOrWhiteSpace(serverBaseUrl))
+            throw new InvalidOperationException("serverBaseUrl is required");
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, BuildUri(serverBaseUrl, path));
+        if (!string.IsNullOrWhiteSpace(token))
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        request.Content = new StringContent(
+            JsonSerializer.Serialize(input, _jsonOptions),
+            Encoding.UTF8,
+            "application/json");
+
+        using var response = await _httpClient.SendAsync(request);
+        var content = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
+            throw new InvalidOperationException($"Server request failed: {(int)response.StatusCode} {response.ReasonPhrase}\n{content}");
+
+        return DeserializeApiData<TResponse>(content, path);
     }
 
     private static Uri BuildUri(string serverBaseUrl, string path)

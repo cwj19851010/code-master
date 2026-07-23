@@ -53,3 +53,12 @@ public sealed class AiProviderTestResult
     public string Message { get; set; } = string.Empty;
     public string? ResponseText { get; set; }
 }
+
+public sealed class AiProviderConnectionSettings
+{
+    public string ProviderType { get; set; } = AiProviderTypes.OpenAiCompatible;
+    public string? BaseUrl { get; set; }
+    public string? ApiKey { get; set; }
+    public string ModelName { get; set; } = string.Empty;
+    public string? ExtraHeadersJson { get; set; }
+}

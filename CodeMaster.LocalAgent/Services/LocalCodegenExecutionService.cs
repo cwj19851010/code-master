@@ -20,15 +20,18 @@ public class LocalCodegenExecutionService
     private readonly CodeMasterServerClient _serverClient;
     private readonly LocalMetadataStore _metadataStore;
     private readonly ProjectInitializationService _initializationService;
+    private readonly LocalAgentChatService _chatService;
 
     public LocalCodegenExecutionService(
         CodeMasterServerClient serverClient,
         LocalMetadataStore metadataStore,
+        LocalAgentChatService chatService,
         IConfiguration configuration,
         IOptions<LocalAgentOptions> options)
     {
         _serverClient = serverClient;
         _metadataStore = metadataStore;
+        _chatService = chatService;
         _initializationService = new ProjectInitializationService(configuration);
     }
 
@@ -80,6 +83,10 @@ public class LocalCodegenExecutionService
                 "stopProject" => await StopProjectAsync(request),
                 "getProjectStatus" => await GetProjectStatusAsync(request),
                 "downloadTemplate" => await DownloadTemplateAsync(request),
+                "saveAiProvider" => await _chatService.SaveProviderAsync(request),
+                "deleteAiProvider" => await _chatService.DeleteProviderAsync(request),
+                "testAiProvider" => await _chatService.TestProviderAsync(request),
+                "agentChat" => await _chatService.ChatAsync(request),
                 _ => LocalExecutionResult.Fail($"Unsupported local action: {action}")
             };
 

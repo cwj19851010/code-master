@@ -202,15 +202,14 @@ public sealed class EntityRelationGraphBuilder
             throw new InvalidOperationException($"Source field '{relation.SourceField}' does not exist.");
         if (targetField == null)
             throw new InvalidOperationException($"Target field '{relation.TargetField}' does not exist.");
+        if (!IsPersistedRelationField(sourceField) || !IsPersistedRelationField(targetField))
+            throw new InvalidOperationException("Relation fields must be persisted database fields.");
         switch (relation.Cardinality)
         {
             case EntityRelationCardinality.OneToMany when !sourceField.IsPrimaryKey:
                 throw new InvalidOperationException("One-to-many relations must use the source entity primary key.");
             case EntityRelationCardinality.ManyToOne when !targetField.IsPrimaryKey:
                 throw new InvalidOperationException("Many-to-one relations must target the target entity primary key.");
-            case EntityRelationCardinality.OneToOne
-                when relation.Ownership == EntityRelationOwnership.Owned && !sourceField.IsPrimaryKey:
-                throw new InvalidOperationException("Owned one-to-one relations must use the source entity primary key.");
             case EntityRelationCardinality.OneToOne
                 when relation.Ownership != EntityRelationOwnership.Owned && !targetField.IsPrimaryKey:
                 throw new InvalidOperationException("Reference one-to-one relations must target the target entity primary key.");
@@ -264,6 +263,15 @@ public sealed class EntityRelationGraphBuilder
 
     private static string NormalizeDataType(string? dataType) =>
         (dataType ?? string.Empty).Trim().TrimEnd('?');
+
+    private static bool IsPersistedRelationField(EntityField field)
+    {
+        if (field.IsIgnore)
+            return false;
+
+        return !string.Equals(field.FieldCategory, "Computed", StringComparison.OrdinalIgnoreCase) &&
+               !string.Equals(field.FieldCategory, "Aggregate", StringComparison.OrdinalIgnoreCase);
+    }
 
     private static EntityField? ResolveField(
         ModuleEntity entity,

@@ -61,7 +61,7 @@
         <el-form-item label="运行位置" prop="executionMode">
           <el-radio-group v-model="form.executionMode" @change="handleExecutionModeChange">
             <el-radio-button label="Server">服务端</el-radio-button>
-            <el-radio-button label="Local" disabled>本机客户端（下一步）</el-radio-button>
+            <el-radio-button label="Local" :disabled="!clientMode">本机客户端</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="API 地址" prop="baseUrl">
@@ -111,6 +111,7 @@ import {
   testProvider,
   updateProvider
 } from '@/api/agent'
+import { executeCodegenAction, isCodeMasterClient } from '@/utils/codegenExecution'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -125,6 +126,7 @@ const editingId = ref('')
 const editingHasApiKey = ref(false)
 const saving = ref(false)
 const testingId = ref('')
+const clientMode = isCodeMasterClient()
 const formRef = ref()
 
 const createDefaultForm = () => ({
@@ -193,10 +195,33 @@ const handleSave = async () => {
   saving.value = true
   try {
     const payload = { ...form }
+    const isLocal = payload.executionMode === 'Local'
+    const serverPayload = isLocal
+      ? { ...payload, apiKey: '', clearApiKey: true }
+      : payload
+    let savedProvider
     if (editingId.value) {
-      await updateProvider(editingId.value, payload)
+      savedProvider = await updateProvider(editingId.value, serverPayload)
     } else {
-      await createProvider(payload)
+      savedProvider = await createProvider(serverPayload)
+    }
+    if (isLocal) {
+      try {
+        await executeCodegenAction('saveAiProvider', {
+          providerId: savedProvider.id,
+          providerType: payload.providerType,
+          baseUrl: payload.baseUrl,
+          modelName: payload.modelName,
+          apiKey: payload.apiKey,
+          clearApiKey: payload.clearApiKey,
+          extraHeadersJson: payload.extraHeadersJson
+        }, () => Promise.reject(new Error('本机模型只能在 CodeMaster 客户端中配置')))
+      } catch (error) {
+        if (!editingId.value) {
+          try { await deleteProvider(savedProvider.id) } catch { /* Keep the local configuration error. */ }
+        }
+        throw error
+      }
     }
     ElMessage.success('保存成功')
     editorVisible.value = false
@@ -209,7 +234,13 @@ const handleSave = async () => {
 const handleTest = async row => {
   testingId.value = row.id
   try {
-    const result = await testProvider(row.id)
+    const result = row.executionMode === 'Local'
+      ? await executeCodegenAction(
+        'testAiProvider',
+        { providerId: row.id },
+        () => Promise.reject(new Error('本机模型只能在 CodeMaster 客户端中测试'))
+      )
+      : await testProvider(row.id)
     if (result.success) {
       ElMessage.success(result.message)
     } else {
@@ -224,6 +255,13 @@ const handleTest = async row => {
 const handleDelete = async row => {
   await ElMessageBox.confirm(`确认删除模型配置“${row.name}”吗？`, '提示', { type: 'warning' })
   await deleteProvider(row.id)
+  if (row.executionMode === 'Local' && clientMode) {
+    try {
+      await executeCodegenAction('deleteAiProvider', { providerId: row.id }, () => Promise.resolve())
+    } catch {
+      // The server record is already deleted; stale local secrets are harmless and can be overwritten.
+    }
+  }
   ElMessage.success('删除成功')
   emit('refresh')
 }

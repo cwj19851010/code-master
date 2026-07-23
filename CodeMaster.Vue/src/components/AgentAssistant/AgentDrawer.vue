@@ -63,7 +63,7 @@
               :key="provider.id"
               :label="`${provider.name} · ${provider.modelName}`"
               :value="provider.id"
-              :disabled="provider.executionMode === 'Local'"
+              :disabled="provider.executionMode === 'Local' && !clientMode"
             >
               <div class="provider-option">
                 <span>{{ provider.name }}</span>
@@ -250,6 +250,7 @@ import {
   sendMessage
 } from '@/api/agent'
 import ProviderSettingsDialog from './ProviderSettingsDialog.vue'
+import { executeCodegenAction, isCodeMasterClient } from '@/utils/codegenExecution'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false }
@@ -273,7 +274,11 @@ const retryContent = ref('')
 const providerDialogVisible = ref(false)
 const approvalLoadingId = ref('')
 const messagePanelRef = ref()
-const enabledProviders = computed(() => providers.value.filter(item => item.isEnabled))
+const clientMode = isCodeMasterClient()
+const enabledProviders = computed(() => providers.value.filter(item =>
+  item.isEnabled && (item.executionMode !== 'Local' || clientMode)
+))
+const selectedProvider = computed(() => providers.value.find(item => item.id === selectedProviderId.value))
 const pendingApprovals = computed(() => toolExecutions.value.filter(item =>
   item.status === 'PendingApproval' || item.status === 'AwaitingClientExecution'
 ))
@@ -294,9 +299,9 @@ const loadInitialData = async () => {
 
 const loadProviders = async () => {
   providers.value = await getProviders()
-  const selectedExists = providers.value.some(item => item.id === selectedProviderId.value && item.isEnabled)
+  const selectedExists = enabledProviders.value.some(item => item.id === selectedProviderId.value)
   if (!selectedExists) {
-    const preferred = providers.value.find(item => item.isDefault && item.isEnabled) || enabledProviders.value[0]
+    const preferred = enabledProviders.value.find(item => item.isDefault) || enabledProviders.value[0]
     selectedProviderId.value = preferred?.id || ''
   }
 }
@@ -385,7 +390,14 @@ const handleSend = async () => {
     }
     await scrollToBottom()
 
-    const result = await sendMessage({ conversationId, requestId, content })
+    const payload = { conversationId, requestId, content }
+    const result = selectedProvider.value?.executionMode === 'Local'
+      ? await executeCodegenAction(
+        'agentChat',
+        payload,
+        () => Promise.reject(new Error('本机模型只能在 CodeMaster 客户端中使用'))
+      )
+      : await sendMessage(payload)
     const assistantIndex = messages.value.findIndex(message =>
       message.role === 'assistant' && message.requestId === requestId
     )
@@ -431,16 +443,41 @@ const createRequestId = () => {
 
 const approveApproval = async approval => {
   approvalLoadingId.value = approval.id
+  let executionSubmitted = approval.status === 'AwaitingClientExecution'
   try {
     const result = approval.status === 'PendingApproval'
       ? await approveTool(approval.id)
       : approval
+    executionSubmitted = true
     updateExecution(result)
+    if (result.status === 'Failed') {
+      throw new Error(result.errorMessage || '变更执行失败')
+    }
+    if (result.status === 'Rejected') {
+      ElMessage.warning('该变更已经被拒绝')
+      return
+    }
+    if (result.status === 'Executing') {
+      ElMessage.info('该变更正在执行，请稍后刷新')
+      return
+    }
     if (result.status === 'AwaitingClientExecution') {
       await executeClientActions(result)
       ElMessage.success('变更和生成任务已完成')
     } else {
       ElMessage.success('已执行')
+    }
+  } catch (error) {
+    console.error('Agent execution failed:', error)
+    try {
+      await loadConversation()
+    } catch {
+      // The server or sidecar already owns the real execution result.
+    }
+    if (executionSubmitted) {
+      ElMessage.success('执行请求已提交，处理结果已记录')
+    } else if (!error?.response) {
+      ElMessage.warning('暂时无法提交执行请求，请稍后重试')
     }
   } finally {
     approvalLoadingId.value = ''
@@ -710,6 +747,7 @@ const formatTime = value => {
 .drawer-actions {
   display: flex;
   align-items: center;
+  gap: 4px;
 }
 
 .agent-layout {

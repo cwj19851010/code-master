@@ -237,6 +237,72 @@ public class EntityRelationGraphTests
     }
 
     [Fact]
+    public async Task Validate_AllowsOwnedOneToOneUsingBusinessField()
+    {
+        var (db, dbFile) = CreateDb();
+        try
+        {
+            SeedEntity(db, 1, 1, "Order", "Id", "OrderNo");
+            SeedEntity(db, 2, 1, "OrderDetail", "Id", "OrderNo");
+
+            var relation = new EntityRelation
+            {
+                SourceEntityId = 1,
+                TargetEntityId = 2,
+                RelationName = "Detail",
+                SourceField = "OrderNo",
+                TargetField = "OrderNo",
+                Cardinality = EntityRelationCardinality.OneToOne,
+                Ownership = EntityRelationOwnership.Owned,
+                DeleteBehavior = EntityRelationDeleteBehavior.Delete
+            };
+
+            await new EntityRelationGraphBuilder(db).ValidateAsync(relation);
+        }
+        finally
+        {
+            db.Dispose();
+            CodeGeneratorServiceTests.TryDelete(dbFile);
+        }
+    }
+
+    [Fact]
+    public async Task Validate_RejectsCalculatedFieldForOwnedOneToOne()
+    {
+        var (db, dbFile) = CreateDb();
+        try
+        {
+            SeedEntity(db, 1, 1, "Order", "Id", "OrderNo");
+            SeedEntity(db, 2, 1, "OrderDetail", "Id", "OrderNo");
+            db.Updateable<EntityField>()
+                .SetColumns(field => field.FieldCategory == "Computed")
+                .Where(field => field.ModuleEntityId == 1 && field.Name == "OrderNo")
+                .ExecuteCommand();
+
+            var relation = new EntityRelation
+            {
+                SourceEntityId = 1,
+                TargetEntityId = 2,
+                RelationName = "Detail",
+                SourceField = "OrderNo",
+                TargetField = "OrderNo",
+                Cardinality = EntityRelationCardinality.OneToOne,
+                Ownership = EntityRelationOwnership.Owned,
+                DeleteBehavior = EntityRelationDeleteBehavior.Delete
+            };
+
+            var error = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                new EntityRelationGraphBuilder(db).ValidateAsync(relation));
+            Assert.Contains("persisted database fields", error.Message);
+        }
+        finally
+        {
+            db.Dispose();
+            CodeGeneratorServiceTests.TryDelete(dbFile);
+        }
+    }
+
+    [Fact]
     public async Task Validate_RejectsOwnedOneToManyInNewRelationStore()
     {
         var (db, dbFile) = CreateDb();

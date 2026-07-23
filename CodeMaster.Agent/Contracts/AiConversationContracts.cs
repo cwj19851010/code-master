@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Text.Json;
 using CodeMaster.Application.Dtos.CodeGen;
 
 namespace CodeMaster.Agent.Contracts;
@@ -45,6 +46,38 @@ public sealed class AiChatResult
 {
     public AiMessageDto Message { get; set; } = new();
     public List<AiToolExecutionDto> PendingApprovals { get; set; } = new();
+}
+
+public sealed class BeginLocalAiChatResult
+{
+    public bool AlreadyCompleted { get; set; }
+    public AiChatResult? CompletedResult { get; set; }
+    public long ConversationId { get; set; }
+    public long ProviderId { get; set; }
+    public string RequestId { get; set; } = string.Empty;
+    public string Instructions { get; set; } = string.Empty;
+    public List<AiMessageDto> Messages { get; set; } = new();
+    public List<string> AvailableTools { get; set; } = new();
+}
+
+public sealed class InvokeLocalAiToolRequest
+{
+    public long ConversationId { get; set; }
+    public string RequestId { get; set; } = string.Empty;
+    public string ToolName { get; set; } = string.Empty;
+    public JsonElement Arguments { get; set; }
+}
+
+public sealed class InvokeLocalAiToolResult
+{
+    public string Output { get; set; } = string.Empty;
+}
+
+public sealed class CompleteLocalAiChatRequest
+{
+    public long ConversationId { get; set; }
+    public string RequestId { get; set; } = string.Empty;
+    public string ResponseText { get; set; } = string.Empty;
 }
 
 public sealed class AiToolExecutionDto

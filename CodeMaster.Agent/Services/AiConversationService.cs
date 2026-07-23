@@ -19,6 +19,9 @@ public interface IAiConversationService
     Task<bool> ArchiveAsync(long conversationId);
     Task<List<AiMessageDto>> GetMessagesAsync(long conversationId);
     Task<AiChatResult> SendAsync(SendAiMessageRequest input);
+    Task<BeginLocalAiChatResult> BeginLocalAsync(SendAiMessageRequest input);
+    Task<InvokeLocalAiToolResult> InvokeLocalToolAsync(InvokeLocalAiToolRequest input);
+    Task<AiChatResult> CompleteLocalAsync(CompleteLocalAiChatRequest input);
     Task<List<AiToolExecutionDto>> GetToolExecutionsAsync(long conversationId);
     Task<AiToolExecutionDto> ApproveAsync(long executionId);
     Task<AiToolExecutionDto> RejectAsync(long executionId);
@@ -164,6 +167,142 @@ internal sealed class AiConversationService : IAiConversationService
         try
         {
             return await SendLockedAsync(input, requestId);
+        }
+        finally
+        {
+            gate.Release();
+        }
+    }
+
+    public async Task<BeginLocalAiChatResult> BeginLocalAsync(SendAiMessageRequest input)
+    {
+        if (string.IsNullOrWhiteSpace(input.Content))
+            throw new ArgumentException("Message content is required.");
+
+        var requestId = NormalizeRequestId(input.RequestId);
+        var gate = ConversationGates.GetOrAdd(input.ConversationId, _ => new SemaphoreSlim(1, 1));
+        await gate.WaitAsync();
+        try
+        {
+            var conversation = await GetOwnedConversationAsync(input.ConversationId);
+            var provider = await GetOwnedProviderAsync(conversation.ProviderId);
+            EnsureLocalProvider(provider);
+
+            var existingAssistant = await GetMessageByRequestAsync(conversation.Id, requestId, "assistant");
+            if (existingAssistant != null)
+            {
+                return new BeginLocalAiChatResult
+                {
+                    AlreadyCompleted = true,
+                    CompletedResult = new AiChatResult
+                    {
+                        Message = ToDto(existingAssistant),
+                        PendingApprovals = await GetPendingApprovalsAsync(conversation.Id)
+                    },
+                    ConversationId = conversation.Id,
+                    ProviderId = provider.Id,
+                    RequestId = requestId
+                };
+            }
+
+            var normalizedContent = Truncate(input.Content.Trim(), 8000);
+            var existingUser = await GetMessageByRequestAsync(conversation.Id, requestId, "user");
+            if (existingUser == null)
+            {
+                await InsertMessageAsync(conversation, "user", normalizedContent, requestId);
+            }
+            else if (!string.Equals(existingUser.Content, normalizedContent, StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException("The request id is already associated with different message content.");
+            }
+
+            var project = await GetProjectAsync(conversation.ProjectId);
+            var tools = await _toolFactory.CreateToolsAsync(conversation.Id, conversation.ProjectId, requestId);
+            return new BeginLocalAiChatResult
+            {
+                ConversationId = conversation.Id,
+                ProviderId = provider.Id,
+                RequestId = requestId,
+                Instructions = BuildInstructions(
+                    project.ProjectName,
+                    project.DisplayName,
+                    project.DatabaseType.ToString(),
+                    conversation.ProjectId),
+                Messages = await GetMessagesAsync(conversation.Id),
+                AvailableTools = tools.Select(item => item.Name).Where(name => !string.IsNullOrWhiteSpace(name)).ToList()
+            };
+        }
+        finally
+        {
+            gate.Release();
+        }
+    }
+
+    public async Task<InvokeLocalAiToolResult> InvokeLocalToolAsync(InvokeLocalAiToolRequest input)
+    {
+        var requestId = NormalizeRequestId(input.RequestId);
+        var conversation = await GetOwnedConversationAsync(input.ConversationId);
+        EnsureLocalProvider(await GetOwnedProviderAsync(conversation.ProviderId));
+
+        var userMessage = await GetMessageByRequestAsync(conversation.Id, requestId, "user");
+        if (userMessage == null)
+            throw new InvalidOperationException("The local Agent request has not been started.");
+
+        return new InvokeLocalAiToolResult
+        {
+            Output = await _toolFactory.InvokeAsync(
+                conversation.Id,
+                conversation.ProjectId,
+                requestId,
+                input.ToolName,
+                input.Arguments)
+        };
+    }
+
+    public async Task<AiChatResult> CompleteLocalAsync(CompleteLocalAiChatRequest input)
+    {
+        if (string.IsNullOrWhiteSpace(input.ResponseText))
+            throw new ArgumentException("Assistant response is required.");
+
+        var requestId = NormalizeRequestId(input.RequestId);
+        var gate = ConversationGates.GetOrAdd(input.ConversationId, _ => new SemaphoreSlim(1, 1));
+        await gate.WaitAsync();
+        try
+        {
+            var conversation = await GetOwnedConversationAsync(input.ConversationId);
+            EnsureLocalProvider(await GetOwnedProviderAsync(conversation.ProviderId));
+
+            var existingAssistant = await GetMessageByRequestAsync(conversation.Id, requestId, "assistant");
+            if (existingAssistant != null)
+            {
+                return new AiChatResult
+                {
+                    Message = ToDto(existingAssistant),
+                    PendingApprovals = await GetPendingApprovalsAsync(conversation.Id)
+                };
+            }
+
+            var userMessage = await GetMessageByRequestAsync(conversation.Id, requestId, "user")
+                ?? throw new InvalidOperationException("The local Agent request has not been started.");
+            var assistantMessage = await InsertMessageAsync(
+                conversation,
+                "assistant",
+                Truncate(input.ResponseText.Trim(), 8000),
+                requestId);
+
+            conversation.LastMessageAt = DateTime.UtcNow;
+            conversation.UpdateUserId = _currentUser.UserId;
+            conversation.UpdateBy = _currentUser.UserName;
+            conversation.UpdateTime = DateTime.UtcNow;
+            if (conversation.Title.EndsWith(" conversation", StringComparison.OrdinalIgnoreCase))
+                conversation.Title = Truncate(userMessage.Content, 80);
+            await _conversationRepository.UpdateAsync(conversation);
+
+            return new AiChatResult
+            {
+                Message = assistantMessage,
+                PendingApprovals = await GetPendingApprovalsAsync(conversation.Id)
+            };
         }
         finally
         {
@@ -516,6 +655,14 @@ internal sealed class AiConversationService : IAiConversationService
             .Where(x => x.Id == providerId && x.UserId == _currentUser.UserId)
             .FirstAsync();
         return provider ?? throw new KeyNotFoundException("AI provider was not found.");
+    }
+
+    private static void EnsureLocalProvider(SysAiProvider provider)
+    {
+        if (!provider.IsEnabled)
+            throw new InvalidOperationException("The selected AI provider is disabled.");
+        if (!string.Equals(provider.ExecutionMode, AiExecutionModes.Local, StringComparison.OrdinalIgnoreCase))
+            throw new InvalidOperationException("The selected AI provider is not configured for LocalAgent execution.");
     }
 
     private async Task<Application.Dtos.CodeGen.ProjectDto> GetProjectAsync(long projectId)

@@ -77,3 +77,26 @@ public class LocalAgentOptions
 
     public string Mode { get; set; } = string.Empty;
 }
+
+public sealed class SaveLocalAiProviderRequest
+{
+    public long ProviderId { get; set; }
+    public string ProviderType { get; set; } = string.Empty;
+    public string? BaseUrl { get; set; }
+    public string ModelName { get; set; } = string.Empty;
+    public string? ApiKey { get; set; }
+    public bool ClearApiKey { get; set; }
+    public string? ExtraHeadersJson { get; set; }
+}
+
+public sealed class LocalAiProviderRecord
+{
+    public string ServerBaseUrl { get; set; } = string.Empty;
+    public long ProviderId { get; set; }
+    public string ProviderType { get; set; } = string.Empty;
+    public string? BaseUrl { get; set; }
+    public string ModelName { get; set; } = string.Empty;
+    public string? ProtectedApiKey { get; set; }
+    public string? ExtraHeadersJson { get; set; }
+    public DateTime UpdateTime { get; set; }
+}

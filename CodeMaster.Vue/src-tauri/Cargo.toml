@@ -1,6 +1,6 @@
 [package]
 name = "codemaster-client"
-version = "1.0.0"
+version = "1.0.1"
 description = "CodeMaster desktop client"
 authors = ["CodeMaster"]
 edition = "2021"

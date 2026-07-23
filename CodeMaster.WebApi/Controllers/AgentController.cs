@@ -65,6 +65,18 @@ public sealed class AgentController : ControllerBase
     public Task<IActionResult> Chat([FromBody] SendAiMessageRequest input)
         => ExecuteAsync(async () => await _conversationService.SendAsync(input));
 
+    [HttpPost("local/chat/begin")]
+    public Task<IActionResult> BeginLocalChat([FromBody] SendAiMessageRequest input)
+        => ExecuteAsync(async () => await _conversationService.BeginLocalAsync(input));
+
+    [HttpPost("local/chat/invoke-tool")]
+    public Task<IActionResult> InvokeLocalTool([FromBody] InvokeLocalAiToolRequest input)
+        => ExecuteAsync(async () => await _conversationService.InvokeLocalToolAsync(input));
+
+    [HttpPost("local/chat/complete")]
+    public Task<IActionResult> CompleteLocalChat([FromBody] CompleteLocalAiChatRequest input)
+        => ExecuteAsync(async () => await _conversationService.CompleteLocalAsync(input));
+
     [HttpPost("tools/{id:long}/approve")]
     public Task<IActionResult> ApproveTool(long id)
         => ExecuteAsync(async () => await _conversationService.ApproveAsync(id));

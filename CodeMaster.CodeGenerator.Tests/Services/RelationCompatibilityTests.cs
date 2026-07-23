@@ -181,6 +181,54 @@ public class RelationCompatibilityTests
         }
     }
 
+    [Fact]
+    public void BuildTemplateContext_UsesBusinessFieldForOwnedOneToOne()
+    {
+        var (db, dbFile) = CodeGeneratorServiceTests.CreateMetadataDb();
+        try
+        {
+            var order = CreateEntity(40, "Order", "orders");
+            var detail = CreateEntity(41, "OrderDetail", "order_details", isChildTable: true);
+            db.Insertable(new[] { order, detail }).ExecuteCommand();
+            var orderNo = CreateField(701, order.Id, "OrderNo");
+            var detailOrderNo = CreateField(702, detail.Id, "OrderNo");
+            db.Insertable(new[] { orderNo, detailOrderNo }).ExecuteCommand();
+
+            var context = new CodeGeneratorService(db).BuildTemplateContext(
+                order,
+                new List<EntityField> { orderNo },
+                new List<OneToManyRelation>(),
+                "CompatibilityProject",
+                "Orders",
+                new List<EntityRelation>
+                {
+                    new()
+                    {
+                        Id = 801,
+                        SourceEntityId = order.Id,
+                        TargetEntityId = detail.Id,
+                        RelationName = "Detail",
+                        SourceField = "OrderNo",
+                        TargetField = "OrderNo",
+                        Cardinality = EntityRelationCardinality.OneToOne,
+                        Ownership = EntityRelationOwnership.Owned,
+                        DeleteBehavior = EntityRelationDeleteBehavior.Delete
+                    }
+                });
+
+            var entity = Assert.IsAssignableFrom<IDictionary<string, object?>>(context["entity"]);
+            var relations = Assert.IsType<List<Dictionary<string, object?>>>(entity["owned_one_relations"]);
+            var generated = Assert.Single(relations);
+            Assert.Equal("string", generated["source_data_type"]);
+            Assert.Equal("entity.OrderNo", generated["create_source_expression"]);
+        }
+        finally
+        {
+            db.Dispose();
+            CodeGeneratorServiceTests.TryDelete(dbFile);
+        }
+    }
+
     private static ModuleEntity CreateEntity(long id, string name, string tableName, bool isChildTable = false) => new()
     {
         Id = id,
