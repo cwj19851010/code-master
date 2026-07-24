@@ -15,10 +15,19 @@ public class McpAuthStore
         WriteIndented = true
     };
 
-    public string AuthFilePath => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-        ".codemaster",
-        "mcp-auth.json");
+    public string AuthFilePath
+    {
+        get
+        {
+            var configuredPath = Environment.GetEnvironmentVariable("CODEMASTER_MCP_AUTH_FILE");
+            return string.IsNullOrWhiteSpace(configuredPath)
+                ? Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    ".codemaster",
+                    "mcp-auth.json")
+                : Path.GetFullPath(configuredPath.Trim());
+        }
+    }
 
     public async Task SaveAsync(McpAuthEntry entry)
     {

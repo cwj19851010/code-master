@@ -1,6 +1,5 @@
 using CodeMaster.LocalAgent.Models;
 using CodeMaster.LocalAgent.Services;
-using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,23 +13,7 @@ if (runStdio)
     builder.Logging.ClearProviders();
 }
 
-builder.Services.Configure<LocalAgentOptions>(builder.Configuration.GetSection("LocalAgent"));
-var localApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-if (string.IsNullOrWhiteSpace(localApplicationData))
-    localApplicationData = AppContext.BaseDirectory;
-var metadataRoot = string.IsNullOrWhiteSpace(configuredOptions.MetadataRoot)
-    ? Path.Combine(localApplicationData, "CodeMaster", "LocalAgent")
-    : configuredOptions.MetadataRoot;
-var dataProtection = builder.Services.AddDataProtection()
-    .SetApplicationName("CodeMaster.LocalAgent")
-    .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(metadataRoot, "keys")));
-if (OperatingSystem.IsWindows())
-    dataProtection.ProtectKeysWithDpapi();
-builder.Services.AddHttpClient<CodeMasterServerClient>();
-builder.Services.AddSingleton<LocalMetadataStore>();
-builder.Services.AddSingleton<LocalAiProviderStore>();
-builder.Services.AddSingleton<LocalAgentChatService>();
-builder.Services.AddSingleton<LocalCodegenExecutionService>();
+builder.Services.AddCodeMasterLocalExecution(builder.Configuration);
 builder.Services.AddSingleton<StdioLocalAgentHost>();
 builder.Services.AddCors(options =>
 {

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using CodeMaster.Application.Dtos.CodeGen;
+using CodeMaster.Application.Services.CodeGen;
 using CodeMaster.McpServer.Services;
 
 namespace CodeMaster.McpServer.Tools;
@@ -30,8 +31,8 @@ public class ModuleTool
             {
                 projectId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Target project id." },
                 moduleId = new { oneOf = new object[] { new { type = "integer" }, new { type = "string" } }, description = "Existing module id. If omitted, moduleName is used to upsert in the project." },
-                moduleName = new { type = "string", description = "Module technical name, PascalCase recommended." },
-                moduleDescription = new { type = "string", description = "Module display title." },
+                moduleName = new { type = "string", description = "Module technical name used as a C# namespace. Required ASCII PascalCase, for example OrderManagement. Never use Chinese here." },
+                moduleDescription = new { type = "string", description = "Human-readable module title. Chinese or another display language belongs here." },
                 icon = new { type = "string", description = "Element Plus icon name." },
                 orderNum = new { type = "integer" },
                 routePath = new { type = "string" },
@@ -51,6 +52,8 @@ public class ModuleTool
 
         if (string.IsNullOrWhiteSpace(args.ModuleName))
             return new { success = false, message = "moduleName is required." };
+
+        args.ModuleName = CSharpModuleNameValidator.RequireValid(args.ModuleName);
 
         var module = await ResolveExistingAsync(args);
         if (module == null)

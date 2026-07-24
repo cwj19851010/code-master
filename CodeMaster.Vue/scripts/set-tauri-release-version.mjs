@@ -36,6 +36,17 @@ if (!cargoVersionPattern.test(cargoContent)) {
 
 const updatedCargoContent = cargoContent.replace(cargoVersionPattern, `$1"${version}"`)
 writeFileSync(cargoPath, updatedCargoContent)
+
+const cargoLockPath = resolve(vueRoot, 'src-tauri', 'Cargo.lock')
+const cargoLockContent = readFileSync(cargoLockPath, 'utf8')
+const cargoLockVersionPattern = /(name\s*=\s*"codemaster-client"\s*\nversion\s*=\s*)"[^"]+"/
+
+if (!cargoLockVersionPattern.test(cargoLockContent)) {
+  throw new Error(`Could not update package version in: ${cargoLockPath}`)
+}
+
+const updatedCargoLockContent = cargoLockContent.replace(cargoLockVersionPattern, `$1"${version}"`)
+writeFileSync(cargoLockPath, updatedCargoLockContent)
 console.log(`Prepared CodeMaster Client release version ${version}`)
 
 function updateJson(filePath, update) {

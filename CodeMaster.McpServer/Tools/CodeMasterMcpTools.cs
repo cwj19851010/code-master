@@ -128,9 +128,11 @@ public sealed class CodeMasterMcpTools
     [Description("Create or update a CodeMaster project module through the authenticated WebApi.")]
     public static Task<object?> SaveModuleAsync(
         ModuleTool tool,
+        [Description("Technical module name used as a C# namespace and generated directory. Required ASCII PascalCase, for example OrderManagement. Never use Chinese here.")]
         string moduleName,
         string? projectId = null,
         string? moduleId = null,
+        [Description("Human-readable module title. Chinese or another display language belongs here, for example 订单管理.")]
         string? moduleDescription = null,
         string? icon = null,
         int? orderNum = null,
@@ -158,7 +160,9 @@ public sealed class CodeMasterMcpTools
         EntityTool tool,
         string? projectId = null,
         string? moduleId = null,
+        [Description("Existing or new technical module name. Required ASCII PascalCase, for example OrderManagement. Never use the Chinese display title.")]
         string? moduleName = null,
+        [Description("Human-readable module title. Chinese or another display language belongs here.")]
         string? moduleDescription = null,
         string? moduleIcon = null,
         int? moduleOrderNum = null,

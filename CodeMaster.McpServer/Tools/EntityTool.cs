@@ -1,5 +1,6 @@
 using System.Text.Json;
 using CodeMaster.Application.Dtos.CodeGen;
+using CodeMaster.Application.Services.CodeGen;
 using CodeMaster.Domain.Entities.CodeGen;
 using CodeMaster.McpServer.Services;
 
@@ -198,6 +199,8 @@ public class EntityTool
 
         if (string.IsNullOrWhiteSpace(args.ModuleName))
             return null;
+
+        args.ModuleName = CSharpModuleNameValidator.RequireValid(args.ModuleName);
 
         var modules = await _apiClient.GetAsync<List<ProjectModuleDto>>(
             $"/api/codegen/projectmodule/getbyprojectid/{args.ProjectId}",

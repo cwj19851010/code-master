@@ -76,6 +76,50 @@ public class CodeMasterProjectChangeSetRulesTests
     }
 
     [Fact]
+    public void Validate_RejectsChineseTechnicalModuleName()
+    {
+        var proposal = new ProjectChangeSetProposal
+        {
+            Summary = "Create order module",
+            Modules =
+            {
+                new CreateModuleProposal
+                {
+                    ModuleName = "订单管理",
+                    ModuleDescription = "订单管理"
+                }
+            }
+        };
+
+        var result = CodeMasterProjectChangeSetRules.Validate(CreateBlueprint(), proposal);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, error => error.Contains("ASCII PascalCase", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Validate_RejectsChineseModuleRename()
+    {
+        var proposal = new ProjectChangeSetProposal
+        {
+            Summary = "Rename module",
+            ModuleUpdates =
+            {
+                new UpdateModuleProposal
+                {
+                    ModuleId = 10,
+                    ModuleName = "系统管理"
+                }
+            }
+        };
+
+        var result = CodeMasterProjectChangeSetRules.Validate(CreateBlueprint(), proposal);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, error => error.Contains("ASCII PascalCase", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void MapFields_AddsStandardPrimaryKeyMetadata()
     {
         var fields = CodeMasterProjectChangeSetService.MapFields(new CreateEntityProposal
@@ -90,6 +134,31 @@ public class CodeMasterProjectChangeSetRulesTests
         Assert.Equal("Id", primaryKey.Name);
         Assert.Equal("long", primaryKey.DataType);
         Assert.True(primaryKey.IsSystemField);
+    }
+
+    [Fact]
+    public void MapFields_NormalizesAgentDataTypeAliases()
+    {
+        var fields = CodeMasterProjectChangeSetService.MapFields(new CreateEntityProposal
+        {
+            Name = "Order",
+            Description = "Order",
+            HasPrimaryKey = false,
+            Fields =
+            {
+                new CreateEntityFieldProposal
+                {
+                    Name = "OrderDate",
+                    Description = "Order date",
+                    DataType = "datetime",
+                    FormControlType = "datetime"
+                }
+            }
+        });
+
+        var field = Assert.Single(fields);
+        Assert.Equal("DateTime", field.DataType);
+        Assert.Equal("datetime", field.FormControlType);
     }
 
     [Fact]

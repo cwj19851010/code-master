@@ -59,12 +59,12 @@
           </el-select>
         </el-form-item>
         <el-form-item label="运行位置" prop="executionMode">
-          <el-radio-group v-model="form.executionMode" @change="handleExecutionModeChange">
+          <el-radio-group v-model="form.executionMode">
             <el-radio-button label="Server">服务端</el-radio-button>
             <el-radio-button label="Local" :disabled="!clientMode">本机客户端</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="API 地址" prop="baseUrl">
+        <el-form-item label="模型 API 地址" prop="baseUrl">
           <el-input v-model="form.baseUrl" placeholder="https://api.example.com/v1" />
         </el-form-item>
         <el-form-item label="模型名称" prop="modelName">
@@ -132,7 +132,7 @@ const formRef = ref()
 const createDefaultForm = () => ({
   name: '',
   providerType: 'OpenAICompatible',
-  executionMode: 'Server',
+  executionMode: clientMode ? 'Local' : 'Server',
   baseUrl: 'https://api.openai.com/v1',
   modelName: '',
   apiKey: '',
@@ -179,15 +179,7 @@ const openEdit = row => {
 const handleProviderTypeChange = value => {
   form.baseUrl = value === 'Anthropic'
     ? 'https://api.anthropic.com'
-    : (form.executionMode === 'Local' ? 'http://127.0.0.1:11434/v1' : 'https://api.openai.com/v1')
-}
-
-const handleExecutionModeChange = value => {
-  if (form.providerType === 'OpenAICompatible') {
-    form.baseUrl = value === 'Local'
-      ? 'http://127.0.0.1:11434/v1'
-      : 'https://api.openai.com/v1'
-  }
+    : 'https://api.openai.com/v1'
 }
 
 const handleSave = async () => {

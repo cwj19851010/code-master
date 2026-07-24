@@ -27,14 +27,11 @@ builder.Logging.AddConsole(options =>
 var workerId = builder.Configuration.GetValue<ushort>("SnowflakeId:WorkerId", (ushort)1);
 YitIdHelper.SetIdGenerator(new IdGeneratorOptions { WorkerId = workerId });
 
-builder.Services.Configure<LocalAgentOptions>(builder.Configuration.GetSection("LocalAgent"));
+builder.Services.AddCodeMasterLocalExecution(builder.Configuration);
 builder.Services.AddHttpClient<CodeMasterApiClient>();
-builder.Services.AddHttpClient<CodeMasterServerClient>();
 builder.Services.AddSingleton<McpAuthStore>();
 builder.Services.AddSingleton<ProjectContextResolver>();
 builder.Services.AddSingleton<McpSessionResolver>();
-builder.Services.AddSingleton<LocalMetadataStore>();
-builder.Services.AddSingleton<LocalCodegenExecutionService>();
 
 builder.Services.AddTransient<AuthTool>();
 builder.Services.AddTransient<QueryTool>();

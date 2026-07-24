@@ -96,7 +96,9 @@ public sealed class AiToolExecutionDto
 
 public sealed class CreateModuleProposal
 {
+    [Description("Technical module name used as a C# namespace and generated directory. Required ASCII PascalCase, for example OrderManagement. Never put Chinese text here.")]
     public string ModuleName { get; set; } = string.Empty;
+    [Description("Human-readable module title. Chinese or another display language belongs here, for example 订单管理.")]
     public string ModuleDescription { get; set; } = string.Empty;
     public string? Icon { get; set; }
     public int OrderNum { get; set; }
@@ -107,6 +109,7 @@ public sealed class CreateModuleProposal
 public sealed class CreateEntityProposal
 {
     public long ModuleId { get; set; }
+    [Description("Technical module name. Use the existing/proposed ASCII PascalCase ModuleName, for example OrderManagement; never use the Chinese display title.")]
     public string? ModuleName { get; set; }
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
@@ -140,6 +143,7 @@ public sealed class CreateEntityFieldProposal
 {
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    [Description("C# data type. Prefer canonical names such as string, int, long, decimal, bool, DateTime, DateOnly, DateTimeOffset, Guid. Use FormControlType=datetime for the UI control; do not use it as the C# type name.")]
     public string DataType { get; set; } = "string";
     public bool IsNullable { get; set; }
     public int? MaxLength { get; set; }
@@ -231,7 +235,9 @@ public sealed class ProjectChangeSetProposal
 public sealed class UpdateModuleProposal
 {
     public long ModuleId { get; set; }
+    [Description("New technical module name used as a C# namespace. When provided, it must be ASCII PascalCase, for example OrderManagement. Never put Chinese text here.")]
     public string? ModuleName { get; set; }
+    [Description("New human-readable module title. Chinese or another display language belongs here.")]
     public string? ModuleDescription { get; set; }
     public string? Icon { get; set; }
     public int? OrderNum { get; set; }
@@ -275,6 +281,7 @@ public sealed class UpdateEntityFieldProposal
     public long FieldId { get; set; }
     public string? Name { get; set; }
     public string? Description { get; set; }
+    [Description("C# data type. Prefer canonical names such as string, int, long, decimal, bool, DateTime, DateOnly, DateTimeOffset, Guid.")]
     public string? DataType { get; set; }
     public bool? IsNullable { get; set; }
     public int? MaxLength { get; set; }

@@ -139,7 +139,7 @@ public class CodeGeneratorService
 
     private static string GetGenerationDataType(EntityField field)
     {
-        var dataType = field.DataType?.TrimEnd('?') ?? "string";
+        var dataType = CSharpDataTypeNormalizer.Normalize(field.DataType).TrimEnd('?');
         if (field.IsMultiple &&
             (field.FormControlType == "select-table" || field.FormControlType == "cascader") &&
             IsNumericDataType(dataType))
@@ -152,7 +152,7 @@ public class CodeGeneratorService
 
     private static bool IsNumericDataType(string? dataType)
     {
-        var normalized = dataType?.TrimEnd('?');
+        var normalized = CSharpDataTypeNormalizer.Normalize(dataType).TrimEnd('?');
         return normalized is "int" or "long" or "decimal" or "double" or "float" or "short" or "byte";
     }
 

@@ -174,6 +174,7 @@ public class ModuleEntityService : CrudApplicationService<ModuleEntity, ModuleEn
                 foreach (var fieldDto in input.Fields)
                 {
                     var field = fieldDto.Adapt<EntityField>();
+                    field.DataType = CSharpDataTypeNormalizer.Normalize(field.DataType);
                     NormalizeCalculatedFieldMetadata(field);
                     field.ModuleEntityId = entity.Id;
                     FillTenantInfo(field);
@@ -273,6 +274,7 @@ public class ModuleEntityService : CrudApplicationService<ModuleEntity, ModuleEn
                 var newFields = input.NewFields.Select(f =>
                 {
                     var field = f.Adapt<EntityField>();
+                    field.DataType = CSharpDataTypeNormalizer.Normalize(field.DataType);
                     NormalizeCalculatedFieldMetadata(field);
                     field.ModuleEntityId = id;
                     if (field.Id == 0)
@@ -301,6 +303,7 @@ public class ModuleEntityService : CrudApplicationService<ModuleEntity, ModuleEn
                     if (field != null)
                     {
                         fieldDto.Adapt(field);
+                        field.DataType = CSharpDataTypeNormalizer.Normalize(field.DataType);
                         NormalizeCalculatedFieldMetadata(field);
                         field.UpdateTime = DateTime.UtcNow;
                         await _db.Updateable(field).ExecuteCommandAsync();

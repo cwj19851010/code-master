@@ -37,6 +37,12 @@ public class EntityFieldService : CrudApplicationService<EntityField, EntityFiel
         return fields.Adapt<List<EntityFieldDto>>();
     }
 
+    public override async Task<long> CreateAsync(CreateEntityFieldDto input)
+    {
+        input.DataType = CSharpDataTypeNormalizer.Normalize(input.DataType);
+        return await base.CreateAsync(input);
+    }
+
     /// <summary>
     /// 批量创建字段
     /// </summary>
@@ -47,6 +53,7 @@ public class EntityFieldService : CrudApplicationService<EntityField, EntityFiel
 
         foreach (var entity in entities)
         {
+            entity.DataType = CSharpDataTypeNormalizer.Normalize(entity.DataType);
             entity.CreateTime = DateTime.UtcNow;
             var id = await Repository.InsertAsync(entity);
             ids.Add(id);
@@ -63,6 +70,7 @@ public class EntityFieldService : CrudApplicationService<EntityField, EntityFiel
             throw new Exception($"Entity with id {id} not found");
         }
 
+        input.DataType = CSharpDataTypeNormalizer.Normalize(input.DataType);
         input.Adapt(entity);
         entity.UpdateTime = DateTime.UtcNow;
         return await Repository.UpdateAsync(entity);
@@ -105,6 +113,7 @@ public class EntityFieldService : CrudApplicationService<EntityField, EntityFiel
             var entity = await Repository.GetByIdAsync(field.Id);
             if (entity != null)
             {
+                field.DataType = CSharpDataTypeNormalizer.Normalize(field.DataType);
                 field.Adapt(entity);
                 entity.UpdateTime = DateTime.UtcNow;
                 await Repository.UpdateAsync(entity);

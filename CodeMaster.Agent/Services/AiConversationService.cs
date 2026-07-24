@@ -716,6 +716,7 @@ internal sealed class AiConversationService : IAiConversationService
         Always use get_project_structure before designing changes. Use get_entity_blueprint when one entity needs closer inspection.
         Treat the returned control catalog, entity fields, relation metadata, and generation state as the source of truth.
         Convert a coherent user requirement into one propose_project_change_set call whenever possible. A change set may create, edit, reorder, or delete modules, entities, fields, and relations, and may request full or incremental generation.
+        ModuleName is a technical C# namespace and directory segment. It must always be an ASCII PascalCase identifier such as OrderManagement, Inventory, or MES. Never put Chinese text in ModuleName. Put the localized human-readable title such as 订单管理 in ModuleDescription.
         Use ModuleName when a new entity belongs to a module created in the same change set. Use TargetEntityName when a relation points to an entity created in the same change set.
         Relation field direction is strict:
         - Owned OneToMany: SourceEntity is the parent, SourceField is its primary key (normally Id), TargetEntity is the child, and TargetField is the child foreign key (for example Order.Id -> OrderItem.OrderId).

@@ -86,6 +86,86 @@ public class CodeGeneratorServiceTests
     }
 
     [Theory]
+    [InlineData("datetime", "DateTime")]
+    [InlineData("DATETIME?", "DateTime?")]
+    [InlineData("boolean", "bool")]
+    [InlineData("uuid", "Guid")]
+    [InlineData("text", "string")]
+    [InlineData("CustomStatus", "CustomStatus")]
+    public void CSharpDataTypeNormalizer_ShouldCanonicalizeAliases(string input, string expected)
+    {
+        Assert.Equal(expected, CSharpDataTypeNormalizer.Normalize(input));
+    }
+
+    [Theory]
+    [InlineData("OrderManagement", true)]
+    [InlineData("MES", true)]
+    [InlineData("Inventory2", true)]
+    [InlineData("订单管理", false)]
+    [InlineData("orderManagement", false)]
+    [InlineData("Order Management", false)]
+    [InlineData("Order-Management", false)]
+    [InlineData("", false)]
+    public void CSharpModuleNameValidator_ShouldRequireAsciiPascalCase(string input, bool expected)
+    {
+        Assert.Equal(expected, CSharpModuleNameValidator.IsValid(input));
+    }
+
+    [Fact]
+    public async Task Generation_ShouldRenderLegacyLowercaseDateTimeAsValidCSharp()
+    {
+        var (db, dbFile) = CreateMetadataDb();
+        try
+        {
+            const long entityId = 90;
+            db.Insertable(new ModuleEntity
+            {
+                Id = entityId,
+                ProjectId = 1,
+                ModuleId = 1,
+                Name = "LegacyOrder",
+                Description = "Legacy order",
+                HasPrimaryKey = true,
+                CreateBy = "test",
+                UpdateUserId = 0
+            }).ExecuteCommand();
+            db.Insertable(new[]
+            {
+                SystemField(91, entityId, "Id", "long", isPrimaryKey: true),
+                new EntityField
+                {
+                    Id = 92,
+                    ModuleEntityId = entityId,
+                    Name = "OrderDate",
+                    Description = "Order date",
+                    DataType = "datetime",
+                    IsRequired = true,
+                    ShowInList = true,
+                    ShowInAddForm = true,
+                    ShowInEditForm = true,
+                    FormControlType = "datetime",
+                    CreateBy = "test",
+                    UpdateUserId = 0
+                }
+            }).ExecuteCommand();
+
+            var generator = new CodeGeneratorService(db);
+            var entityCode = await generator.GenerateEntityAutoAsync(entityId, "Demo", "Orders");
+            var dtoCode = await generator.GenerateDtoAsync(entityId, "Demo", "Orders");
+
+            Assert.Contains("public DateTime OrderDate", entityCode);
+            Assert.Contains("public DateTime OrderDate", dtoCode);
+            Assert.DoesNotContain("public datetime OrderDate", entityCode);
+            Assert.DoesNotContain("public datetime OrderDate", dtoCode);
+        }
+        finally
+        {
+            db.Dispose();
+            TryDelete(dbFile);
+        }
+    }
+
+    [Theory]
     [InlineData("Order", "orders")]
     [InlineData("OrderItem", "order_items")]
     [InlineData("Address", "address")]

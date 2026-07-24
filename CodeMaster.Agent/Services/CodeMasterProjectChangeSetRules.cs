@@ -1,4 +1,5 @@
 using CodeMaster.Agent.Contracts;
+using CodeMaster.Application.Services.CodeGen;
 using CodeMaster.Domain.Entities.CodeGen;
 
 namespace CodeMaster.Agent.Services;
@@ -129,6 +130,9 @@ public static class CodeMasterProjectChangeSetRules
                 continue;
             }
 
+            if (!CSharpModuleNameValidator.IsValid(module.ModuleName))
+                result.Errors.Add(CSharpModuleNameValidator.Requirement);
+
             if (existingModulesByName.ContainsKey(module.ModuleName.Trim()))
                 result.Errors.Add($"Module '{module.ModuleName}' already exists in this project.");
         }
@@ -160,6 +164,8 @@ public static class CodeMasterProjectChangeSetRules
                 else
                 {
                     var name = update.ModuleName.Trim();
+                    if (!CSharpModuleNameValidator.IsValid(name))
+                        result.Errors.Add(CSharpModuleNameValidator.Requirement);
                     if (existingModulesByName.TryGetValue(name, out var conflict) && conflict.Id != current.Id)
                         result.Errors.Add($"Module name '{name}' already belongs to another module.");
                     if (proposedModules.ContainsKey(name))

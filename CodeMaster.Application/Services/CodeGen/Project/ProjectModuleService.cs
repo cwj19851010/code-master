@@ -31,6 +31,18 @@ public class ProjectModuleService : CrudApplicationService<ProjectModule, Projec
         _sqlSugarClient = sqlSugarClient;
     }
 
+    public override async Task<long> CreateAsync(CreateProjectModuleDto input)
+    {
+        input.ModuleName = CSharpModuleNameValidator.RequireValid(input.ModuleName);
+        return await base.CreateAsync(input);
+    }
+
+    public override async Task<int> UpdateAsync(long id, UpdateProjectModuleDto input)
+    {
+        input.ModuleName = CSharpModuleNameValidator.RequireValid(input.ModuleName);
+        return await base.UpdateAsync(id, input);
+    }
+
     /// <summary>
     /// 根据项目ID获取模块列表
     /// </summary>

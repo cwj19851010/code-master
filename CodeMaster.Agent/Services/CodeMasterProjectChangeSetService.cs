@@ -240,7 +240,7 @@ internal sealed class CodeMasterProjectChangeSetService : ICodeMasterProjectChan
         {
             Name = field.Name.Trim(),
             Description = field.Description.Trim(),
-            DataType = field.DataType.Trim(),
+            DataType = CSharpDataTypeNormalizer.Normalize(field.DataType),
             IsNullable = field.IsNullable,
             MaxLength = field.MaxLength,
             Precision = field.Precision,
@@ -314,7 +314,7 @@ internal sealed class CodeMasterProjectChangeSetService : ICodeMasterProjectChan
             Id = current.Id,
             Name = MergeRequired(update.Name, current.Name),
             Description = MergeRequired(update.Description, current.Description),
-            DataType = MergeRequired(update.DataType, current.DataType),
+            DataType = CSharpDataTypeNormalizer.Normalize(MergeRequired(update.DataType, current.DataType)),
             IsNullable = update.IsNullable ?? current.IsNullable,
             MaxLength = update.ClearMaxLength ? null : update.MaxLength ?? current.MaxLength,
             Precision = update.ClearPrecision ? null : update.Precision ?? current.Precision,

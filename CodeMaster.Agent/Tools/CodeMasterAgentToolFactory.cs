@@ -683,6 +683,8 @@ internal sealed class CodeMasterAgentToolFactory : ICodeMasterAgentToolFactory
         {
             throw new ArgumentException("Module name and description are required.");
         }
+
+        CSharpModuleNameValidator.RequireValid(proposal.ModuleName);
     }
 
     private static T DeserializeRequired<T>(string? json)
